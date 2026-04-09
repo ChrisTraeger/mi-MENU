@@ -1,46 +1,61 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Menú — Comida Express</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Segoe UI', sans-serif; background: #f5f5f5; color: #1a1a1a; padding: 20px; }
-    .container { max-width: 600px; margin: 0 auto; text-align: center; }
-    .brand { padding: 20px; background: white; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 20px; }
-    .brand-icon { font-size: 50px; cursor: pointer; user-select: none; }
-    .brand-name { font-size: 28px; font-weight: bold; margin: 10px 0; }
-    #admin-panel { display: none; background: #fff; padding: 20px; border-radius: 15px; border: 2px solid #D85A30; margin-top: 20px; text-align: left; }
-    input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; }
-    .btn-save { background: #D85A30; color: white; padding: 15px; border: none; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer; font-size: 16px; }
-    .footer { font-size: 12px; color: #888; margin-top: 20px; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f5f5; color: #1a1a1a; min-height: 100vh; }
+    .container { max-width: 700px; margin: 0 auto; padding: 1.5rem 1rem; }
+    .tabs { display: none; gap: 6px; border-bottom: 1px solid #e0e0e0; margin-bottom: 1.5rem; }
+    .tab { font-size: 14px; padding: 10px 18px; cursor: pointer; border: none; background: none; color: #888; border-bottom: 2px solid transparent; }
+    .tab.active { color: #D85A30; border-bottom: 2px solid #D85A30; font-weight: 600; }
+    .view-section { display: none; }
+    .view-section.active { display: block; }
+    .brand { text-align: center; margin-bottom: 1.2rem; padding: 1.5rem 0 0.5rem; }
+    .brand-icon { font-size: 40px; margin-bottom: 8px; cursor: pointer; user-select: none; }
+    .brand-name { font-size: 28px; font-weight: 700; color: #1a1a1a; }
+    .divider { height: 1px; background: #e0e0e0; margin: 1rem 0; }
+    .cat-title { font-size: 11px; font-weight: 700; color: #aaa; text-transform: uppercase; letter-spacing: 1.2px; margin: 2rem 0 0.75rem; }
+    .items-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+    .item-card { background: #fff; border: 1px solid #e8e8e8; border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 4px; }
+    .item-name { font-size: 14px; font-weight: 600; }
+    .item-desc { font-size: 12px; color: #888; line-height: 1.4; }
+    .item-price { font-size: 15px; font-weight: 700; color: #D85A30; margin-top: auto; padding-top: 8px; }
+    .editor { display: flex; flex-direction: column; gap: 16px; }
+    .ed-section { background: #fff; border: 1px solid #e8e8e8; border-radius: 12px; padding: 16px; }
+    .ed-item-block { background: #fafafa; padding: 10px; border-radius: 8px; margin-bottom: 10px; border: 1px solid #eee; }
+    .ed-row-top { display: grid; grid-template-columns: 1fr 100px auto; gap: 6px; margin-bottom: 6px; }
+    .ed-row-top input, .ed-desc-input, .brand-input { font-size: 13px; padding: 7px 10px; border-radius: 8px; border: 1px solid #e0e0e0; width: 100%; }
+    .del-btn { background: #FCEBEB; border: none; color: #E24B4A; padding: 4px 10px; border-radius: 6px; cursor: pointer; }
+    .add-item-btn { padding: 10px; border-radius: 8px; border: 1px dashed #ccc; background: none; width: 100%; cursor: pointer; }
+    .save-btn { width: 100%; padding: 15px; font-weight: 600; border-radius: 10px; background: #D85A30; color: white; border: none; margin-top: 20px; cursor: pointer; }
+    .saved-msg { text-align: center; padding: 10px; background: #EAF3DE; color: #3B6D11; border-radius: 8px; margin-top: 10px; display: none; }
+    @media (max-width: 480px) { .items-grid { grid-template-columns: 1fr 1fr; } }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <div class="brand">
-    <div class="brand-icon" onclick="handleLogin()">🍔</div>
-    <div class="brand-name" id="display-name">Comida Express</div>
-    <p>Menú Digital</p>
+  <div class="tabs" id="adminTabs">
+    <button class="tab active" onclick="switchTab('menu')">Vista Cliente</button>
+    <button class="tab" onclick="switchTab('editor')">Editar Menú</button>
   </div>
 
-  <div id="admin-panel">
-    <h3>⚙️ Panel de Edición</h3>
-    <label>Cambiar nombre del negocio:</label>
-    <input type="text" id="input-name" placeholder="Ej: Comida Express 2.0">
-    <button class="btn-save" onclick="applyChanges()">GUARDAR EN LA NUBE</button>
-    <p id="msg" style="color: green; margin-top:10px; display:none; font-weight:bold;">✅ ¡Guardado con éxito!</p>
-  </div>
+  <div id="tab-menu" class="view-section active">Cargando...</div>
 
-  <div class="footer">Toca la hamburguesa 5 veces para editar</div>
+  <div id="tab-editor" class="view-section">
+    <div class="editor" id="editorContainer"></div>
+    <button class="save-btn" onclick="applyChanges()">GUARDAR TODO EN LA NUBE</button>
+    <div class="saved-msg" id="savedMsg">✓ Cambios guardados exitosamente</div>
+  </div>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
 <script>
-  // TUS DATOS REALES
   const firebaseConfig = {
     apiKey: "AIzaSyByKcM9Z2_PwW0Y9xdbFIfBI6AMviiI4uQ",
     authDomain: "mi-menu-2f5bd.firebaseapp.com",
@@ -52,36 +67,78 @@
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
 
-  // Leer datos de la nube
-  db.ref('nombreNegocio').on('value', (snap) => {
-    const val = snap.val();
-    if(val) {
-      document.getElementById('display-name').innerText = val;
-      document.getElementById('input-name').value = val;
-    }
+  let data = {
+    brand: "Comida Express",
+    cats: [{ name: "Salchipapas", items: [{ name: "Sencilla", desc: "Papa, salchicha y salsas", price: "$12.000" }] }]
+  };
+
+  db.ref('menuFullData').on('value', (snapshot) => {
+    const cloudData = snapshot.val();
+    if (cloudData) { data = cloudData; }
+    renderMenu();
   });
 
-  let clicks = 0;
-  function handleLogin() {
-    clicks++;
-    if(clicks === 5) {
-      if(prompt("Contraseña de administrador:") === "1234") {
-        document.getElementById('admin-panel').style.display = 'block';
-      }
-      clicks = 0;
+  let logoClicks = 0;
+  function handleLogoClick() {
+    logoClicks++;
+    if (logoClicks === 5) {
+      if (prompt("Clave:") === "1234") document.getElementById('adminTabs').style.display = 'flex';
+      logoClicks = 0;
     }
-    setTimeout(() => { clicks = 0; }, 3000);
+    setTimeout(() => { logoClicks = 0; }, 3000);
   }
 
+  function renderMenu() {
+    const el = document.getElementById('tab-menu');
+    let h = `<div class="brand"><div class="brand-icon" onclick="handleLogoClick()">🍔</div><div class="brand-name">${data.brand}</div></div><div class="divider"></div>`;
+    data.cats.forEach(cat => {
+      h += `<div class="cat-title">${cat.name}</div><div class="items-grid">`;
+      cat.items.forEach(item => {
+        h += `<div class="item-card"><div class="item-name">${item.name}</div><div class="item-desc">${item.desc}</div><div class="item-price">${item.price}</div></div>`;
+      });
+      h += `</div>`;
+    });
+    el.innerHTML = h;
+  }
+
+  function renderEditor() {
+    const el = document.getElementById('editorContainer');
+    let h = `<div class="ed-section"><b>Nombre:</b><input class="brand-input" id="brandInput" value="${data.brand}"></div>`;
+    data.cats.forEach((cat, ci) => {
+      h += `<div class="ed-section"><b>Categoría:</b><input value="${cat.name}" onchange="data.cats[${ci}].name=this.value">`;
+      cat.items.forEach((item, ii) => {
+        h += `<div class="ed-item-block">
+          <div class="ed-row-top">
+            <input value="${item.name}" onchange="updateItem(${ci},${ii},'name',this.value)" placeholder="Plato">
+            <input value="${item.price}" onchange="updateItem(${ci},${ii},'price',this.value)" placeholder="Precio">
+            <button class="del-btn" onclick="deleteItem(${ci},${ii})">✕</button>
+          </div>
+          <input class="ed-desc-input" value="${item.desc}" onchange="updateItem(${ci},${ii},'desc',this.value)" placeholder="Descripción">
+        </div>`;
+      });
+      h += `<button class="add-item-btn" onclick="addItem(${ci})">+ Añadir Plato</button></div>`;
+    });
+    el.innerHTML = h;
+  }
+
+  function updateItem(ci, ii, f, v) { data.cats[ci].items[ii][f] = v; }
+  function deleteItem(ci, ii) { data.cats[ci].items.splice(ii, 1); renderEditor(); }
+  function addItem(ci) { data.cats[ci].items.push({ name: "", desc: "", price: "" }); renderEditor(); }
+
   function applyChanges() {
-    const nuevoNombre = document.getElementById('input-name').value;
-    db.ref('nombreNegocio').set(nuevoNombre)
+    data.brand = document.getElementById('brandInput').value;
+    db.ref('menuFullData').set(data)
       .then(() => {
-        const msg = document.getElementById('msg');
-        msg.style.display = 'block';
-        setTimeout(() => { msg.style.display = 'none'; }, 3000);
+        document.getElementById('savedMsg').style.display = 'block';
+        setTimeout(() => { document.getElementById('savedMsg').style.display = 'none'; }, 2000);
       })
-      .catch(err => alert("Error de permisos: " + err.message));
+      .catch(e => alert("Error: " + e.message));
+  }
+
+  function switchTab(t) {
+    if (t === 'editor') renderEditor();
+    document.querySelectorAll('.tab').forEach(b => b.classList.toggle('active', b.innerText.toLowerCase().includes(t === 'menu' ? 'vista' : 'editar')));
+    document.querySelectorAll('.view-section').forEach(s => s.classList.toggle('active', s.id === 'tab-' + t));
   }
 </script>
 </body>
