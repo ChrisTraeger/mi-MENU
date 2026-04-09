@@ -28,15 +28,24 @@
       box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
       margin: -20px -20px 30px -20px; 
     }
-    .brand-icon { font-size: 50px; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; }
-    .brand-name { font-size: 32px; font-weight: 800; color: var(--primary); text-transform: uppercase; }
+    /* Estilo para los emojis juntos */
+    .brand-logos { 
+      font-size: 65px; /* Un poco más grande para que luzcan */
+      cursor: pointer; 
+      user-select: none; 
+      -webkit-tap-highlight-color: transparent; 
+      margin-bottom: 5px; 
+      display: block;
+      letter-spacing: 5px;
+    }
+    .brand-name { font-size: 32px; font-weight: 800; color: var(--primary); text-transform: uppercase; line-height: 1.1; }
     
-    .cat-title { font-size: 18px; font-weight: 700; margin: 30px 0 15px; padding-left: 10px; border-left: 5px solid var(--primary); }
-    .item-card { background: var(--white); border-radius: 18px; padding: 18px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 15px; }
+    .cat-title { font-size: 18px; font-weight: 700; margin: 35px 0 15px; padding-left: 10px; border-left: 5px solid var(--primary); color: #2d3436; }
+    .item-card { background: var(--white); border-radius: 18px; padding: 18px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 15px; border: 1px solid rgba(0,0,0,0.02); }
     .item-info { flex: 1; padding-right: 15px; }
-    .item-name { font-size: 16px; font-weight: 700; }
-    .item-desc { font-size: 13px; color: #636e72; line-height: 1.4; }
-    .item-price { font-size: 16px; font-weight: 800; color: var(--primary); background: #fff5f2; padding: 6px 12px; border-radius: 10px; white-space: nowrap; }
+    .item-name { font-size: 16px; font-weight: 700; color: #1e272e; }
+    .item-desc { font-size: 13px; color: #636e72; line-height: 1.4; margin-top: 2px; }
+    .item-price { font-size: 16px; font-weight: 800; color: var(--primary); background: #fff5f2; padding: 6px 14px; border-radius: 12px; white-space: nowrap; }
 
     /* PANEL ADMINISTRADOR (OCULTO) */
     #admin-panel { 
@@ -65,22 +74,21 @@
 <body>
 
   <div class="container" id="client-view">
-    <div id="menu-content">Cargando menú delicioso...</div>
+    <div id="menu-content">Cargando delicias...</div>
   </div>
 
   <div id="admin-panel">
-    <button class="btn btn-close" onclick="closeAdmin()">← CERRAR PANEL</button>
-    <h2 style="margin-bottom:20px; text-align:center;">ADMINISTRACIÓN</h2>
+    <button class="btn btn-close" onclick="closeAdmin()">← VOLVER AL MENÚ</button>
+    <h2 style="margin-bottom:20px; text-align:center;">PANEL DE CONTROL</h2>
     <div id="editor-content"></div>
     <button class="btn btn-cat" onclick="addCat()">+ NUEVA CATEGORÍA</button>
-    <button class="btn btn-save" onclick="applyChanges()">💾 GUARDAR CAMBIOS AHORA</button>
+    <button class="btn btn-save" onclick="applyChanges()">💾 GUARDAR EN LA NUBE</button>
   </div>
 
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
   <script>
-    // TUS CREDENCIALES EXACTAS
     const firebaseConfig = {
       apiKey: "AIzaSyByKcM9Z2_PwW0Y9xdbFIfBI6AMviiI4uQ",
       authDomain: "mi-menu-2f5bd.firebaseapp.com",
@@ -91,48 +99,40 @@
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
-    
-    // Objeto de datos inicial
     let data = { brand: "Comida Express", cats: [] };
 
-    // FUNCIÓN 1: Escuchar cambios en la nube (Ruta 'menuData' como en tu foto)
     db.ref('menuData').on('value', (snap) => {
       const cloud = snap.val();
       if(cloud) {
         data = cloud;
         if(!data.cats) data.cats = [];
-        // Aseguramos que cada categoría tenga su lista de items
         data.cats.forEach(c => { if(!c.items) c.items = []; });
       }
       renderClientMenu();
     });
 
-    // FUNCIÓN 2: Lógica Secreta (5 clics en 🍔)
+    // Lógica Secreta mejorada
     let clicks = 0;
     function handleLogoClick() {
       clicks++;
       if(clicks === 5) {
-        if(prompt("Introduce tu clave:") === "1234") {
-          openAdmin();
-        }
+        let clave = prompt("🔐 Clave de Administrador:");
+        if(clave === "1234") { openAdmin(); }
+        else if(clave !== null) { alert("❌ Clave incorrecta"); }
         clicks = 0;
       }
       setTimeout(() => { clicks = 0; }, 3000);
     }
 
-    // FUNCIÓN 3: Dibujar Menú para Clientes
     function renderClientMenu() {
       const el = document.getElementById('menu-content');
+      // AQUÍ ESTÁ EL TRÍO DINÁMICO: 🍔🍟🥤
       let h = `
         <div class="brand">
-          <div class="brand-icon" onclick="handleLogoClick()">🍔</div>
+          <div class="brand-logos" onclick="handleLogoClick()">🍔🍟🥤</div>
           <div class="brand-name">${data.brand}</div>
         </div>`;
       
-      if(data.cats.length === 0) {
-        h += `<p style="text-align:center; padding:40px; color:#999;">Cargando productos...</p>`;
-      }
-
       data.cats.forEach(cat => {
         h += `<div class="cat-title">${cat.name}</div>`;
         if(cat.items) {
@@ -143,7 +143,7 @@
                   <div class="item-name">${item.name || 'Producto'}</div>
                   <div class="item-desc">${item.desc || ''}</div>
                 </div>
-                <div class="item-price">${item.price || '$0'}</div>
+                <div class="item-price">${item.price || ''}</div>
               </div>`;
           });
         }
@@ -151,36 +151,32 @@
       el.innerHTML = h;
     }
 
-    // FUNCIÓN 4: Dibujar Editor para Ti
     function renderAdminEditor() {
       const el = document.getElementById('editor-content');
       let h = `<div class="admin-card"><b>Nombre del Negocio:</b><input id="brandInput" value="${data.brand}"></div>`;
-      
       data.cats.forEach((cat, ci) => {
         h += `
           <div class="admin-card">
-            <div style="display:flex; gap:10px; align-items:center;">
+            <div style="display:flex; gap:10px;">
               <input style="font-weight:bold; color:var(--primary)" value="${cat.name}" onchange="data.cats[${ci}].name=this.value">
-              <button class="btn btn-del" onclick="deleteCat(${ci})">Borrar Categoría</button>
+              <button class="btn btn-del" onclick="deleteCat(${ci})">Eliminar Cat</button>
             </div>`;
-        
         if(cat.items) {
           cat.items.forEach((item, ii) => {
             h += `
               <div class="ed-item-block">
                 <input placeholder="Nombre Plato" value="${item.name}" onchange="updateItem(${ci},${ii},'name',this.value)">
                 <input placeholder="Precio" value="${item.price}" onchange="updateItem(${ci},${ii},'price',this.value)">
-                <input placeholder="Descripción/Ingredientes" value="${item.desc}" onchange="updateItem(${ci},${ii},'desc',this.value)">
-                <button class="btn btn-del" style="width:100%; margin-top:5px;" onclick="deleteItem(${ci},${ii})">Quitar este Plato</button>
+                <input placeholder="Ingredientes" value="${item.desc}" onchange="updateItem(${ci},${ii},'desc',this.value)">
+                <button class="btn btn-del" style="width:100%" onclick="deleteItem(${ci},${ii})">Quitar Plato</button>
               </div>`;
           });
         }
-        h += `<button class="btn btn-add" onclick="addItem(${ci})">+ Añadir Plato a ${cat.name}</button></div>`;
+        h += `<button class="btn btn-add" onclick="addItem(${ci})">+ Añadir Plato</button></div>`;
       });
       el.innerHTML = h;
     }
 
-    // FUNCIONES DE EDICIÓN
     function openAdmin() { document.getElementById('admin-panel').style.display = 'block'; renderAdminEditor(); }
     function closeAdmin() { document.getElementById('admin-panel').style.display = 'none'; }
     function updateItem(ci, ii, f, v) { data.cats[ci].items[ii][f] = v; }
@@ -189,15 +185,12 @@
     function addItem(ci) { if(!data.cats[ci].items) data.cats[ci].items = []; data.cats[ci].items.push({name:"", desc:"", price:""}); renderAdminEditor(); }
     function addCat() { data.cats.push({name:"Nueva Categoría", items:[]}); renderAdminEditor(); }
 
-    // FUNCIÓN FINAL: Mandar todo a Firebase
     function applyChanges() {
       data.brand = document.getElementById('brandInput').value;
-      db.ref('menuData').set(data)
-        .then(() => {
-          alert("✅ ¡MENÚ ACTUALIZADO! Ya todos los clientes pueden verlo.");
-          closeAdmin();
-        })
-        .catch(err => alert("❌ Error al guardar: " + err.message));
+      db.ref('menuData').set(data).then(() => {
+        alert("✅ ¡Menú actualizado para todos!");
+        closeAdmin();
+      });
     }
   </script>
 </body>
