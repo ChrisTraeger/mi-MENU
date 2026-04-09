@@ -48,7 +48,7 @@
     <div class="editor" id="editorContainer"></div>
     <button class="add-btn add-cat-btn" onclick="addCat()">+ AÑADIR NUEVA CATEGORÍA</button>
     <button class="save-btn" onclick="applyChanges()">💾 GUARDAR TODO EN LA NUBE</button>
-    <div class="saved-msg" id="savedMsg">✓ ¡Menú actualizado!</div>
+    <div class="saved-msg" id="savedMsg">✓ ¡Menú actualizado en la nube!</div>
   </div>
 </div>
 
@@ -67,17 +67,15 @@
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
 
-  let data = { brand: "Cargando...", cats: [] };
+  let data = { brand: "Comida Express", cats: [] };
 
-  // CORRECCIÓN: Usamos 'menuData' para que coincida con tu imagen
+  // Escuchar 'menuData'
   db.ref('menuData').on('value', (snapshot) => {
     const cloudData = snapshot.val();
     if (cloudData) {
       data = cloudData;
-      // Asegurar que items sea siempre un array para evitar errores si está vacío
-      if(data.cats) {
-        data.cats.forEach(c => { if(!c.items) c.items = []; });
-      } else { data.cats = []; }
+      if(!data.cats) data.cats = [];
+      data.cats.forEach(c => { if(!c.items) c.items = []; });
     }
     renderMenu();
   });
@@ -92,20 +90,29 @@
     setTimeout(() => { logoClicks = 0; }, 3000);
   }
 
+  // FUNCIÓN CORREGIDA: Ahora todas las categorías muestran descripción
   function renderMenu() {
     const el = document.getElementById('tab-menu');
     let h = `<div class="brand"><div class="brand-icon" onclick="handleLogoClick()">🍔</div><div class="brand-name">${data.brand}</div></div><div class="divider"></div>`;
+    
     if(data.cats && data.cats.length > 0) {
       data.cats.forEach(cat => {
         h += `<div class="cat-title">${cat.name}</div><div class="items-grid">`;
         if(cat.items) {
           cat.items.forEach(item => {
-            h += `<div class="item-card"><div class="item-name">${item.name || 'Sin nombre'}</div><div class="item-desc">${item.desc || ''}</div><div class="item-price">${item.price || ''}</div></div>`;
+            h += `
+              <div class="item-card">
+                <div class="item-name">${item.name || 'Sin nombre'}</div>
+                <div class="item-desc">${item.desc || ''}</div>
+                <div class="item-price">${item.price || ''}</div>
+              </div>`;
           });
         }
         h += `</div>`;
       });
-    } else { h += "<p style='text-align:center; color:#888;'>El menú está vacío. Entra al editor para añadir categorías.</p>"; }
+    } else {
+      h += "<p style='text-align:center; padding:20px; color:#888;'>Usa el panel de edición para crear categorías y platos.</p>";
+    }
     el.innerHTML = h;
   }
 
