@@ -1,176 +1,204 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Menú — Comida Express</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Menú Digital — Comida Express</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
   <style>
+    :root { --primary: #D85A30; --bg: #f8f9fa; --text: #2d3436; --white: #ffffff; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f5f5; color: #1a1a1a; min-height: 100vh; }
-    .container { max-width: 700px; margin: 0 auto; padding: 1.5rem 1rem; }
-    .tabs { display: none; gap: 6px; border-bottom: 1px solid #e0e0e0; margin-bottom: 1.5rem; }
-    .tab { font-size: 14px; padding: 10px 18px; cursor: pointer; border: none; background: none; color: #888; border-bottom: 2px solid transparent; font-family: inherit; }
-    .tab.active { color: #D85A30; border-bottom: 2px solid #D85A30; font-weight: 600; }
-    .view-section { display: none; }
-    .view-section.active { display: block; }
-    .brand { text-align: center; margin-bottom: 1.2rem; padding: 1.5rem 0 0.5rem; }
-    .brand-icon { font-size: 40px; margin-bottom: 8px; cursor: pointer; user-select: none; }
-    .brand-name { font-size: 28px; font-weight: 700; }
-    .divider { height: 1px; background: #e0e0e0; margin: 1rem 0; }
-    .cat-title { font-size: 11px; font-weight: 700; color: #aaa; text-transform: uppercase; letter-spacing: 1.2px; margin: 2rem 0 0.75rem; }
-    .items-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
-    .item-card { background: #fff; border: 1px solid #e8e8e8; border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 4px; }
-    .item-name { font-size: 14px; font-weight: 600; }
-    .item-desc { font-size: 12px; color: #888; line-height: 1.4; }
-    .item-price { font-size: 15px; font-weight: 700; color: #D85A30; margin-top: auto; padding-top: 8px; }
-    .editor { display: flex; flex-direction: column; gap: 16px; }
-    .ed-section { background: #fff; border: 1px solid #e8e8e8; border-radius: 12px; padding: 16px; margin-bottom: 15px; }
-    .ed-item-block { background: #fafafa; padding: 10px; border-radius: 8px; margin-bottom: 10px; border: 1px solid #eee; }
-    .ed-row-top { display: grid; grid-template-columns: 1fr 100px auto; gap: 6px; margin-bottom: 6px; }
-    .ed-row-top input, .ed-desc-input, .brand-input, .cat-input { font-size: 13px; padding: 7px 10px; border-radius: 8px; border: 1px solid #e0e0e0; width: 100%; }
-    .del-btn { background: #FCEBEB; border: none; color: #E24B4A; padding: 4px 10px; border-radius: 6px; cursor: pointer; }
-    .add-btn { padding: 10px; border-radius: 8px; border: 1px dashed #ccc; background: #fff; width: 100%; cursor: pointer; margin-top: 5px; font-weight: bold; }
-    .add-cat-btn { background: #e8f5e9; color: #2e7d32; border: 1px solid #2e7d32; margin-top: 20px; }
-    .save-btn { width: 100%; padding: 15px; font-weight: 600; border-radius: 10px; background: #D85A30; color: white; border: none; margin-top: 20px; cursor: pointer; font-size: 16px; }
-    .saved-msg { text-align: center; padding: 10px; background: #EAF3DE; color: #3B6D11; border-radius: 8px; margin-top: 10px; display: none; }
-    @media (max-width: 480px) { .items-grid { grid-template-columns: 1fr 1fr; } }
+    
+    body { 
+      font-family: 'Poppins', sans-serif; 
+      background: var(--bg); 
+      color: var(--text); 
+      overflow-y: auto; 
+      min-height: 100vh;
+    }
+    
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; padding-bottom: 60px; }
+
+    /* VISTA CLIENTE */
+    .brand { 
+      text-align: center; 
+      padding: 40px 20px; 
+      background: var(--white); 
+      border-radius: 0 0 30px 30px; 
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
+      margin: -20px -20px 30px -20px; 
+    }
+    .brand-icon { font-size: 50px; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; }
+    .brand-name { font-size: 32px; font-weight: 800; color: var(--primary); text-transform: uppercase; }
+    
+    .cat-title { font-size: 18px; font-weight: 700; margin: 30px 0 15px; padding-left: 10px; border-left: 5px solid var(--primary); }
+    .item-card { background: var(--white); border-radius: 18px; padding: 18px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 15px; }
+    .item-info { flex: 1; padding-right: 15px; }
+    .item-name { font-size: 16px; font-weight: 700; }
+    .item-desc { font-size: 13px; color: #636e72; line-height: 1.4; }
+    .item-price { font-size: 16px; font-weight: 800; color: var(--primary); background: #fff5f2; padding: 6px 12px; border-radius: 10px; white-space: nowrap; }
+
+    /* PANEL ADMINISTRADOR (OCULTO) */
+    #admin-panel { 
+      display: none; 
+      background: #1e272e; 
+      color: white; 
+      position: fixed; 
+      top: 0; left: 0; 
+      width: 100%; height: 100%; 
+      z-index: 1000; 
+      padding: 20px; 
+      overflow-y: scroll; 
+    }
+    .admin-card { background: white; color: #333; padding: 20px; border-radius: 20px; margin-bottom: 20px; }
+    .ed-item-block { background: #f1f2f6; padding: 15px; border-radius: 12px; margin-top: 10px; border: 1px solid #dfe4ea; }
+    
+    input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ccc; border-radius: 10px; font-family: inherit; font-size: 14px; }
+    .btn { cursor: pointer; border: none; font-weight: 600; border-radius: 12px; padding: 12px; width: 100%; margin-top: 10px; }
+    .btn-save { background: #05c46b; color: white; font-size: 18px; margin: 20px 0 40px 0; }
+    .btn-add { background: #ffa801; color: white; }
+    .btn-cat { background: #3c40c6; color: white; margin-top: 20px; }
+    .btn-del { background: #ff5e57; color: white; font-size: 12px; width: auto; padding: 5px 15px; }
+    .btn-close { background: #808e9b; color: white; margin-bottom: 20px; }
   </style>
 </head>
 <body>
 
-<div class="container">
-  <div class="tabs" id="adminTabs">
-    <button class="tab active" onclick="switchTab('menu')">Vista Cliente</button>
-    <button class="tab" onclick="switchTab('editor')">Editar Menú</button>
+  <div class="container" id="client-view">
+    <div id="menu-content">Cargando menú delicioso...</div>
   </div>
-  <div id="tab-menu" class="view-section active">Cargando menú...</div>
-  <div id="tab-editor" class="view-section">
-    <div class="editor" id="editorContainer"></div>
-    <button class="add-btn add-cat-btn" onclick="addCat()">+ AÑADIR NUEVA CATEGORÍA</button>
-    <button class="save-btn" onclick="applyChanges()">💾 GUARDAR TODO EN LA NUBE</button>
-    <div class="saved-msg" id="savedMsg">✓ ¡Menú actualizado en la nube!</div>
+
+  <div id="admin-panel">
+    <button class="btn btn-close" onclick="closeAdmin()">← CERRAR PANEL</button>
+    <h2 style="margin-bottom:20px; text-align:center;">ADMINISTRACIÓN</h2>
+    <div id="editor-content"></div>
+    <button class="btn btn-cat" onclick="addCat()">+ NUEVA CATEGORÍA</button>
+    <button class="btn btn-save" onclick="applyChanges()">💾 GUARDAR CAMBIOS AHORA</button>
   </div>
-</div>
 
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyByKcM9Z2_PwW0Y9xdbFIfBI6AMviiI4uQ",
-    authDomain: "mi-menu-2f5bd.firebaseapp.com",
-    databaseURL: "https://mi-menu-2f5bd-default-rtdb.firebaseio.com",
-    projectId: "mi-menu-2f5bd",
-    appId: "1:524735114538:web:f7095bb24eedcfe2ff4253"
-  };
+  <script>
+    // TUS CREDENCIALES EXACTAS
+    const firebaseConfig = {
+      apiKey: "AIzaSyByKcM9Z2_PwW0Y9xdbFIfBI6AMviiI4uQ",
+      authDomain: "mi-menu-2f5bd.firebaseapp.com",
+      databaseURL: "https://mi-menu-2f5bd-default-rtdb.firebaseio.com",
+      projectId: "mi-menu-2f5bd",
+      appId: "1:524735114538:web:f7095bb24eedcfe2ff4253"
+    };
 
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
-
-  let data = { brand: "Comida Express", cats: [] };
-
-  // Escuchar 'menuData'
-  db.ref('menuData').on('value', (snapshot) => {
-    const cloudData = snapshot.val();
-    if (cloudData) {
-      data = cloudData;
-      if(!data.cats) data.cats = [];
-      data.cats.forEach(c => { if(!c.items) c.items = []; });
-    }
-    renderMenu();
-  });
-
-  let logoClicks = 0;
-  function handleLogoClick() {
-    logoClicks++;
-    if (logoClicks === 5) {
-      if (prompt("Clave:") === "1234") document.getElementById('adminTabs').style.display = 'flex';
-      logoClicks = 0;
-    }
-    setTimeout(() => { logoClicks = 0; }, 3000);
-  }
-
-  // FUNCIÓN CORREGIDA: Ahora todas las categorías muestran descripción
-  function renderMenu() {
-    const el = document.getElementById('tab-menu');
-    let h = `<div class="brand"><div class="brand-icon" onclick="handleLogoClick()">🍔</div><div class="brand-name">${data.brand}</div></div><div class="divider"></div>`;
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
     
-    if(data.cats && data.cats.length > 0) {
+    // Objeto de datos inicial
+    let data = { brand: "Comida Express", cats: [] };
+
+    // FUNCIÓN 1: Escuchar cambios en la nube (Ruta 'menuData' como en tu foto)
+    db.ref('menuData').on('value', (snap) => {
+      const cloud = snap.val();
+      if(cloud) {
+        data = cloud;
+        if(!data.cats) data.cats = [];
+        // Aseguramos que cada categoría tenga su lista de items
+        data.cats.forEach(c => { if(!c.items) c.items = []; });
+      }
+      renderClientMenu();
+    });
+
+    // FUNCIÓN 2: Lógica Secreta (5 clics en 🍔)
+    let clicks = 0;
+    function handleLogoClick() {
+      clicks++;
+      if(clicks === 5) {
+        if(prompt("Introduce tu clave:") === "1234") {
+          openAdmin();
+        }
+        clicks = 0;
+      }
+      setTimeout(() => { clicks = 0; }, 3000);
+    }
+
+    // FUNCIÓN 3: Dibujar Menú para Clientes
+    function renderClientMenu() {
+      const el = document.getElementById('menu-content');
+      let h = `
+        <div class="brand">
+          <div class="brand-icon" onclick="handleLogoClick()">🍔</div>
+          <div class="brand-name">${data.brand}</div>
+        </div>`;
+      
+      if(data.cats.length === 0) {
+        h += `<p style="text-align:center; padding:40px; color:#999;">Cargando productos...</p>`;
+      }
+
       data.cats.forEach(cat => {
-        h += `<div class="cat-title">${cat.name}</div><div class="items-grid">`;
+        h += `<div class="cat-title">${cat.name}</div>`;
         if(cat.items) {
           cat.items.forEach(item => {
             h += `
               <div class="item-card">
-                <div class="item-name">${item.name || 'Sin nombre'}</div>
-                <div class="item-desc">${item.desc || ''}</div>
-                <div class="item-price">${item.price || ''}</div>
+                <div class="item-info">
+                  <div class="item-name">${item.name || 'Producto'}</div>
+                  <div class="item-desc">${item.desc || ''}</div>
+                </div>
+                <div class="item-price">${item.price || '$0'}</div>
               </div>`;
           });
         }
-        h += `</div>`;
       });
-    } else {
-      h += "<p style='text-align:center; padding:20px; color:#888;'>Usa el panel de edición para crear categorías y platos.</p>";
+      el.innerHTML = h;
     }
-    el.innerHTML = h;
-  }
 
-  function renderEditor() {
-    const el = document.getElementById('editorContainer');
-    let h = `<div class="ed-section"><b>Nombre del Negocio:</b><input class="brand-input" id="brandInput" value="${data.brand}"></div>`;
-    data.cats.forEach((cat, ci) => {
-      h += `<div class="ed-section">
-        <div style="display:flex; gap:10px; margin-bottom:15px;">
-          <input class="cat-input" value="${cat.name}" onchange="data.cats[${ci}].name=this.value">
-          <button class="del-btn" onclick="deleteCat(${ci})">Eliminar</button>
-        </div>`;
-      if(cat.items) {
-        cat.items.forEach((item, ii) => {
-          h += `<div class="ed-item-block">
-            <div class="ed-row-top">
-              <input value="${item.name}" onchange="updateItem(${ci},${ii},'name',this.value)" placeholder="Plato">
-              <input value="${item.price}" onchange="updateItem(${ci},${ii},'price',this.value)" placeholder="Precio">
-              <button class="del-btn" onclick="deleteItem(${ci},${ii})">✕</button>
-            </div>
-            <input class="ed-desc-input" value="${item.desc}" onchange="updateItem(${ci},${ii},'desc',this.value)" placeholder="Descripción">
-          </div>`;
-        });
-      }
-      h += `<button class="add-btn" onclick="addItem(${ci})">+ Añadir Plato</button></div>`;
-    });
-    el.innerHTML = h;
-  }
+    // FUNCIÓN 4: Dibujar Editor para Ti
+    function renderAdminEditor() {
+      const el = document.getElementById('editor-content');
+      let h = `<div class="admin-card"><b>Nombre del Negocio:</b><input id="brandInput" value="${data.brand}"></div>`;
+      
+      data.cats.forEach((cat, ci) => {
+        h += `
+          <div class="admin-card">
+            <div style="display:flex; gap:10px; align-items:center;">
+              <input style="font-weight:bold; color:var(--primary)" value="${cat.name}" onchange="data.cats[${ci}].name=this.value">
+              <button class="btn btn-del" onclick="deleteCat(${ci})">Borrar Categoría</button>
+            </div>`;
+        
+        if(cat.items) {
+          cat.items.forEach((item, ii) => {
+            h += `
+              <div class="ed-item-block">
+                <input placeholder="Nombre Plato" value="${item.name}" onchange="updateItem(${ci},${ii},'name',this.value)">
+                <input placeholder="Precio" value="${item.price}" onchange="updateItem(${ci},${ii},'price',this.value)">
+                <input placeholder="Descripción/Ingredientes" value="${item.desc}" onchange="updateItem(${ci},${ii},'desc',this.value)">
+                <button class="btn btn-del" style="width:100%; margin-top:5px;" onclick="deleteItem(${ci},${ii})">Quitar este Plato</button>
+              </div>`;
+          });
+        }
+        h += `<button class="btn btn-add" onclick="addItem(${ci})">+ Añadir Plato a ${cat.name}</button></div>`;
+      });
+      el.innerHTML = h;
+    }
 
-  function updateItem(ci, ii, f, v) { data.cats[ci].items[ii][f] = v; }
-  function deleteItem(ci, ii) { data.cats[ci].items.splice(ii, 1); renderEditor(); }
-  function deleteCat(ci) { data.cats.splice(ci, 1); renderEditor(); }
-  function addItem(ci) { 
-    if(!data.cats[ci].items) data.cats[ci].items = [];
-    data.cats[ci].items.push({ name: "", desc: "", price: "" }); 
-    renderEditor(); 
-  }
-  function addCat() { 
-    if(!data.cats) data.cats = [];
-    data.cats.push({ name: "Nueva Categoría", items: [] }); 
-    renderEditor(); 
-  }
+    // FUNCIONES DE EDICIÓN
+    function openAdmin() { document.getElementById('admin-panel').style.display = 'block'; renderAdminEditor(); }
+    function closeAdmin() { document.getElementById('admin-panel').style.display = 'none'; }
+    function updateItem(ci, ii, f, v) { data.cats[ci].items[ii][f] = v; }
+    function deleteItem(ci, ii) { data.cats[ci].items.splice(ii, 1); renderAdminEditor(); }
+    function deleteCat(ci) { data.cats.splice(ci, 1); renderAdminEditor(); }
+    function addItem(ci) { if(!data.cats[ci].items) data.cats[ci].items = []; data.cats[ci].items.push({name:"", desc:"", price:""}); renderAdminEditor(); }
+    function addCat() { data.cats.push({name:"Nueva Categoría", items:[]}); renderAdminEditor(); }
 
-  function applyChanges() {
-    data.brand = document.getElementById('brandInput').value;
-    db.ref('menuData').set(data)
-      .then(() => {
-        document.getElementById('savedMsg').style.display = 'block';
-        setTimeout(() => { document.getElementById('savedMsg').style.display = 'none'; }, 3000);
-      })
-      .catch(e => alert("Error: " + e.message));
-  }
-
-  function switchTab(t) {
-    if (t === 'editor') renderEditor();
-    document.querySelectorAll('.tab').forEach(b => b.classList.toggle('active', b.innerText.toLowerCase().includes(t === 'menu' ? 'vista' : 'editar')));
-    document.querySelectorAll('.view-section').forEach(s => s.classList.toggle('active', s.id === 'tab-' + t));
-  }
-</script>
+    // FUNCIÓN FINAL: Mandar todo a Firebase
+    function applyChanges() {
+      data.brand = document.getElementById('brandInput').value;
+      db.ref('menuData').set(data)
+        .then(() => {
+          alert("✅ ¡MENÚ ACTUALIZADO! Ya todos los clientes pueden verlo.");
+          closeAdmin();
+        })
+        .catch(err => alert("❌ Error al guardar: " + err.message));
+    }
+  </script>
 </body>
 </html>
