@@ -20,9 +20,8 @@
       padding: 1.5rem 1rem;
     }
 
-    /* TABS OCULTOS POR DEFECTO */
     .tabs {
-      display: none; /* Se activa solo al entrar en modo admin */
+      display: none;
       gap: 6px;
       border-bottom: 1px solid #e0e0e0;
       margin-bottom: 1.5rem;
@@ -46,7 +45,6 @@
     .view-section { display: none; }
     .view-section.active { display: block; }
 
-    /* BRAND */
     .brand {
       text-align: center;
       margin-bottom: 1.2rem;
@@ -71,7 +69,6 @@
 
     .divider { height: 1px; background: #e0e0e0; margin: 1rem 0; }
 
-    /* CATEGORÍAS */
     .cat-title {
       font-size: 11px;
       font-weight: 700;
@@ -81,7 +78,6 @@
       margin: 2rem 0 0.75rem;
     }
 
-    /* GRID DE PLATOS */
     .items-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
@@ -93,8 +89,7 @@
       border-radius: 12px;
       padding: 14px;
       display: flex;
-      flex-direction: column;
-      gap: 4px;
+      flex-direction: column;      gap: 4px;
     }
     .item-name { font-size: 14px; font-weight: 600; }
     .item-desc { font-size: 12px; color: #888; line-height: 1.4; }
@@ -106,7 +101,6 @@
       padding-top: 8px;
     }
 
-    /* EDITOR STYLES */
     .editor { display: flex; flex-direction: column; gap: 16px; }
     .ed-section {
       background: #fff;
@@ -157,11 +151,28 @@
   <div id="tab-editor" class="view-section">
     <div class="editor" id="editorContainer"></div>
     <button class="save-btn" onclick="applyChanges()">Guardar Cambios</button>
-    <div class="saved-msg" id="savedMsg">✓ Menú actualizado correctamente</div>
+    <div class="saved-msg" id="savedMsg">✓ Cambios guardados en la nube para todos</div>
   </div>
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
 <script>
+  // CONFIGURACIÓN OBTENIDA DE TU FIREBASE
+  const firebaseConfig = {
+    apiKey: "AIzaSyByKcM9Z2_PwW0Y9xdbFIfBI6AMviiI4uQ",
+    authDomain: "mi-menu-2f5bd.firebaseapp.com",
+    databaseURL: "https://mi-menu-2f5bd-default-rtdb.firebaseio.com",
+    projectId: "mi-menu-2f5bd",
+    storageBucket: "mi-menu-2f5bd.firebasestorage.app",
+    messagingSenderId: "524735114538",
+    appId: "1:524735114538:web:f7095bb24eedcfe2ff4253"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
   let data = {
     brand: "Comida Express",
     cats: [
@@ -171,7 +182,17 @@
     ]
   };
 
-  // LÓGICA DE ACCESO OCULTO
+  // ESCUCHAR CAMBIOS EN TIEMPO REAL
+  db.ref('menuData').on('value', (snapshot) => {
+    const cloudData = snapshot.val();
+    if (cloudData) {
+      data = cloudData;
+      renderMenu();
+    } else {
+      renderMenu(); // Carga el default si la nube está vacía la primera vez
+    }
+  });
+
   let logoClicks = 0;
   function handleLogoClick() {
       logoClicks++;
@@ -179,7 +200,6 @@
           const pass = prompt("Acceso administrativo. Contraseña:");
           if (pass === "1234") {
               document.getElementById('adminTabs').style.display = 'flex';
-              alert("Modo edición activado.");
           } else {
               alert("Incorrecto.");
               logoClicks = 0;
@@ -217,7 +237,7 @@
     const el = document.getElementById('editorContainer');
     let h = `<div class="ed-section"><div class="ed-section-title">Nombre del Negocio</div><input class="brand-input" id="brandInput" value="${data.brand}"></div>`;
     data.cats.forEach((cat, ci) => {
-      h += `<div class="ed-section"><div class="ed-section-title"><input class="cat-name-input" style="width:70%" value="${cat.name}" onchange="data.cats[${ci}].name=this.value" placeholder="Categoría"><button class="del-btn" onclick="deleteCat(${ci})">Eliminar</button></div>`;
+      h += `<div class="ed-section"><input class="cat-name-input" style="width:70%" value="${cat.name}" onchange="data.cats[${ci}].name=this.value" placeholder="Categoría"><button class="del-btn" onclick="deleteCat(${ci})">Eliminar</button>`;
       cat.items.forEach((item, ii) => {
         h += `
           <div class="ed-item-block">
@@ -241,11 +261,13 @@
   function addItem(ci) { data.cats[ci].items.push({ name: "", desc: "", price: "" }); renderEditor(); }
   function addCat() { data.cats.push({ name: "Nueva Categoría", items: [] }); renderEditor(); }
 
+  // GUARDAR EN FIREBASE
   function applyChanges() {
     data.brand = document.getElementById('brandInput').value;
-    renderMenu();
-    document.getElementById('savedMsg').style.display = 'block';
-    setTimeout(() => { document.getElementById('savedMsg').style.display = 'none'; }, 2000);
+    db.ref('menuData').set(data).then(() => {
+        document.getElementById('savedMsg').style.display = 'block';
+        setTimeout(() => { document.getElementById('savedMsg').style.display = 'none'; }, 2000);
+    });
   }
 
   function switchTab(t) {
