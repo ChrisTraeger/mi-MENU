@@ -28,9 +28,8 @@
       box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
       margin: -20px -20px 30px -20px; 
     }
-    /* Estilo para los emojis juntos */
     .brand-logos { 
-      font-size: 65px; /* Un poco más grande para que luzcan */
+      font-size: 65px;
       cursor: pointer; 
       user-select: none; 
       -webkit-tap-highlight-color: transparent; 
@@ -46,6 +45,75 @@
     .item-name { font-size: 16px; font-weight: 700; color: #1e272e; }
     .item-desc { font-size: 13px; color: #636e72; line-height: 1.4; margin-top: 2px; }
     .item-price { font-size: 16px; font-weight: 800; color: var(--primary); background: #fff5f2; padding: 6px 14px; border-radius: 12px; white-space: nowrap; }
+
+    /* TARJETA DE CONTACTO */
+    .contact-card {
+      background: #1a1a1a;
+      border-radius: 20px;
+      overflow: hidden;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+    }
+    .contact-header {
+      background: #111;
+      padding: 20px;
+      text-align: center;
+      border-bottom: 1px solid #2a2a2a;
+    }
+    .contact-business-name {
+      font-size: 22px;
+      font-weight: 800;
+      color: #EF9F27;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+    .contact-slogan {
+      font-size: 12px;
+      color: #888;
+      margin-top: 4px;
+      font-style: italic;
+    }
+    .contact-body {
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .contact-icon-circle {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: rgba(239,159,39,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .contact-label {
+      font-size: 11px;
+      color: #888;
+      margin-bottom: 2px;
+    }
+    .contact-number {
+      font-size: 18px;
+      font-weight: 700;
+      color: #EF9F27;
+      letter-spacing: 1.5px;
+    }
+    .contact-call-btn {
+      margin-left: auto;
+      background: #EF9F27;
+      color: #1a1a1a;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 8px 18px;
+      border-radius: 12px;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      font-family: 'Poppins', sans-serif;
+    }
+    .contact-call-btn:hover { background: #d48a1a; }
 
     /* PANEL ADMINISTRADOR (OCULTO) */
     #admin-panel { 
@@ -99,13 +167,15 @@
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
-    let data = { brand: "Comida Express", cats: [] };
+    let data = { brand: "Comida Express", phone: "3127447977", slogan: "Porque el hambre no espera.", cats: [] };
 
     db.ref('menuData').on('value', (snap) => {
       const cloud = snap.val();
       if(cloud) {
         data = cloud;
         if(!data.cats) data.cats = [];
+        if(!data.phone) data.phone = "3127447977";
+        if(!data.slogan) data.slogan = "Porque el hambre no espera.";
         data.cats.forEach(c => { if(!c.items) c.items = []; });
       }
       renderClientMenu();
@@ -124,13 +194,36 @@
       setTimeout(() => { clicks = 0; }, 3000);
     }
 
+    function formatPhone(p) {
+      const clean = (p || '').replace(/\D/g, '');
+      return clean.length === 10 ? clean.replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3') : clean;
+    }
+
     function renderClientMenu() {
       const el = document.getElementById('menu-content');
-      // AQUÍ ESTÁ EL TRÍO DINÁMICO: 🍔🍟🥤
       let h = `
         <div class="brand">
           <div class="brand-logos" onclick="handleLogoClick()">🍔🍟🥤</div>
           <div class="brand-name">${data.brand}</div>
+        </div>
+
+        <div class="contact-card">
+          <div class="contact-header">
+            <div class="contact-business-name">${data.brand}</div>
+            <div class="contact-slogan">"${data.slogan}"</div>
+          </div>
+          <div class="contact-body">
+            <div class="contact-icon-circle">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#EF9F27" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+              </svg>
+            </div>
+            <div>
+              <div class="contact-label">Llámanos</div>
+              <div class="contact-number">${formatPhone(data.phone)}</div>
+            </div>
+            <a class="contact-call-btn" href="tel:${(data.phone||'').replace(/\D/g,'')}">Llamar</a>
+          </div>
         </div>`;
       
       data.cats.forEach(cat => {
@@ -153,7 +246,15 @@
 
     function renderAdminEditor() {
       const el = document.getElementById('editor-content');
-      let h = `<div class="admin-card"><b>Nombre del Negocio:</b><input id="brandInput" value="${data.brand}"></div>`;
+      let h = `
+        <div class="admin-card">
+          <b>Nombre del Negocio:</b>
+          <input id="brandInput" value="${data.brand}">
+          <b>Número de Celular:</b>
+          <input id="phoneInput" value="${data.phone || '3127447977'}" placeholder="Ej: 3127447977">
+          <b>Eslogan:</b>
+          <input id="sloganInput" value="${data.slogan || ''}" placeholder="Tu eslogan aquí">
+        </div>`;
       data.cats.forEach((cat, ci) => {
         h += `
           <div class="admin-card">
@@ -187,6 +288,8 @@
 
     function applyChanges() {
       data.brand = document.getElementById('brandInput').value;
+      data.phone = document.getElementById('phoneInput').value;
+      data.slogan = document.getElementById('sloganInput').value;
       db.ref('menuData').set(data).then(() => {
         alert("✅ ¡Menú actualizado para todos!");
         closeAdmin();
