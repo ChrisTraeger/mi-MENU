@@ -191,7 +191,7 @@
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
-    let data = { brand: "Comida Express", phone: "3127447977", slogan: "Porque el hambre no espera.", cats: [] };
+    let data = { brand: "Comida Express", phone: "3127447977", slogan: "Porque el hambre no espera.", nequi: "3127447977", bancolombia: "000-000000-00", cats: [] };
 
     db.ref('menuData').on('value', (snap) => {
       const cloud = snap.val();
@@ -200,6 +200,8 @@
         if(!data.cats) data.cats = [];
         if(!data.phone) data.phone = "3127447977";
         if(!data.slogan) data.slogan = "Porque el hambre no espera.";
+        if(!data.nequi) data.nequi = "3127447977";
+        if(!data.bancolombia) data.bancolombia = "000-000000-00";
         data.cats.forEach(c => { if(!c.items) c.items = []; });
       }
       renderClientMenu();
@@ -253,6 +255,34 @@
               </a>
             </div>
           </div>
+          <div style="border-top:1px solid #2a2a2a; padding:14px 20px;">
+            <div style="font-size:11px; color:#666; letter-spacing:2px; text-transform:uppercase; margin-bottom:12px; text-align:center;">Métodos de pago</div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+              
+              <div style="background:#1e0a3c; border:1px solid #8B5CF640; border-radius:14px; padding:14px; display:flex; flex-direction:column; gap:8px;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <div style="width:28px; height:28px; border-radius:50%; background:#8B5CF6; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><rect x="2" y="5" width="20" height="14" rx="3"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                  </div>
+                  <span style="font-size:13px; font-weight:700; color:#8B5CF6;">Nequi</span>
+                </div>
+                <div style="font-size:16px; font-weight:800; color:#fff; letter-spacing:1px;">${formatPhone(data.nequi)}</div>
+                <button onclick="copiarTexto('${(data.nequi||'').replace(/\D/g,'')}', this)" style="background:#8B5CF6; color:#fff; border:none; border-radius:8px; padding:7px; font-size:12px; font-weight:700; cursor:pointer; font-family:'Poppins',sans-serif; width:100%;">📋 Copiar número</button>
+              </div>
+
+              <div style="background:#1c1500; border:1px solid #CA8A0440; border-radius:14px; padding:14px; display:flex; flex-direction:column; gap:8px;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <div style="width:28px; height:28px; border-radius:50%; background:#CA8A04; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><rect x="2" y="5" width="20" height="14" rx="3"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                  </div>
+                  <span style="font-size:13px; font-weight:700; color:#CA8A04;">Bancolombia</span>
+                </div>
+                <div style="font-size:14px; font-weight:800; color:#fff; letter-spacing:1px; word-break:break-all;">${data.bancolombia}</div>
+                <button onclick="copiarTexto('${data.bancolombia}', this)" style="background:#CA8A04; color:#fff; border:none; border-radius:8px; padding:7px; font-size:12px; font-weight:700; cursor:pointer; font-family:'Poppins',sans-serif; width:100%;">📋 Copiar número</button>
+              </div>
+
+            </div>
+          </div>
         </div>`;
       
       data.cats.forEach(cat => {
@@ -283,6 +313,10 @@
           <input id="phoneInput" value="${data.phone || '3127447977'}" placeholder="Ej: 3127447977">
           <b>Eslogan:</b>
           <input id="sloganInput" value="${data.slogan || ''}" placeholder="Tu eslogan aquí">
+          <b>Nequi:</b>
+          <input id="nequiInput" value="${data.nequi || '3127447977'}" placeholder="Número Nequi">
+          <b>Bancolombia (cuenta):</b>
+          <input id="bancoInput" value="${data.bancolombia || ''}" placeholder="Ej: 123-456789-00">
         </div>`;
       data.cats.forEach((cat, ci) => {
         h += `
@@ -307,6 +341,26 @@
       el.innerHTML = h;
     }
 
+    function copiarTexto(texto, btn) {
+      navigator.clipboard.writeText(texto).then(() => {
+        const original = btn.innerHTML;
+        btn.innerHTML = '✅ ¡Copiado!';
+        btn.style.background = '#05c46b';
+        setTimeout(() => { btn.innerHTML = original; btn.style.background = ''; }, 2000);
+      }).catch(() => {
+        const ta = document.createElement('textarea');
+        ta.value = texto;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        const original = btn.innerHTML;
+        btn.innerHTML = '✅ ¡Copiado!';
+        btn.style.background = '#05c46b';
+        setTimeout(() => { btn.innerHTML = original; btn.style.background = ''; }, 2000);
+      });
+    }
+
     function openAdmin() { document.getElementById('admin-panel').style.display = 'block'; renderAdminEditor(); }
     function closeAdmin() { document.getElementById('admin-panel').style.display = 'none'; }
     function updateItem(ci, ii, f, v) { data.cats[ci].items[ii][f] = v; }
@@ -319,6 +373,8 @@
       data.brand = document.getElementById('brandInput').value;
       data.phone = document.getElementById('phoneInput').value;
       data.slogan = document.getElementById('sloganInput').value;
+      data.nequi = document.getElementById('nequiInput').value;
+      data.bancolombia = document.getElementById('bancoInput').value;
       db.ref('menuData').set(data).then(() => {
         alert("✅ ¡Menú actualizado para todos!");
         closeAdmin();
