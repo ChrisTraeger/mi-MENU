@@ -139,6 +139,26 @@
     }
     .contact-wa-btn:hover { background: #1ebe5d; }
 
+    /* CARRITO */
+    .item-card { background: var(--white); border-radius: 18px; padding: 18px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 15px; border: 1px solid rgba(0,0,0,0.02); gap: 10px; }
+    .qty-controls { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+    .qty-btn { width: 30px; height: 30px; border-radius: 50%; border: none; font-size: 18px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; background: #f0f0f0; color: #333; }
+    .qty-btn.plus { background: var(--primary); color: white; }
+    .qty-num { font-size: 15px; font-weight: 700; min-width: 16px; text-align: center; }
+    .cart-bar {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: #25D366; color: white;
+      padding: 14px 20px; display: none;
+      justify-content: space-between; align-items: center;
+      z-index: 999; cursor: pointer;
+      max-width: 600px; margin: 0 auto;
+      border-radius: 20px 20px 0 0;
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
+    }
+    .cart-bar.visible { display: flex; }
+    .cart-bar-left { font-size: 14px; font-weight: 700; }
+    .cart-bar-right { font-size: 13px; font-weight: 600; background: white; color: #25D366; padding: 6px 16px; border-radius: 20px; }
+
     /* PANEL ADMINISTRADOR (OCULTO) */
     #admin-panel { 
       display: none; 
@@ -167,6 +187,13 @@
 
   <div class="container" id="client-view">
     <div id="menu-content">Cargando delicias...</div>
+  </div>
+
+  <div class="cart-bar" id="cart-bar" onclick="enviarPedido()">
+    <div class="cart-bar-left">
+      🛒 <span id="cart-count">0</span> productos · <span id="cart-total">$0</span>
+    </div>
+    <div class="cart-bar-right">Pedir por WhatsApp</div>
   </div>
 
   <div id="admin-panel">
@@ -288,14 +315,22 @@
       data.cats.forEach(cat => {
         h += `<div class="cat-title">${cat.name}</div>`;
         if(cat.items) {
-          cat.items.forEach(item => {
+          cat.items.forEach((item, ii) => {
+            const itemKey = `${cat.name}__${item.name}`;
             h += `
               <div class="item-card">
                 <div class="item-info">
                   <div class="item-name">${item.name || 'Producto'}</div>
                   <div class="item-desc">${item.desc || ''}</div>
                 </div>
-                <div class="item-price">${item.price || ''}</div>
+                <div style="display:flex; flex-direction:column; align-items:flex-end; gap:8px; flex-shrink:0;">
+                  <div class="item-price">${item.price || ''}</div>
+                  <div class="qty-controls">
+                    <button class="qty-btn" onclick="cambiarQty('${itemKey}','${item.name}','${item.price}', -1)">−</button>
+                    <span class="qty-num" id="qty-${itemKey.replace(/[^a-z0-9]/gi,'_')}">0</span>
+                    <button class="qty-btn plus" onclick="cambiarQty('${itemKey}','${item.name}','${item.price}', 1)">+</button>
+                  </div>
+                </div>
               </div>`;
           });
         }
@@ -339,6 +374,47 @@
         h += `<button class="btn btn-add" onclick="addItem(${ci})">+ Añadir Plato</button></div>`;
       });
       el.innerHTML = h;
+    }
+
+    let carrito = {};
+
+    function cambiarQty(key, nombre, precio, delta) {
+      if(!carrito[key]) carrito[key] = { nombre, precio, qty: 0 };
+      carrito[key].qty = Math.max(0, carrito[key].qty + delta);
+      if(carrito[key].qty === 0) delete carrito[key];
+      const safeKey = key.replace(/[^a-z0-9]/gi,'_');
+      const el = document.getElementById('qty-' + safeKey);
+      if(el) el.textContent = carrito[key] ? carrito[key].qty : 0;
+      actualizarCarrito();
+    }
+
+    function actualizarCarrito() {
+      const items = Object.values(carrito);
+      const total = items.reduce((s, i) => {
+        const num = parseInt((i.precio || '').replace(/[^0-9]/g,'')) || 0;
+        return s + num * i.qty;
+      }, 0);
+      const count = items.reduce((s, i) => s + i.qty, 0);
+      document.getElementById('cart-count').textContent = count;
+      document.getElementById('cart-total').textContent = '$' + total.toLocaleString('es-CO');
+      const bar = document.getElementById('cart-bar');
+      if(count > 0) bar.classList.add('visible');
+      else bar.classList.remove('visible');
+    }
+
+    function enviarPedido() {
+      const items = Object.values(carrito);
+      if(!items.length) return;
+      let msg = `🍔 *Pedido - ${data.brand}*\n\n`;
+      items.forEach(i => { msg += `• ${i.nombre} x${i.qty} — ${i.precio}\n`; });
+      const total = items.reduce((s, i) => {
+        const num = parseInt((i.precio || '').replace(/[^0-9]/g,'')) || 0;
+        return s + num * i.qty;
+      }, 0);
+      msg += `\n💰 *Total: $${total.toLocaleString('es-CO')}*`;
+      msg += `\n\n📍 Por favor confirma tu dirección.`;
+      const phone = (data.phone || '3127447977').replace(/\D/g,'');
+      window.open(`https://wa.me/57${phone}?text=${encodeURIComponent(msg)}`, '_blank');
     }
 
     function copiarTexto(texto, btn) {
