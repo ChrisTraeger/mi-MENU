@@ -197,22 +197,43 @@
     <div class="cart-bar-right">Pedir por WhatsApp</div>
   </div>
 
+  <!-- MODAL ZONAS -->
   <div id="zona-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:2000; align-items:flex-end; justify-content:center;">
     <div style="background:white; width:100%; max-width:600px; border-radius:24px 24px 0 0; padding:28px 20px 40px;">
       <div style="text-align:center; margin-bottom:20px;">
         <div style="font-size:28px; margin-bottom:6px;">🛵</div>
-        <div style="font-size:18px; font-weight:800; color:#1e272e;">¿Dónde te lo llevamos?</div>
-        <div style="font-size:13px; color:#888; margin-top:4px;">Selecciona tu zona para calcular el domicilio</div>
+        <div style="font-size:18px; font-weight:800; color:#1e272e;">¿Cómo quieres tu pedido?</div>
+        <div style="font-size:13px; color:#888; margin-top:4px;">Selecciona tu zona o si vas a recoger en el local</div>
       </div>
       <div style="display:flex; flex-direction:column; gap:10px;">
-        <button onclick="seleccionarZona('Cereté / Ciénaga', 2000, 3000)" style="background:#fff5f2; border:2px solid #D85A30; border-radius:14px; padding:16px; cursor:pointer; font-family:'Poppins',sans-serif; text-align:left;">
+
+        <!-- PRESENCIAL / LOCAL -->
+        <button onclick="seleccionarZona('Presencial en el local', 0, 0, true)" style="background:#f0fff4; border:2px solid #05c46b; border-radius:14px; padding:16px; cursor:pointer; font-family:'Poppins',sans-serif; text-align:left;">
+          <div style="font-size:15px; font-weight:700; color:#05c46b;">🏠 Recoger en el local</div>
+          <div style="font-size:13px; color:#888; margin-top:2px;">Estoy aquí · Sin costo de domicilio</div>
+        </button>
+
+        <!-- BERASTEGUI GRATIS -->
+        <button onclick="seleccionarZona('Berasteguí', 0, 0, false)" style="background:#f0fff4; border:2px solid #05c46b; border-radius:14px; padding:16px; cursor:pointer; font-family:'Poppins',sans-serif; text-align:left;">
+          <div style="display:flex; align-items:center; justify-content:space-between;">
+            <div style="font-size:15px; font-weight:700; color:#05c46b;">📍 Berasteguí</div>
+            <div style="background:#05c46b; color:white; font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px;">¡GRATIS!</div>
+          </div>
+          <div style="font-size:13px; color:#888; margin-top:2px;">Domicilio sin costo 🎉</div>
+        </button>
+
+        <!-- CERETÉ / CIÉNAGA -->
+        <button onclick="seleccionarZona('Cereté / Ciénaga', 2000, 3000, false)" style="background:#fff5f2; border:2px solid #D85A30; border-radius:14px; padding:16px; cursor:pointer; font-family:'Poppins',sans-serif; text-align:left;">
           <div style="font-size:15px; font-weight:700; color:#D85A30;">📍 Cereté / Ciénaga</div>
           <div style="font-size:13px; color:#888; margin-top:2px;">Domicilio: $2.000 – $3.000</div>
         </button>
-        <button onclick="seleccionarZona('Zona lejana', 4000, 5000)" style="background:#f8f9fa; border:2px solid #ddd; border-radius:14px; padding:16px; cursor:pointer; font-family:'Poppins',sans-serif; text-align:left;">
+
+        <!-- ZONA LEJANA -->
+        <button onclick="seleccionarZona('Zona lejana', 4000, 5000, false)" style="background:#f8f9fa; border:2px solid #ddd; border-radius:14px; padding:16px; cursor:pointer; font-family:'Poppins',sans-serif; text-align:left;">
           <div style="font-size:15px; font-weight:700; color:#636e72;">📍 Más lejos</div>
           <div style="font-size:13px; color:#888; margin-top:2px;">Domicilio: $4.000 – $5.000</div>
         </button>
+
         <button onclick="cerrarZonas()" style="background:#f0f0f0; border:none; border-radius:14px; padding:14px; cursor:pointer; font-family:'Poppins',sans-serif; font-size:14px; color:#636e72; font-weight:600;">
           Cancelar
         </button>
@@ -439,8 +460,9 @@
       document.getElementById('zona-modal').style.display = 'none';
     }
 
-    function seleccionarZona(nombre, minDom, maxDom) {
-      zonaSeleccionada = { nombre, minDom, maxDom };
+    // presencial = true omite solicitar ubicación GPS
+    function seleccionarZona(nombre, minDom, maxDom, presencial) {
+      zonaSeleccionada = { nombre, minDom, maxDom, presencial };
       cerrarZonas();
       enviarPedido();
     }
@@ -451,7 +473,6 @@
       if(!zonaSeleccionada) { abrirZonas(); return; }
 
       const bar = document.getElementById('cart-bar');
-      bar.innerHTML = `<div class="cart-bar-left">📍 Obteniendo ubicación...</div>`;
 
       function construirMensaje(ubicacion) {
         let msg = `🍔 *Pedido - ${data.brand}*\n\n`;
@@ -461,17 +482,37 @@
           return s + num * i.qty;
         }, 0);
         msg += `\n🛒 *Subtotal: $${totalProductos.toLocaleString('es-CO')}*`;
-        msg += `\n🛵 *Domicilio (${zonaSeleccionada.nombre}): $${zonaSeleccionada.minDom.toLocaleString('es-CO')} – $${zonaSeleccionada.maxDom.toLocaleString('es-CO')}*`;
-        const totalMin = totalProductos + zonaSeleccionada.minDom;
-        const totalMax = totalProductos + zonaSeleccionada.maxDom;
-        msg += `\n💰 *Total aprox: $${totalMin.toLocaleString('es-CO')} – $${totalMax.toLocaleString('es-CO')}*`;
-        msg += `\n\n📍 *Ubicación del cliente:*\n${ubicacion}`;
+
+        if(zonaSeleccionada.presencial) {
+          msg += `\n🏠 *Pedido presencial en el local*`;
+          msg += `\n💰 *Total: $${totalProductos.toLocaleString('es-CO')}*`;
+        } else if(zonaSeleccionada.minDom === 0) {
+          msg += `\n🛵 *Domicilio (${zonaSeleccionada.nombre}): ¡GRATIS! 🎉*`;
+          msg += `\n💰 *Total: $${totalProductos.toLocaleString('es-CO')}*`;
+          msg += `\n\n📍 *Ubicación del cliente:*\n${ubicacion}`;
+        } else {
+          msg += `\n🛵 *Domicilio (${zonaSeleccionada.nombre}): $${zonaSeleccionada.minDom.toLocaleString('es-CO')} – $${zonaSeleccionada.maxDom.toLocaleString('es-CO')}*`;
+          const totalMin = totalProductos + zonaSeleccionada.minDom;
+          const totalMax = totalProductos + zonaSeleccionada.maxDom;
+          msg += `\n💰 *Total aprox: $${totalMin.toLocaleString('es-CO')} – $${totalMax.toLocaleString('es-CO')}*`;
+          msg += `\n\n📍 *Ubicación del cliente:*\n${ubicacion}`;
+        }
+
         const phone = (data.phone || '3127447977').replace(/\D/g,'');
         window.open(`https://wa.me/57${phone}?text=${encodeURIComponent(msg)}`, '_blank');
         zonaSeleccionada = null;
         carrito = {};
         actualizarCarrito();
       }
+
+      // Si es presencial NO pedimos ubicación
+      if(zonaSeleccionada.presencial) {
+        construirMensaje('');
+        return;
+      }
+
+      // Berasteguí gratis o zonas con costo: pedir ubicación
+      bar.innerHTML = `<div class="cart-bar-left">📍 Obteniendo ubicación...</div>`;
 
       if(navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
@@ -481,6 +522,71 @@
             const link = `https://maps.google.com/?q=${lat},${lng}`;
             construirMensaje(link);
           },
+          () => { construirMensaje('_(El cliente no compartió su ubicación)_'); },
+          { timeout: 8000 }
+        );
+      } else {
+        construirMensaje('_(Ubicación no disponible en este dispositivo)_');
+      }
+    }
+
+    function estadoNegocio() {
+      const now = new Date();
+      const h = now.getHours();
+      const abierto = h >= 18 && h < 23;
+      return abierto
+        ? `<div style="display:inline-flex;align-items:center;gap:6px;background:#05c46b20;border:1px solid #05c46b50;padding:5px 14px;border-radius:20px;margin-top:10px;">
+            <span style="width:8px;height:8px;border-radius:50%;background:#05c46b;display:inline-block;animation:pulso 1.2s infinite;"></span>
+            <span style="font-size:12px;font-weight:700;color:#05c46b;">ABIERTO AHORA · Hasta las 11pm</span>
+           </div>`
+        : `<div style="display:inline-flex;align-items:center;gap:6px;background:#ff5e5720;border:1px solid #ff5e5750;padding:5px 14px;border-radius:20px;margin-top:10px;">
+            <span style="width:8px;height:8px;border-radius:50%;background:#ff5e57;display:inline-block;"></span>
+            <span style="font-size:12px;font-weight:700;color:#ff5e57;">CERRADO · Abrimos a las 6pm</span>
+           </div>`;
+    }
+
+    function copiarTexto(texto, btn) {
+      navigator.clipboard.writeText(texto).then(() => {
+        const original = btn.innerHTML;
+        btn.innerHTML = '✅ ¡Copiado!';
+        btn.style.background = '#05c46b';
+        setTimeout(() => { btn.innerHTML = original; btn.style.background = ''; }, 2000);
+      }).catch(() => {
+        const ta = document.createElement('textarea');
+        ta.value = texto;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        const original = btn.innerHTML;
+        btn.innerHTML = '✅ ¡Copiado!';
+        btn.style.background = '#05c46b';
+        setTimeout(() => { btn.innerHTML = original; btn.style.background = ''; }, 2000);
+      });
+    }
+
+    function openAdmin() { document.getElementById('admin-panel').style.display = 'block'; renderAdminEditor(); }
+    function closeAdmin() { document.getElementById('admin-panel').style.display = 'none'; }
+    function updateItem(ci, ii, f, v) { data.cats[ci].items[ii][f] = v; }
+    function deleteItem(ci, ii) { data.cats[ci].items.splice(ii, 1); renderAdminEditor(); }
+    function deleteCat(ci) { data.cats.splice(ci, 1); renderAdminEditor(); }
+    function addItem(ci) { if(!data.cats[ci].items) data.cats[ci].items = []; data.cats[ci].items.push({name:"", desc:"", price:""}); renderAdminEditor(); }
+    function addCat() { data.cats.push({name:"Nueva Categoría", items:[]}); renderAdminEditor(); }
+
+    function applyChanges() {
+      data.brand = document.getElementById('brandInput').value;
+      data.phone = document.getElementById('phoneInput').value;
+      data.slogan = document.getElementById('sloganInput').value;
+      data.nequi = document.getElementById('nequiInput').value;
+      data.bancolombia = document.getElementById('bancoInput').value;
+      db.ref('menuData').set(data).then(() => {
+        alert("✅ ¡Menú actualizado para todos!");
+        closeAdmin();
+      });
+    }
+  </script>
+</body>
+</html>
           () => { construirMensaje('_(El cliente no compartió su ubicación)_'); },
           { timeout: 8000 }
         );
