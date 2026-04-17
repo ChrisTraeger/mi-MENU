@@ -214,22 +214,46 @@
     return clean.length === 10 ? clean.replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3') : clean;
   }
 
-  // ── ESTADO NEGOCIO (horario dinámico) ──
+  // ── ESTADO NEGOCIO (horario dinámico + solo vie–dom) ──
   function estadoNegocio() {
-    const h = new Date().getHours();
+    const now = new Date();
+    const h = now.getHours();
+    const dia = now.getDay(); // 0=dom, 1=lun ... 5=vie, 6=sab
     const abre = parseInt(data.horaAbre) || 18;
     const cierra = parseInt(data.horaCierra) || 23;
-    const abierto = h >= abre && h < cierra;
     const fmtH = (n) => { const suffix = n >= 12 ? 'pm' : 'am'; const h12 = n % 12 || 12; return h12 + suffix; };
-    return abierto
-      ? `<div style="display:inline-flex;align-items:center;gap:6px;background:#05c46b20;border:1px solid #05c46b50;padding:5px 14px;border-radius:20px;margin-top:10px;">
-          <span style="width:8px;height:8px;border-radius:50%;background:#05c46b;display:inline-block;animation:pulso 1.2s infinite;"></span>
-          <span style="font-size:12px;font-weight:700;color:#05c46b;">ABIERTO AHORA · Hasta las ${fmtH(cierra)}</span>
-         </div>`
-      : `<div style="display:inline-flex;align-items:center;gap:6px;background:#ff5e5720;border:1px solid #ff5e5750;padding:5px 14px;border-radius:20px;margin-top:10px;">
-          <span style="width:8px;height:8px;border-radius:50%;background:#ff5e57;display:inline-block;"></span>
-          <span style="font-size:12px;font-weight:700;color:#ff5e57;">CERRADO · Abrimos a las ${fmtH(abre)}</span>
-         </div>`;
+    const diaValido = dia === 5 || dia === 6 || dia === 0; // vie, sab, dom
+    const abierto = diaValido && h >= abre && h < cierra;
+
+    if (abierto) {
+      return `<div style="display:inline-flex;align-items:center;gap:6px;background:#05c46b20;border:1px solid #05c46b50;padding:5px 14px;border-radius:20px;margin-top:10px;">
+        <span style="width:8px;height:8px;border-radius:50%;background:#05c46b;display:inline-block;animation:pulso 1.2s infinite;"></span>
+        <span style="font-size:12px;font-weight:700;color:#05c46b;">ABIERTO AHORA · Hasta las ${fmtH(cierra)}</span>
+      </div>`;
+    }
+
+    // Cerrado: calcular cuándo vuelve a abrir
+    const diasNombre = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+    let msg = '';
+    if (!diaValido) {
+      // Calcular próximo viernes
+      const diasHastaVie = (5 - dia + 7) % 7 || 7;
+      msg = `Solo atendemos vie–dom · Próx. apertura: ${diasNombre[(dia + diasHastaVie) % 7]} ${fmtH(abre)}`;
+    } else {
+      // Es día válido pero fuera de hora
+      if (h < abre) {
+        msg = `Abrimos hoy a las ${fmtH(abre)}`;
+      } else {
+        // Ya cerró, si es domingo el siguiente es el viernes
+        const diasHastaVie = dia === 0 ? 5 : (5 - dia + 7) % 7;
+        msg = `Cerrado por hoy · Próx.: ${diasNombre[(dia + diasHastaVie) % 7]} ${fmtH(abre)}`;
+      }
+    }
+
+    return `<div style="display:inline-flex;align-items:center;gap:6px;background:#ff5e5720;border:1px solid #ff5e5750;padding:5px 14px;border-radius:20px;margin-top:10px;">
+      <span style="width:8px;height:8px;border-radius:50%;background:#ff5e57;display:inline-block;"></span>
+      <span style="font-size:12px;font-weight:700;color:#ff5e57;">CERRADO · ${msg}</span>
+    </div>`;
   }
 
   // ── BADGE HTML ──
