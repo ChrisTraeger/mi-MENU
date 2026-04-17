@@ -293,7 +293,10 @@
     const abre = parseInt(data.horaAbre) || 18;
     const cierra = parseInt(data.horaCierra) || 23;
     const diaValido = dia === 5 || dia === 6 || dia === 0;
-    return diaValido && h >= abre && h < cierra;
+    // Si hay horario configurado, respetar días y horas
+    // Si no hay restricción de día (todos los días), solo verificar hora
+    if (!diaValido) return false;
+    return h >= abre && h < cierra;
   }
 
   // ── TOAST de cerrado ──
@@ -581,8 +584,9 @@
       itemsFiltrados.forEach(item => {
         const itemKey = (cat.name+'__'+item.name).replace(/[^a-z0-9]/gi,'_');
         const agotado = item.badge==='sold';
-        // ── BLOQUEO: si está cerrado O agotado, el + queda deshabilitado ──
-        const cerrado = !estaAbierto();
+        // ── BLOQUEO: si cerradoManual O agotado, el + queda deshabilitado ──
+        // El horario (vie-dom) solo es visual; el admin controla el cierre con el toggle
+        const cerrado = data.cerradoManual;
         const plusDisabled = agotado || cerrado;
         const qtyActual = carrito[cat.name+'__'+item.name] ? carrito[cat.name+'__'+item.name].qty : 0;
         h += `
@@ -611,9 +615,9 @@
     el.innerHTML = h;
   }
 
-  // ── INTENTAR AGREGAR — verifica si está abierto primero ──
+  // ── INTENTAR AGREGAR — verifica si está cerrado manualmente ──
   function intentarAgregar(key, nombre, precio) {
-    if (!estaAbierto()) {
+    if (data.cerradoManual) {
       mostrarToastCerrado();
       return;
     }
@@ -712,7 +716,9 @@
 
   function toggleCerrado(val) {
     data.cerradoManual = val;
-    // Actualizar en tiempo real para que renderItems() refleje el cambio
+    // Guardar en Firebase para que el cambio se refleje en tiempo real para todos
+    db.ref('menuData/cerradoManual').set(val);
+    db.ref('menuData/mensajeCerrado').set(data.mensajeCerrado || '');
     renderItems();
   }
 
