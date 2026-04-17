@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Menú Digital — Comida Express</title>
+  <title> Menú Digital — Comida Express</title>
+  <link rel="manifest" href="manifest.json">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
   <style>
     :root { --primary: #D85A30; --bg: #f8f9fa; --text: #2d3436; --white: #ffffff; }
@@ -772,6 +773,15 @@
     db.ref('menuData').set(data).then(()=>{
       alert("✅ ¡Menú actualizado para todos!");
       closeAdmin();
+    });
+  }
+</script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('data:text/javascript,self.addEventListener("fetch", ()=>false);')
+        .then(reg => console.log('PWA lista 🚀'))
+        .catch(err => console.log('Error PWA: ', err));
     });
   }
 </script>
