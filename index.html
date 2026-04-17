@@ -44,6 +44,7 @@
     .item-name { font-size: 15px; font-weight: 700; color: #1e272e; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
     .item-desc { font-size: 12px; color: #636e72; line-height: 1.4; margin-top: 3px; }
     .item-price { font-size: 15px; font-weight: 800; color: var(--primary); background: #fff5f2; padding: 5px 12px; border-radius: 10px; white-space: nowrap; }
+    .item-price-antes { font-size: 11px; color: #aaa; text-decoration: line-through; text-align: right; }
 
     .badge { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 20px; white-space: nowrap; }
     .badge-hot { background: #fff0eb; color: #D85A30; }
@@ -217,10 +218,6 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <script>
-  // ══════════════════════════════════════════
-  // CACHÉ OFFLINE — guarda el menú en localStorage
-  // para que funcione sin datos la próxima vez
-  // ══════════════════════════════════════════
   const MENU_CACHE_KEY = 'menuData_cache_v1';
 
   function guardarMenuCache(d) {
@@ -233,7 +230,6 @@
     const b = document.getElementById('offline-banner');
     if (b) b.className = visible ? (modoOffline ? 'show readonly' : 'show') : '';
   }
-  // Reaccionar si el usuario pierde o recupera internet durante la sesión
   window.addEventListener('online',  () => setBanner(false));
   window.addEventListener('offline', () => setBanner(true));
 
@@ -255,14 +251,12 @@
   };
   let ratings = {};
 
-  // ── Si no hay internet → abrir PDF directo ──
   let modoOffline = false;
   if (!navigator.onLine) {
     modoOffline = true;
     window.location.replace('./menu_antojo_express.pdf');
   }
 
-  // ── ID DE SESIÓN ──
   function getClientId() {
     let id = localStorage.getItem('menuClientId');
     if (!id) { id = 'c_' + Math.random().toString(36).substr(2,12) + '_' + Date.now(); localStorage.setItem('menuClientId', id); }
@@ -275,7 +269,6 @@
   function guardarMisVotos() { localStorage.setItem('menuMisVotos', JSON.stringify(misVotos)); }
   cargarMisVotos();
 
-  // ── FUNCIÓN CENTRAL: ¿está abierto ahora? ──
   function estaAbierto() {
     if (data.cerradoManual) return false;
     const now = new Date();
@@ -283,13 +276,10 @@
     const abre = parseInt(data.horaAbre) || 18;
     const cierra = parseInt(data.horaCierra) || 23;
     const diaValido = dia === 5 || dia === 6 || dia === 0;
-    // Si hay horario configurado, respetar días y horas
-    // Si no hay restricción de día (todos los días), solo verificar hora
     if (!diaValido) return false;
     return h >= abre && h < cierra;
   }
 
-  // ── TOAST de cerrado ──
   let toastTimer = null;
   function mostrarToastCerrado() {
     const t = document.getElementById('closed-toast');
@@ -312,9 +302,13 @@
       if (!data.mensajeCerrado) data.mensajeCerrado = "";
       data.cats.forEach(c => {
         if (!c.items) c.items = [];
-        c.items.forEach(i => { if (!i.badge) i.badge=''; if (!i.img) i.img=''; });
+        c.items.forEach(i => {
+          if (!i.badge) i.badge='';
+          if (!i.img) i.img='';
+          if (!i.precioAntes) i.precioAntes='';
+        });
       });
-      guardarMenuCache(data); // ← Guardar siempre que haya datos frescos
+      guardarMenuCache(data);
       setBanner(false);
     }
     loadRatings();
@@ -326,10 +320,6 @@
       renderClientMenu();
     });
   }
-
-  // ── ESTADÍSTICAS REALES ──
-  // Estructura en Firebase: stats/YYYY-MM-DD = { count: N, pedidos: [{hora, items, total}] }
-  // stats/semana/YYYY-Wnn = { count: N }
 
   function getFechaHoy() {
     const now = new Date();
@@ -352,7 +342,6 @@
     const hora = new Date().toLocaleTimeString('es-CO', {hour:'2-digit', minute:'2-digit'});
     const resumen = items.map(i => `${i.nombre} x${i.qty}`).join(', ');
 
-    // Incrementar contador del día en Firebase con transacción
     const refDia = db.ref(`stats/dias/${hoy}`);
     refDia.transaction(actual => {
       if (!actual) return { count: 1, pedidos: [{ hora, resumen, total }] };
@@ -361,7 +350,6 @@
       return { count: (actual.count || 0) + 1, pedidos };
     });
 
-    // Incrementar contador de la semana
     const refSem = db.ref(`stats/semanas/${semana}/count`);
     refSem.transaction(v => (v || 0) + 1);
   }
@@ -578,8 +566,16 @@
         const plusDisabled = agotado || cerrado;
         const qtyActual = carrito[cat.name+'__'+item.name] ? carrito[cat.name+'__'+item.name].qty : 0;
 
+        // Bloque de precio: con o sin precio anterior tachado
+        const precioBlock = `
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;">
+            <div style="display:flex;align-items:center;gap:6px;">
+              ${item.precioAntes ? `<span class="item-price-antes">${item.precioAntes}</span>` : ''}
+              <div class="item-price">${item.price||''}</div>
+            </div>
+          </div>`;
+
         if (modoOffline) {
-          // ── MODO SIN INTERNET: solo lectura, sin carrito ──
           h += `
             <div class="item-card">
               ${item.img ? `<div class="item-img-wrap"><img class="item-img" src="${item.img}" alt="${item.name}" onerror="this.parentElement.style.display='none'"></div>` : ''}
@@ -588,7 +584,7 @@
                   <div class="item-name">${item.name||'Producto'} ${badgeHtml(item.badge)}</div>
                   <div class="item-desc">${item.desc||''}</div>
                 </div>
-                <div class="item-price">${item.price||''}</div>
+                ${precioBlock}
               </div>
             </div>`;
         } else {
@@ -602,7 +598,7 @@
                   ${starsHtml(itemKey)}
                 </div>
                 <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0;">
-                  <div class="item-price">${item.price||''}</div>
+                  ${precioBlock}
                   <div class="qty-controls">
                     <button class="qty-btn" onclick="cambiarQty('${cat.name}__${item.name}','${item.name}','${item.price}',-1)" ${agotado?'disabled':''}>−</button>
                     <span class="qty-num" id="qty-${itemKey}">${qtyActual}</span>
@@ -619,7 +615,6 @@
     el.innerHTML = h;
   }
 
-  // ── INTENTAR AGREGAR — verifica si está cerrado manualmente ──
   function intentarAgregar(key, nombre, precio) {
     if (data.cerradoManual) {
       mostrarToastCerrado();
@@ -628,10 +623,8 @@
     cambiarQty(key, nombre, precio, 1);
   }
 
-  // ── ADMIN ──
   function renderAdminEditor() {
     const el = document.getElementById('editor-content');
-    // Cargar stats reales desde Firebase
     cargarEstadisticas(stats => {
       const hoy = stats.hoy || 0;
       const sem = stats.semana || 0;
@@ -698,7 +691,8 @@
           h += `
             <div class="ed-item-block">
               <input placeholder="Nombre Plato" value="${item.name}" onchange="updateItem(${ci},${ii},'name',this.value)">
-              <input placeholder="Precio" value="${item.price}" onchange="updateItem(${ci},${ii},'price',this.value)">
+              <input placeholder="Precio actual (ej: $12.000)" value="${item.price}" onchange="updateItem(${ci},${ii},'price',this.value)">
+              <input placeholder="Precio anterior tachado (ej: $15.000) — dejar vacío si no aplica" value="${item.precioAntes||''}" onchange="updateItem(${ci},${ii},'precioAntes',this.value)">
               <input placeholder="Descripción / ingredientes" value="${item.desc}" onchange="updateItem(${ci},${ii},'desc',this.value)">
               <input placeholder="URL de foto (opcional)" value="${item.img||''}" onchange="updateItem(${ci},${ii},'img',this.value)">
               <div style="margin:6px 0 2px;font-size:12px;font-weight:600;color:#555;">Etiqueta:</div>
@@ -720,7 +714,6 @@
 
   function toggleCerrado(val) {
     data.cerradoManual = val;
-    // Guardar en Firebase para que el cambio se refleje en tiempo real para todos
     db.ref('menuData/cerradoManual').set(val);
     db.ref('menuData/mensajeCerrado').set(data.mensajeCerrado || '');
     renderItems();
@@ -728,7 +721,6 @@
 
   function setBadge(ci, ii, val) { data.cats[ci].items[ii].badge = val; renderAdminEditor(); }
 
-  // ── CARRITO ──
   let carrito = {};
 
   function cambiarQty(key, nombre, precio, delta) {
@@ -769,7 +761,6 @@
     const notas = (document.getElementById('pedido-notas')?.value || '').trim();
     const tp = items.reduce((s,i) => s + (parseInt((i.precio||'').replace(/[^0-9]/g,''))||0)*i.qty, 0);
 
-    // ── PRESENCIAL: mostrar resumen en pantalla, sin WhatsApp ──
     if (zonaSeleccionada.presencial) {
       let itemsHtml = '';
       items.forEach(i => {
@@ -803,7 +794,6 @@
       return;
     }
 
-    // ── DOMICILIO: enviar por WhatsApp ──
     const bar = document.getElementById('cart-bar');
     function construirMensaje(ubicacion) {
       let msg = `🍔 *Pedido - ${data.brand}*\n\n`;
@@ -868,7 +858,11 @@
   function updateItem(ci,ii,f,v) { data.cats[ci].items[ii][f]=v; }
   function deleteItem(ci,ii) { data.cats[ci].items.splice(ii,1); renderAdminEditor(); }
   function deleteCat(ci) { data.cats.splice(ci,1); renderAdminEditor(); }
-  function addItem(ci) { if(!data.cats[ci].items) data.cats[ci].items=[]; data.cats[ci].items.push({name:"",desc:"",price:"",img:"",badge:""}); renderAdminEditor(); }
+  function addItem(ci) {
+    if(!data.cats[ci].items) data.cats[ci].items=[];
+    data.cats[ci].items.push({name:"",desc:"",price:"",img:"",badge:"",precioAntes:""});
+    renderAdminEditor();
+  }
   function addCat() { data.cats.push({name:"Nueva Categoría",items:[]}); renderAdminEditor(); }
 
   function applyChanges() {
@@ -896,8 +890,6 @@
     });
   }
 
-  // ── PRE-CACHEAR EL PDF apenas haya internet ──
-  // Usa la Cache API directamente desde la página, sin depender del SW
   function cachearPDF() {
     if (!navigator.onLine) return;
     const PDF_URL = './menu_antojo_express.pdf';
@@ -918,7 +910,6 @@
     }
   }
 
-  // Cachear al cargar si hay internet, y también cuando se recupere la conexión
   window.addEventListener('load',   cachearPDF);
   window.addEventListener('online', cachearPDF);
 </script>
