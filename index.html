@@ -11,59 +11,57 @@
     body { font-family: 'Poppins', sans-serif; background: var(--bg); color: var(--text); overflow-y: auto; min-height: 100vh; }
     .container { max-width: 600px; margin: 0 auto; padding: 20px; padding-bottom: 120px; }
 
-    /* BRAND */
     .brand { text-align: center; padding: 40px 20px 24px; background: var(--white); border-radius: 0 0 30px 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin: -20px -20px 20px -20px; }
     .brand-logos { font-size: 65px; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; margin-bottom: 5px; display: block; letter-spacing: 5px; }
     .brand-name { font-size: 32px; font-weight: 800; color: var(--primary); text-transform: uppercase; line-height: 1.1; }
     @keyframes pulso { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(1.3)} }
 
-    /* BANNER CERRADO */
     .closed-banner { background: #ff5e57; color: white; border-radius: 16px; padding: 16px 20px; text-align: center; margin-bottom: 20px; }
     .closed-banner-title { font-size: 18px; font-weight: 800; }
     .closed-banner-msg { font-size: 13px; margin-top: 4px; opacity: 0.9; }
 
-    /* BUSCADOR */
+    /* BUSCADOR — ahora debajo del nav de categorías */
     .search-wrap { position: relative; margin-bottom: 16px; }
     .search-wrap input { width: 100%; padding: 13px 18px 13px 44px; border-radius: 16px; border: none; background: var(--white); font-family: 'Poppins', sans-serif; font-size: 14px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); color: var(--text); outline: none; }
     .search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 18px; pointer-events: none; }
 
-    /* NAVEGACIÓN CATEGORÍAS */
-    .cat-nav { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 10px; scrollbar-width: none; }
+    .cat-nav { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 12px; scrollbar-width: none; }
     .cat-nav::-webkit-scrollbar { display: none; }
     .cat-nav-btn { flex-shrink: 0; padding: 7px 16px; border-radius: 20px; border: 2px solid #e0e0e0; background: white; font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; color: #636e72; white-space: nowrap; transition: all 0.15s; }
     .cat-nav-btn.active { background: var(--primary); border-color: var(--primary); color: white; }
 
     .cat-title { font-size: 18px; font-weight: 700; margin: 30px 0 15px; padding-left: 10px; border-left: 5px solid var(--primary); color: #2d3436; }
 
-    /* ITEM CARD */
+    /* ITEM CARD — imagen sin recorte */
     .item-card { background: var(--white); border-radius: 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 15px; border: 1px solid rgba(0,0,0,0.02); overflow: hidden; }
-    .item-img { width: 100%; height: 170px; object-fit: cover; display: block; }
-    .item-body { padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
-    .item-info { flex: 1; }
+    .item-img-wrap { width: 100%; height: 180px; overflow: hidden; }
+    .item-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .item-body { padding: 14px 16px; display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+    .item-info { flex: 1; min-width: 0; }
     .item-name { font-size: 15px; font-weight: 700; color: #1e272e; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
     .item-desc { font-size: 12px; color: #636e72; line-height: 1.4; margin-top: 3px; }
     .item-price { font-size: 15px; font-weight: 800; color: var(--primary); background: #fff5f2; padding: 5px 12px; border-radius: 10px; white-space: nowrap; }
 
-    /* BADGES */
     .badge { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 20px; white-space: nowrap; }
     .badge-hot { background: #fff0eb; color: #D85A30; }
     .badge-new { background: #e8f8f2; color: #05c46b; }
     .badge-sold { background: #f0f0f0; color: #888; }
 
-    /* ESTRELLAS */
-    .stars-row { display: flex; align-items: center; gap: 4px; margin-top: 6px; }
-    .star { font-size: 18px; cursor: pointer; color: #ddd; transition: color 0.1s; line-height: 1; }
+    /* ESTRELLAS mejoradas */
+    .stars-row { display: flex; align-items: center; gap: 3px; margin-top: 7px; flex-wrap: wrap; }
+    .star { font-size: 20px; cursor: pointer; color: #e0e0e0; transition: color 0.12s, transform 0.1s; line-height: 1; user-select: none; -webkit-tap-highlight-color: transparent; }
     .star.filled { color: #f9ca24; }
-    .star-count { font-size: 11px; color: #888; margin-left: 2px; }
+    .star.locked { cursor: default; }
+    .star:not(.locked):hover { transform: scale(1.2); color: #f9ca24; }
+    .star-count { font-size: 11px; color: #888; margin-left: 4px; }
+    .star-voted { font-size: 11px; color: #05c46b; font-weight: 700; margin-left: 4px; }
 
-    /* QTY */
     .qty-controls { display: flex; align-items: center; gap: 8px; flex-shrink: 0; flex-direction: column; }
     .qty-btn { width: 30px; height: 30px; border-radius: 50%; border: none; font-size: 18px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; background: #f0f0f0; color: #333; }
     .qty-btn.plus { background: var(--primary); color: white; }
     .qty-btn:disabled { background: #e0e0e0; color: #aaa; cursor: not-allowed; }
     .qty-num { font-size: 15px; font-weight: 700; min-width: 16px; text-align: center; }
 
-    /* CARRITO BAR */
     .cart-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #25D366; color: white; padding: 14px 20px; display: none; flex-direction: column; align-items: stretch; z-index: 999; max-width: 600px; margin: 0 auto; border-radius: 20px 20px 0 0; box-shadow: 0 -4px 20px rgba(0,0,0,0.15); }
     .cart-bar.visible { display: flex; }
     .cart-bar-row { display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
@@ -74,7 +72,6 @@
     .cart-notes-area textarea { width: 100%; padding: 10px; border-radius: 12px; border: none; font-family: 'Poppins', sans-serif; font-size: 13px; color: #1e272e; resize: none; outline: none; }
     .cart-notes-toggle { font-size: 12px; color: rgba(255,255,255,0.85); text-align: center; margin-top: 6px; cursor: pointer; text-decoration: underline; }
 
-    /* TARJETA CONTACTO */
     .contact-card { background: #1a1a1a; border-radius: 20px; overflow: hidden; margin-bottom: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.12); }
     .contact-header { background: #111; padding: 20px; text-align: center; border-bottom: 1px solid #2a2a2a; }
     .contact-business-name { font-size: 22px; font-weight: 800; color: #EF9F27; letter-spacing: 2px; text-transform: uppercase; }
@@ -87,13 +84,8 @@
     .contact-buttons { display: flex; gap: 8px; margin-left: auto; align-items: center; flex-shrink: 0; }
     .contact-wa-btn { background: #25D366; color: #fff; width: 42px; height: 42px; border-radius: 50%; text-decoration: none; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 
-    /* NO RESULTADOS */
     .no-results { text-align: center; padding: 40px 20px; color: #888; font-size: 15px; }
 
-    /* MODAL ZONAS */
-    #zona-modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:2000; align-items:flex-end; justify-content:center; }
-
-    /* PANEL ADMIN */
     #admin-panel { display: none; background: #1e272e; color: white; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1000; padding: 20px; overflow-y: scroll; }
     .admin-card { background: white; color: #333; padding: 20px; border-radius: 20px; margin-bottom: 20px; }
     .ed-item-block { background: #f1f2f6; padding: 15px; border-radius: 12px; margin-top: 10px; border: 1px solid #dfe4ea; }
@@ -102,7 +94,6 @@
     .badge-opt.active-hot { border-color: #D85A30; background: #fff0eb; color: #D85A30; }
     .badge-opt.active-new { border-color: #05c46b; background: #e8f8f2; color: #05c46b; }
     .badge-opt.active-sold { border-color: #888; background: #f0f0f0; color: #888; }
-    /* switch cerrado */
     .switch-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-top: 1px solid #eee; margin-top: 10px; }
     .switch-label { font-size: 14px; font-weight: 600; color: #333; }
     .toggle-switch { position: relative; width: 52px; height: 28px; }
@@ -111,7 +102,6 @@
     .toggle-slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 4px; bottom: 4px; background: white; border-radius: 50%; transition: .3s; }
     input:checked + .toggle-slider { background: #ff5e57; }
     input:checked + .toggle-slider:before { transform: translateX(24px); }
-    /* stats */
     .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
     .stat-box { background: #f1f2f6; border-radius: 14px; padding: 14px; text-align: center; }
     .stat-num { font-size: 28px; font-weight: 800; color: var(--primary); }
@@ -135,7 +125,6 @@
   <div id="menu-content">Cargando delicias...</div>
 </div>
 
-<!-- CARRITO BAR -->
 <div class="cart-bar" id="cart-bar">
   <div class="cart-bar-row" onclick="abrirZonas()">
     <div class="cart-bar-left">🛒 <span id="cart-count">0</span> productos · <span id="cart-total">$0</span></div>
@@ -147,7 +136,6 @@
   </div>
 </div>
 
-<!-- MODAL ZONAS -->
 <div id="zona-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:2000; align-items:flex-end; justify-content:center;">
   <div style="background:white; width:100%; max-width:600px; border-radius:24px 24px 0 0; padding:28px 20px 40px;">
     <div style="text-align:center; margin-bottom:20px;">
@@ -180,7 +168,6 @@
   </div>
 </div>
 
-<!-- PANEL ADMIN -->
 <div id="admin-panel">
   <button class="btn btn-close" onclick="closeAdmin()">← VOLVER AL MENÚ</button>
   <h2 style="margin-bottom:20px; text-align:center;">PANEL DE CONTROL</h2>
@@ -210,7 +197,28 @@
     cats:[]
   };
 
-  // calificaciones en memoria local (no ocupa espacio en Firebase)
+  // ── ID DE SESIÓN (por cliente, persiste en localStorage) ──
+  function getClientId() {
+    let id = localStorage.getItem('menuClientId');
+    if (!id) {
+      id = 'c_' + Math.random().toString(36).substr(2, 12) + '_' + Date.now();
+      localStorage.setItem('menuClientId', id);
+    }
+    return id;
+  }
+  const CLIENT_ID = getClientId();
+
+  // mis votos locales: { itemKey: estrellas }
+  let misVotos = {};
+  function cargarMisVotos() {
+    try { misVotos = JSON.parse(localStorage.getItem('menuMisVotos') || '{}'); } catch(e) { misVotos = {}; }
+  }
+  function guardarMisVotos() {
+    localStorage.setItem('menuMisVotos', JSON.stringify(misVotos));
+  }
+  cargarMisVotos();
+
+  // ratings globales desde Firebase
   let ratings = {};
 
   db.ref('menuData').on('value', (snap) => {
@@ -232,10 +240,8 @@
       resetDiarioPorDia();
     }
     loadRatings();
-    renderClientMenu();
   });
 
-  // calificaciones en firebase separado para no ensuciar menuData
   function loadRatings() {
     db.ref('ratings').once('value', snap => {
       ratings = snap.val() || {};
@@ -253,7 +259,6 @@
     }
   }
 
-  // ── HELPERS ──
   function formatPhone(p) {
     const c = (p||'').replace(/\D/g,'');
     return c.length===10 ? c.replace(/(\d{3})(\d{3})(\d{4})/,'$1 $2 $3') : c;
@@ -304,25 +309,45 @@
     return '';
   }
 
+  // ── CALIFICACIONES — una por cliente ──
   function starsHtml(itemKey) {
     const r = ratings[itemKey] || {sum:0,count:0};
     const avg = r.count ? Math.round(r.sum/r.count*10)/10 : 0;
     const full = Math.round(avg);
+    const yaVoto = misVotos[itemKey] !== undefined;
+    const miVoto = misVotos[itemKey] || 0;
+
     let s = '<div class="stars-row">';
-    for (let i=1;i<=5;i++) {
-      s += `<span class="star ${i<=full?'filled':''}" onclick="calificar('${itemKey}',${i})">★</span>`;
+    for (let i=1; i<=5; i++) {
+      if (yaVoto) {
+        // bloqueadas: muestra promedio global
+        s += `<span class="star filled-display ${i<=full?'filled':''} locked" title="Promedio: ${avg.toFixed(1)}">★</span>`;
+      } else {
+        s += `<span class="star" onclick="calificar('${itemKey}',${i})" title="Darle ${i} estrella${i>1?'s':''}">★</span>`;
+      }
     }
-    if (r.count) s += `<span class="star-count">${avg.toFixed(1)} (${r.count})</span>`;
-    else s += `<span class="star-count">Sin calificaciones aún</span>`;
+
+    if (yaVoto) {
+      s += `<span class="star-voted">✓ Calificaste con ${miVoto}★</span>`;
+    }
+    if (r.count) {
+      s += `<span class="star-count">${avg.toFixed(1)} (${r.count} ${r.count===1?'voto':'votos'})</span>`;
+    } else if (!yaVoto) {
+      s += `<span class="star-count">¡Sé el primero en calificar!</span>`;
+    }
     s += '</div>';
     return s;
   }
 
   function calificar(itemKey, stars) {
+    if (misVotos[itemKey] !== undefined) return; // ya votó
     const r = ratings[itemKey] || {sum:0,count:0};
     ratings[itemKey] = {sum: r.sum+stars, count: r.count+1};
     db.ref('ratings/'+itemKey).set(ratings[itemKey]);
-    renderClientMenu();
+    // guardar voto local
+    misVotos[itemKey] = stars;
+    guardarMisVotos();
+    renderItems(); // solo re-render los items, no todo el menú
   }
 
   // ── BUSCADOR ──
@@ -332,7 +357,6 @@
     renderItems();
   }
 
-  // ── NAVEGACIÓN ──
   function scrollACat(catName) {
     const id = 'cat-' + catName.replace(/[^a-z0-9]/gi,'_');
     const el = document.getElementById(id);
@@ -343,7 +367,6 @@
   function renderClientMenu() {
     const el = document.getElementById('menu-content');
 
-    // contacto y pagos (bloque fijo, no se filtra)
     const contactBlock = `
       <div class="contact-card">
         <div class="contact-header">
@@ -394,11 +417,11 @@
         </div>
       </div>`;
 
-    // nav categorías
     const navBtns = data.cats.map(c =>
       `<button class="cat-nav-btn" onclick="scrollACat('${c.name}')">${c.name}</button>`
     ).join('');
 
+    // ORDEN CORRECTO: brand → contacto → nav categorías → buscador → items
     el.innerHTML = `
       <div class="brand">
         <div class="brand-logos" onclick="handleLogoClick()">🍔🍟🥤</div>
@@ -440,7 +463,7 @@
         const qtyActual = carrito[cat.name+'__'+item.name] ? carrito[cat.name+'__'+item.name].qty : 0;
         h += `
           <div class="item-card">
-            ${item.img ? `<img class="item-img" src="${item.img}" alt="${item.name}" onerror="this.style.display='none'">` : ''}
+            ${item.img ? `<div class="item-img-wrap"><img class="item-img" src="${item.img}" alt="${item.name}" onerror="this.parentElement.style.display='none'"></div>` : ''}
             <div class="item-body">
               <div class="item-info">
                 <div class="item-name">${item.name||'Producto'} ${badgeHtml(item.badge)}</div>
@@ -478,7 +501,6 @@
         </div>
         <button class="btn-reset-stats" onclick="resetStats()">Reiniciar contadores</button>
       </div>
-
       <div class="admin-card">
         <b>Nombre del Negocio:</b>
         <input id="brandInput" value="${data.brand}">
@@ -495,7 +517,6 @@
           <div><small>Hora apertura (0–23)</small><input id="horaAbreInput" type="number" min="0" max="23" value="${data.horaAbre!==undefined?data.horaAbre:18}"></div>
           <div><small>Hora cierre (0–23)</small><input id="horaCierraInput" type="number" min="0" max="23" value="${data.horaCierra||23}"></div>
         </div>
-
         <div class="switch-row">
           <div>
             <div class="switch-label">🌙 Cerrado temporalmente</div>
@@ -539,9 +560,7 @@
     el.innerHTML = h;
   }
 
-  function toggleCerrado(val) {
-    data.cerradoManual = val;
-  }
+  function toggleCerrado(val) { data.cerradoManual = val; }
 
   function resetStats() {
     if (!confirm('¿Reiniciar los contadores de pedidos?')) return;
@@ -610,14 +629,11 @@
       }
       const phone = (data.phone||'3127447977').replace(/\D/g,'');
       window.open(`https://wa.me/57${phone}?text=${encodeURIComponent(msg)}`, '_blank');
-
-      // contar pedido
       const nuevosHoy = (data.pedidosHoy||0)+1;
       const nuevosSem = (data.pedidosSemana||0)+1;
       data.pedidosHoy = nuevosHoy; data.pedidosSemana = nuevosSem;
       db.ref('menuData/pedidosHoy').set(nuevosHoy);
       db.ref('menuData/pedidosSemana').set(nuevosSem);
-
       zonaSeleccionada=null; carrito={};
       if (document.getElementById('pedido-notas')) document.getElementById('pedido-notas').value='';
       document.getElementById('notes-area').classList.remove('open');
