@@ -317,7 +317,9 @@
   function loadRatings() {
     db.ref('ratings').once('value', snap => {
       ratings = snap.val() || {};
-      renderClientMenu();
+      calcularMasVendidos(() => {
+        renderClientMenu();
+      });
     });
   }
 
@@ -458,6 +460,63 @@
     renderItems();
   }
 
+  // ── MÁS VENDIDOS ──
+  let masVendidos = [];
+  let conteoVendidos = {};
+
+  function calcularMasVendidos(callback) {
+    db.ref('stats/dias').once('value', snap => {
+      const dias = snap.val() || {};
+      const conteo = {};
+      Object.values(dias).forEach(dia => {
+        (dia.pedidos || []).forEach(p => {
+          if (!p.resumen) return;
+          p.resumen.split(', ').forEach(parte => {
+            const match = parte.match(/^(.+?) x(\d+)$/);
+            if (match) {
+              const nombre = match[1].trim();
+              const qty = parseInt(match[2]) || 1;
+              conteo[nombre] = (conteo[nombre] || 0) + qty;
+            }
+          });
+        });
+      });
+      conteoVendidos = conteo;
+      masVendidos = Object.entries(conteo)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 3)
+        .map(e => e[0]);
+      callback();
+    });
+  }
+
+  function seccionMasVendidosHtml() {
+    if (!masVendidos.length) return '';
+    let cards = '';
+    masVendidos.forEach((nombre, idx) => {
+      let precio = '', img = '';
+      data.cats.forEach(cat => {
+        (cat.items||[]).forEach(item => {
+          if (item.name === nombre) { precio = item.price; img = item.img || ''; }
+        });
+      });
+      const veces = conteoVendidos[nombre] || 0;
+      const medals = ['🥇','🥈','🥉'];
+      cards += `<div style="flex-shrink:0;width:150px;background:white;border-radius:16px;overflow:hidden;box-shadow:0 4px 15px rgba(0,0,0,0.08);border:1px solid rgba(216,90,48,0.12);">` +
+        (img ? `<div style="width:100%;height:90px;overflow:hidden;position:relative;"><img src="${img}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.innerHTML='<div style=width:100%;height:90px;background:#fff5f2;display:flex;align-items:center;justify-content:center;font-size:28px>🍽️</div>'"><div style="position:absolute;top:6px;left:6px;font-size:18px;">${medals[idx]}</div></div>`
+               : `<div style="width:100%;height:90px;background:#fff5f2;display:flex;align-items:center;justify-content:center;font-size:28px;position:relative;">${medals[idx]}<span style="position:absolute;font-size:28px;">🍽️</span></div>`) +
+        `<div style="padding:8px 10px;">` +
+        `<div style="font-size:12px;font-weight:700;color:#1e272e;line-height:1.3;">${nombre}</div>` +
+        `<div style="font-size:10px;color:#888;margin-top:2px;">Pedido ${veces} ${veces===1?'vez':'veces'}</div>` +
+        `<div style="font-size:13px;font-weight:800;color:#D85A30;margin-top:4px;">${precio}</div>` +
+        `</div></div>`;
+    });
+    return `<div style="margin-bottom:24px;">` +
+      `<div style="font-size:16px;font-weight:700;color:#2d3436;margin-bottom:12px;display:flex;align-items:center;gap:8px;">🔥 Lo más pedido</div>` +
+      `<div style="display:flex;gap:12px;overflow-x:auto;padding-bottom:6px;scrollbar-width:none;-webkit-overflow-scrolling:touch;">${cards}</div>` +
+      `</div>`;
+  }
+
   let busqueda = '';
   function filtrarMenu(q) { busqueda = q.toLowerCase(); renderItems(); }
 
@@ -532,6 +591,7 @@
       </div>
       ${data.cerradoManual && data.mensajeCerrado ? `<div class="closed-banner"><div class="closed-banner-title">⏸ Cerrado temporalmente</div><div class="closed-banner-msg">${data.mensajeCerrado}</div></div>` : ''}
       ${contactBlock}
+      <div id="mas-vendidos-section">${seccionMasVendidosHtml()}</div>
       <div class="cat-nav" id="cat-nav">${navBtns}</div>
       <div class="search-wrap">
         <span class="search-icon">🔍</span>
@@ -581,7 +641,7 @@
               ${item.img ? `<div class="item-img-wrap"><img class="item-img" src="${item.img}" alt="${item.name}" onerror="this.parentElement.style.display='none'"></div>` : ''}
               <div class="item-body">
                 <div class="item-info">
-                  <div class="item-name">${item.name||'Producto'} ${badgeHtml(item.badge)}</div>
+                  <div class="item-name">${item.name||'Producto'} ${badgeHtml(item.badge)}${masVendidos.includes(item.name) ? '<span class="badge badge-hot">🔥 Más vendido</span>' : ''}</div>
                   <div class="item-desc">${item.desc||''}</div>
                 </div>
                 ${precioBlock}
@@ -593,7 +653,7 @@
               ${item.img ? `<div class="item-img-wrap"><img class="item-img" src="${item.img}" alt="${item.name}" onerror="this.parentElement.style.display='none'"></div>` : ''}
               <div class="item-body">
                 <div class="item-info">
-                  <div class="item-name">${item.name||'Producto'} ${badgeHtml(item.badge)}</div>
+                  <div class="item-name">${item.name||'Producto'} ${badgeHtml(item.badge)}${masVendidos.includes(item.name) ? '<span class="badge badge-hot">🔥 Más vendido</span>' : ''}</div>
                   <div class="item-desc">${item.desc||''}</div>
                   ${starsHtml(itemKey)}
                 </div>
