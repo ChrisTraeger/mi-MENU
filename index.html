@@ -131,6 +131,7 @@
     /* ── Banner offline ── */
     #offline-banner { display:none; background:#2d3436; color:white; text-align:center; padding:10px 16px; font-size:12px; font-weight:700; border-radius:12px; margin-bottom:14px; letter-spacing:0.3px; }
     #offline-banner.show { display:flex; align-items:center; justify-content:center; gap:6px; }
+    #offline-banner.show.readonly { background: #6c5ce7; }
   </style>
 </head>
 <body>
@@ -138,7 +139,7 @@
 <div id="closed-toast">⛔ Estamos cerrados ahora mismo</div>
 
 <div class="container" id="client-view">
-  <div id="offline-banner">📵 Sin internet · Mostrando menú guardado</div>
+  <div id="offline-banner">📵 Sin internet · Mostrando menú guardado · Solo lectura</div>
   <div id="menu-content">Cargando delicias...</div>
 </div>
 
@@ -230,7 +231,7 @@
   }
   function setBanner(visible) {
     const b = document.getElementById('offline-banner');
-    if (b) b.className = visible ? 'show' : '';
+    if (b) b.className = visible ? (modoOffline ? 'show readonly' : 'show') : '';
   }
   // Reaccionar si el usuario pierde o recupera internet durante la sesión
   window.addEventListener('online',  () => setBanner(false));
@@ -255,20 +256,17 @@
   let ratings = {};
 
   // ── Si no hay internet al abrir, mostrar caché de inmediato ──
+  let modoOffline = false;
   if (!navigator.onLine) {
     setBanner(true);
     const cached = leerMenuCache();
     if (cached) {
       data = cached;
-      // Renderizar con datos del caché (calificaciones en blanco, el resto completo)
+      modoOffline = true;
       setTimeout(() => renderClientMenu(), 0);
     } else {
-      document.getElementById('menu-content').innerHTML = `
-        <div style="text-align:center;padding:70px 20px 40px;color:#636e72;">
-          <div style="font-size:56px;margin-bottom:14px;">📵</div>
-          <div style="font-size:17px;font-weight:800;color:#2d3436;margin-bottom:8px;">Sin conexión a internet</div>
-          <div style="font-size:13px;line-height:1.6;">Abre el menú <b>una vez con internet</b><br>y la próxima vez lo verás sin datos. 🙌</div>
-        </div>`;
+      // Sin caché y sin internet → abrir el PDF directamente
+      window.location.href = './menu_antojo_express.pdf';
     }
   }
 
@@ -584,30 +582,44 @@
       itemsFiltrados.forEach(item => {
         const itemKey = (cat.name+'__'+item.name).replace(/[^a-z0-9]/gi,'_');
         const agotado = item.badge==='sold';
-        // ── BLOQUEO: si cerradoManual O agotado, el + queda deshabilitado ──
-        // El horario (vie-dom) solo es visual; el admin controla el cierre con el toggle
         const cerrado = data.cerradoManual;
         const plusDisabled = agotado || cerrado;
         const qtyActual = carrito[cat.name+'__'+item.name] ? carrito[cat.name+'__'+item.name].qty : 0;
-        h += `
-          <div class="item-card">
-            ${item.img ? `<div class="item-img-wrap"><img class="item-img" src="${item.img}" alt="${item.name}" onerror="this.parentElement.style.display='none'"></div>` : ''}
-            <div class="item-body">
-              <div class="item-info">
-                <div class="item-name">${item.name||'Producto'} ${badgeHtml(item.badge)}</div>
-                <div class="item-desc">${item.desc||''}</div>
-                ${starsHtml(itemKey)}
-              </div>
-              <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0;">
+
+        if (modoOffline) {
+          // ── MODO SIN INTERNET: solo lectura, sin carrito ──
+          h += `
+            <div class="item-card">
+              ${item.img ? `<div class="item-img-wrap"><img class="item-img" src="${item.img}" alt="${item.name}" onerror="this.parentElement.style.display='none'"></div>` : ''}
+              <div class="item-body">
+                <div class="item-info">
+                  <div class="item-name">${item.name||'Producto'} ${badgeHtml(item.badge)}</div>
+                  <div class="item-desc">${item.desc||''}</div>
+                </div>
                 <div class="item-price">${item.price||''}</div>
-                <div class="qty-controls">
-                  <button class="qty-btn" onclick="cambiarQty('${cat.name}__${item.name}','${item.name}','${item.price}',-1)" ${agotado?'disabled':''}>−</button>
-                  <span class="qty-num" id="qty-${itemKey}">${qtyActual}</span>
-                  <button class="qty-btn plus" onclick="intentarAgregar('${cat.name}__${item.name}','${item.name}','${item.price}')" ${plusDisabled?'disabled':''}>+</button>
+              </div>
+            </div>`;
+        } else {
+          h += `
+            <div class="item-card">
+              ${item.img ? `<div class="item-img-wrap"><img class="item-img" src="${item.img}" alt="${item.name}" onerror="this.parentElement.style.display='none'"></div>` : ''}
+              <div class="item-body">
+                <div class="item-info">
+                  <div class="item-name">${item.name||'Producto'} ${badgeHtml(item.badge)}</div>
+                  <div class="item-desc">${item.desc||''}</div>
+                  ${starsHtml(itemKey)}
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0;">
+                  <div class="item-price">${item.price||''}</div>
+                  <div class="qty-controls">
+                    <button class="qty-btn" onclick="cambiarQty('${cat.name}__${item.name}','${item.name}','${item.price}',-1)" ${agotado?'disabled':''}>−</button>
+                    <span class="qty-num" id="qty-${itemKey}">${qtyActual}</span>
+                    <button class="qty-btn plus" onclick="intentarAgregar('${cat.name}__${item.name}','${item.name}','${item.price}')" ${plusDisabled?'disabled':''}>+</button>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>`;
+            </div>`;
+        }
       });
     });
 
