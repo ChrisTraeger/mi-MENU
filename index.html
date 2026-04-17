@@ -20,7 +20,6 @@
     .closed-banner-title { font-size: 18px; font-weight: 800; }
     .closed-banner-msg { font-size: 13px; margin-top: 4px; opacity: 0.9; }
 
-    /* BUSCADOR — ahora debajo del nav de categorías */
     .search-wrap { position: relative; margin-bottom: 16px; }
     .search-wrap input { width: 100%; padding: 13px 18px 13px 44px; border-radius: 16px; border: none; background: var(--white); font-family: 'Poppins', sans-serif; font-size: 14px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); color: var(--text); outline: none; }
     .search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 18px; pointer-events: none; }
@@ -32,7 +31,6 @@
 
     .cat-title { font-size: 18px; font-weight: 700; margin: 30px 0 15px; padding-left: 10px; border-left: 5px solid var(--primary); color: #2d3436; }
 
-    /* ITEM CARD — imagen sin recorte */
     .item-card { background: var(--white); border-radius: 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 15px; border: 1px solid rgba(0,0,0,0.02); overflow: hidden; }
     .item-img-wrap { width: 100%; height: 180px; overflow: hidden; }
     .item-img { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -47,7 +45,6 @@
     .badge-new { background: #e8f8f2; color: #05c46b; }
     .badge-sold { background: #f0f0f0; color: #888; }
 
-    /* ESTRELLAS mejoradas */
     .stars-row { display: flex; align-items: center; gap: 3px; margin-top: 7px; flex-wrap: wrap; }
     .star { font-size: 20px; cursor: pointer; color: #e0e0e0; transition: color 0.12s, transform 0.1s; line-height: 1; user-select: none; -webkit-tap-highlight-color: transparent; }
     .star.filled { color: #f9ca24; }
@@ -61,6 +58,10 @@
     .qty-btn.plus { background: var(--primary); color: white; }
     .qty-btn:disabled { background: #e0e0e0; color: #aaa; cursor: not-allowed; }
     .qty-num { font-size: 15px; font-weight: 700; min-width: 16px; text-align: center; }
+
+    /* Toast de cerrado */
+    #closed-toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(20px); background: #ff5e57; color: white; padding: 12px 22px; border-radius: 20px; font-size: 13px; font-weight: 700; z-index: 3000; opacity: 0; pointer-events: none; transition: opacity 0.3s, transform 0.3s; box-shadow: 0 4px 20px rgba(255,94,87,0.4); white-space: nowrap; }
+    #closed-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
     .cart-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #25D366; color: white; padding: 14px 20px; display: none; flex-direction: column; align-items: stretch; z-index: 999; max-width: 600px; margin: 0 auto; border-radius: 20px 20px 0 0; box-shadow: 0 -4px 20px rgba(0,0,0,0.15); }
     .cart-bar.visible { display: flex; }
@@ -117,9 +118,15 @@
     .horario-row { display: flex; gap: 10px; }
     .horario-row input { flex: 1; }
     small { font-size: 11px; color: #888; display: block; margin-top: -4px; margin-bottom: 6px; }
+
+    /* Historial de pedidos en admin */
+    .pedido-hist { background: #f8f9fa; border-radius: 10px; padding: 10px 14px; margin-top: 8px; font-size: 12px; border-left: 3px solid var(--primary); }
+    .pedido-hist-time { font-size: 10px; color: #888; margin-top: 3px; }
   </style>
 </head>
 <body>
+
+<div id="closed-toast">⛔ Estamos cerrados ahora mismo</div>
 
 <div class="container" id="client-view">
   <div id="menu-content">Cargando delicias...</div>
@@ -193,33 +200,46 @@
     brand:"Comida Express", phone:"3127447977", slogan:"Porque el hambre no espera.",
     nequi:"3127447977", bancolombia:"000-000000-00",
     horaAbre:18, horaCierra:23, cerradoManual:false, mensajeCerrado:"",
-    pedidosHoy:0, pedidosSemana:0, fechaReset:"",
     cats:[]
   };
 
-  // ── ID DE SESIÓN (por cliente, persiste en localStorage) ──
+  // ── ID DE SESIÓN ──
   function getClientId() {
     let id = localStorage.getItem('menuClientId');
-    if (!id) {
-      id = 'c_' + Math.random().toString(36).substr(2, 12) + '_' + Date.now();
-      localStorage.setItem('menuClientId', id);
-    }
+    if (!id) { id = 'c_' + Math.random().toString(36).substr(2,12) + '_' + Date.now(); localStorage.setItem('menuClientId', id); }
     return id;
   }
   const CLIENT_ID = getClientId();
 
-  // mis votos locales: { itemKey: estrellas }
   let misVotos = {};
-  function cargarMisVotos() {
-    try { misVotos = JSON.parse(localStorage.getItem('menuMisVotos') || '{}'); } catch(e) { misVotos = {}; }
-  }
-  function guardarMisVotos() {
-    localStorage.setItem('menuMisVotos', JSON.stringify(misVotos));
-  }
+  function cargarMisVotos() { try { misVotos = JSON.parse(localStorage.getItem('menuMisVotos') || '{}'); } catch(e) { misVotos = {}; } }
+  function guardarMisVotos() { localStorage.setItem('menuMisVotos', JSON.stringify(misVotos)); }
   cargarMisVotos();
 
-  // ratings globales desde Firebase
   let ratings = {};
+
+  // ── FUNCIÓN CENTRAL: ¿está abierto ahora? ──
+  function estaAbierto() {
+    if (data.cerradoManual) return false;
+    const now = new Date();
+    const h = now.getHours(), dia = now.getDay();
+    const abre = parseInt(data.horaAbre) || 18;
+    const cierra = parseInt(data.horaCierra) || 23;
+    const diaValido = dia === 5 || dia === 6 || dia === 0;
+    return diaValido && h >= abre && h < cierra;
+  }
+
+  // ── TOAST de cerrado ──
+  let toastTimer = null;
+  function mostrarToastCerrado() {
+    const t = document.getElementById('closed-toast');
+    if (!t) return;
+    const msg = data.mensajeCerrado ? `⛔ ${data.mensajeCerrado}` : '⛔ Estamos cerrados ahora mismo';
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+  }
 
   db.ref('menuData').on('value', (snap) => {
     const cloud = snap.val();
@@ -230,14 +250,10 @@
       if (!data.horaCierra) data.horaCierra = 23;
       if (data.cerradoManual === undefined) data.cerradoManual = false;
       if (!data.mensajeCerrado) data.mensajeCerrado = "";
-      if (!data.pedidosHoy) data.pedidosHoy = 0;
-      if (!data.pedidosSemana) data.pedidosSemana = 0;
-      if (!data.fechaReset) data.fechaReset = "";
       data.cats.forEach(c => {
         if (!c.items) c.items = [];
         c.items.forEach(i => { if (!i.badge) i.badge=''; if (!i.img) i.img=''; });
       });
-      resetDiarioPorDia();
     }
     loadRatings();
   });
@@ -249,14 +265,66 @@
     });
   }
 
-  function resetDiarioPorDia() {
-    const hoy = new Date().toISOString().slice(0,10);
-    if (data.fechaReset !== hoy) {
-      data.pedidosHoy = 0;
-      data.fechaReset = hoy;
-      db.ref('menuData/pedidosHoy').set(0);
-      db.ref('menuData/fechaReset').set(hoy);
-    }
+  // ── ESTADÍSTICAS REALES ──
+  // Estructura en Firebase: stats/YYYY-MM-DD = { count: N, pedidos: [{hora, items, total}] }
+  // stats/semana/YYYY-Wnn = { count: N }
+
+  function getFechaHoy() {
+    const now = new Date();
+    const y = now.getFullYear();
+    const m = String(now.getMonth()+1).padStart(2,'0');
+    const d = String(now.getDate()).padStart(2,'0');
+    return `${y}-${m}-${d}`;
+  }
+
+  function getSemanaKey() {
+    const now = new Date();
+    const startOfYear = new Date(now.getFullYear(), 0, 1);
+    const semana = Math.ceil(((now - startOfYear) / 86400000 + startOfYear.getDay() + 1) / 7);
+    return `${now.getFullYear()}-W${String(semana).padStart(2,'0')}`;
+  }
+
+  function registrarPedidoStats(items, total) {
+    const hoy = getFechaHoy();
+    const semana = getSemanaKey();
+    const hora = new Date().toLocaleTimeString('es-CO', {hour:'2-digit', minute:'2-digit'});
+    const resumen = items.map(i => `${i.nombre} x${i.qty}`).join(', ');
+
+    // Incrementar contador del día en Firebase con transacción
+    const refDia = db.ref(`stats/dias/${hoy}`);
+    refDia.transaction(actual => {
+      if (!actual) return { count: 1, pedidos: [{ hora, resumen, total }] };
+      const pedidos = actual.pedidos || [];
+      pedidos.push({ hora, resumen, total });
+      return { count: (actual.count || 0) + 1, pedidos };
+    });
+
+    // Incrementar contador de la semana
+    const refSem = db.ref(`stats/semanas/${semana}/count`);
+    refSem.transaction(v => (v || 0) + 1);
+  }
+
+  function cargarEstadisticas(callback) {
+    const hoy = getFechaHoy();
+    const semana = getSemanaKey();
+    Promise.all([
+      db.ref(`stats/dias/${hoy}`).once('value'),
+      db.ref(`stats/semanas/${semana}/count`).once('value')
+    ]).then(([snapDia, snapSem]) => {
+      const dataDia = snapDia.val() || { count: 0, pedidos: [] };
+      const countSem = snapSem.val() || 0;
+      callback({ hoy: dataDia.count || 0, semana: countSem, pedidosHoy: dataDia.pedidos || [] });
+    });
+  }
+
+  function resetStats() {
+    if (!confirm('¿Reiniciar los contadores de hoy y esta semana?')) return;
+    const hoy = getFechaHoy();
+    const semana = getSemanaKey();
+    db.ref(`stats/dias/${hoy}`).remove();
+    db.ref(`stats/semanas/${semana}`).remove();
+    renderAdminEditor();
+    alert('✅ Contadores reiniciados');
   }
 
   function formatPhone(p) {
@@ -309,53 +377,39 @@
     return '';
   }
 
-  // ── CALIFICACIONES — una por cliente ──
   function starsHtml(itemKey) {
     const r = ratings[itemKey] || {sum:0,count:0};
     const avg = r.count ? Math.round(r.sum/r.count*10)/10 : 0;
     const full = Math.round(avg);
     const yaVoto = misVotos[itemKey] !== undefined;
     const miVoto = misVotos[itemKey] || 0;
-
     let s = '<div class="stars-row">';
     for (let i=1; i<=5; i++) {
       if (yaVoto) {
-        // bloqueadas: muestra promedio global
-        s += `<span class="star filled-display ${i<=full?'filled':''} locked" title="Promedio: ${avg.toFixed(1)}">★</span>`;
+        s += `<span class="star ${i<=full?'filled':''} locked" title="Promedio: ${avg.toFixed(1)}">★</span>`;
       } else {
         s += `<span class="star" onclick="calificar('${itemKey}',${i})" title="Darle ${i} estrella${i>1?'s':''}">★</span>`;
       }
     }
-
-    if (yaVoto) {
-      s += `<span class="star-voted">✓ Calificaste con ${miVoto}★</span>`;
-    }
-    if (r.count) {
-      s += `<span class="star-count">${avg.toFixed(1)} (${r.count} ${r.count===1?'voto':'votos'})</span>`;
-    } else if (!yaVoto) {
-      s += `<span class="star-count">¡Sé el primero en calificar!</span>`;
-    }
+    if (yaVoto) s += `<span class="star-voted">✓ Calificaste con ${miVoto}★</span>`;
+    if (r.count) s += `<span class="star-count">${avg.toFixed(1)} (${r.count} ${r.count===1?'voto':'votos'})</span>`;
+    else if (!yaVoto) s += `<span class="star-count">¡Sé el primero en calificar!</span>`;
     s += '</div>';
     return s;
   }
 
   function calificar(itemKey, stars) {
-    if (misVotos[itemKey] !== undefined) return; // ya votó
+    if (misVotos[itemKey] !== undefined) return;
     const r = ratings[itemKey] || {sum:0,count:0};
     ratings[itemKey] = {sum: r.sum+stars, count: r.count+1};
     db.ref('ratings/'+itemKey).set(ratings[itemKey]);
-    // guardar voto local
     misVotos[itemKey] = stars;
     guardarMisVotos();
-    renderItems(); // solo re-render los items, no todo el menú
-  }
-
-  // ── BUSCADOR ──
-  let busqueda = '';
-  function filtrarMenu(q) {
-    busqueda = q.toLowerCase();
     renderItems();
   }
+
+  let busqueda = '';
+  function filtrarMenu(q) { busqueda = q.toLowerCase(); renderItems(); }
 
   function scrollACat(catName) {
     const id = 'cat-' + catName.replace(/[^a-z0-9]/gi,'_');
@@ -363,7 +417,6 @@
     if (el) el.scrollIntoView({behavior:'smooth', block:'start'});
   }
 
-  // ── RENDER CLIENTE ──
   function renderClientMenu() {
     const el = document.getElementById('menu-content');
 
@@ -421,7 +474,6 @@
       `<button class="cat-nav-btn" onclick="scrollACat('${c.name}')">${c.name}</button>`
     ).join('');
 
-    // ORDEN CORRECTO: brand → contacto → nav categorías → buscador → items
     el.innerHTML = `
       <div class="brand">
         <div class="brand-logos" onclick="handleLogoClick()">🍔🍟🥤</div>
@@ -460,6 +512,9 @@
       itemsFiltrados.forEach(item => {
         const itemKey = (cat.name+'__'+item.name).replace(/[^a-z0-9]/gi,'_');
         const agotado = item.badge==='sold';
+        // ── BLOQUEO: si está cerrado O agotado, el + queda deshabilitado ──
+        const cerrado = !estaAbierto();
+        const plusDisabled = agotado || cerrado;
         const qtyActual = carrito[cat.name+'__'+item.name] ? carrito[cat.name+'__'+item.name].qty : 0;
         h += `
           <div class="item-card">
@@ -475,7 +530,7 @@
                 <div class="qty-controls">
                   <button class="qty-btn" onclick="cambiarQty('${cat.name}__${item.name}','${item.name}','${item.price}',-1)" ${agotado?'disabled':''}>−</button>
                   <span class="qty-num" id="qty-${itemKey}">${qtyActual}</span>
-                  <button class="qty-btn plus" onclick="cambiarQty('${cat.name}__${item.name}','${item.name}','${item.price}',1)" ${agotado?'disabled':''}>+</button>
+                  <button class="qty-btn plus" onclick="intentarAgregar('${cat.name}__${item.name}','${item.name}','${item.price}')" ${plusDisabled?'disabled':''}>+</button>
                 </div>
               </div>
             </div>
@@ -487,87 +542,109 @@
     el.innerHTML = h;
   }
 
+  // ── INTENTAR AGREGAR — verifica si está abierto primero ──
+  function intentarAgregar(key, nombre, precio) {
+    if (!estaAbierto()) {
+      mostrarToastCerrado();
+      return;
+    }
+    cambiarQty(key, nombre, precio, 1);
+  }
+
   // ── ADMIN ──
   function renderAdminEditor() {
     const el = document.getElementById('editor-content');
-    const hoy = data.pedidosHoy||0;
-    const sem = data.pedidosSemana||0;
-    let h = `
-      <div class="admin-card">
-        <b>📊 Estadísticas</b>
-        <div class="stat-grid" style="margin-top:12px;">
-          <div class="stat-box"><div class="stat-num">${hoy}</div><div class="stat-label">Pedidos hoy</div></div>
-          <div class="stat-box"><div class="stat-num">${sem}</div><div class="stat-label">Esta semana</div></div>
-        </div>
-        <button class="btn-reset-stats" onclick="resetStats()">Reiniciar contadores</button>
-      </div>
-      <div class="admin-card">
-        <b>Nombre del Negocio:</b>
-        <input id="brandInput" value="${data.brand}">
-        <b>Número de Celular:</b>
-        <input id="phoneInput" value="${data.phone||'3127447977'}">
-        <b>Eslogan:</b>
-        <input id="sloganInput" value="${data.slogan||''}">
-        <b>Nequi:</b>
-        <input id="nequiInput" value="${data.nequi||''}">
-        <b>Bancolombia:</b>
-        <input id="bancoInput" value="${data.bancolombia||''}">
-        <b>🕐 Horario (solo vie–dom):</b>
-        <div class="horario-row">
-          <div><small>Hora apertura (0–23)</small><input id="horaAbreInput" type="number" min="0" max="23" value="${data.horaAbre!==undefined?data.horaAbre:18}"></div>
-          <div><small>Hora cierre (0–23)</small><input id="horaCierraInput" type="number" min="0" max="23" value="${data.horaCierra||23}"></div>
-        </div>
-        <div class="switch-row">
-          <div>
-            <div class="switch-label">🌙 Cerrado temporalmente</div>
-            <small style="margin:0;">Bloquea el carrito y muestra un aviso</small>
-          </div>
-          <label class="toggle-switch">
-            <input type="checkbox" id="cerradoToggle" ${data.cerradoManual?'checked':''} onchange="toggleCerrado(this.checked)">
-            <span class="toggle-slider"></span>
-          </label>
-        </div>
-        <input id="mensajeCerradoInput" placeholder="Mensaje de cierre (ej: Volvemos el viernes 🙏)" value="${data.mensajeCerrado||''}">
-      </div>`;
+    // Cargar stats reales desde Firebase
+    cargarEstadisticas(stats => {
+      const hoy = stats.hoy || 0;
+      const sem = stats.semana || 0;
+      const pedidosHoy = stats.pedidosHoy || [];
 
-    data.cats.forEach((cat, ci) => {
-      h += `
+      let histHtml = '';
+      if (pedidosHoy.length) {
+        const recientes = [...pedidosHoy].reverse().slice(0, 10);
+        histHtml = recientes.map(p =>
+          `<div class="pedido-hist">🛒 ${p.resumen}<div class="pedido-hist-time">🕐 ${p.hora} · Total: $${(p.total||0).toLocaleString('es-CO')}</div></div>`
+        ).join('');
+      } else {
+        histHtml = '<div style="font-size:12px;color:#aaa;text-align:center;padding:10px 0;">Aún no hay pedidos hoy</div>';
+      }
+
+      let h = `
         <div class="admin-card">
-          <div style="display:flex;gap:10px;">
-            <input style="font-weight:bold;color:var(--primary)" value="${cat.name}" onchange="data.cats[${ci}].name=this.value">
-            <button class="btn btn-del" onclick="deleteCat(${ci})">Eliminar Cat</button>
-          </div>`;
-      (cat.items||[]).forEach((item, ii) => {
-        const b = item.badge||'';
-        h += `
-          <div class="ed-item-block">
-            <input placeholder="Nombre Plato" value="${item.name}" onchange="updateItem(${ci},${ii},'name',this.value)">
-            <input placeholder="Precio" value="${item.price}" onchange="updateItem(${ci},${ii},'price',this.value)">
-            <input placeholder="Descripción / ingredientes" value="${item.desc}" onchange="updateItem(${ci},${ii},'desc',this.value)">
-            <input placeholder="URL de foto (opcional)" value="${item.img||''}" onchange="updateItem(${ci},${ii},'img',this.value)">
-            <div style="margin:6px 0 2px;font-size:12px;font-weight:600;color:#555;">Etiqueta:</div>
-            <div class="badge-selector">
-              <button type="button" class="badge-opt ${b==='hot'?'active-hot':''}" onclick="setBadge(${ci},${ii},'hot')">🔥 El más pedido</button>
-              <button type="button" class="badge-opt ${b==='new'?'active-new':''}" onclick="setBadge(${ci},${ii},'new')">✨ Nuevo</button>
-              <button type="button" class="badge-opt ${b==='sold'?'active-sold':''}" onclick="setBadge(${ci},${ii},'sold')">❌ Agotado</button>
-              <button type="button" class="badge-opt" onclick="setBadge(${ci},${ii},'')" style="${b===''?'border-color:#aaa;background:#f0f0f0;color:#555':''}">Sin etiqueta</button>
+          <b>📊 Estadísticas en tiempo real</b>
+          <div class="stat-grid" style="margin-top:12px;">
+            <div class="stat-box"><div class="stat-num">${hoy}</div><div class="stat-label">Pedidos hoy</div></div>
+            <div class="stat-box"><div class="stat-num">${sem}</div><div class="stat-label">Esta semana</div></div>
+          </div>
+          <div style="margin-top:12px;"><b style="font-size:13px;">📋 Últimos pedidos de hoy</b>${histHtml}</div>
+          <button class="btn-reset-stats" onclick="resetStats()">Reiniciar contadores</button>
+        </div>
+        <div class="admin-card">
+          <b>Nombre del Negocio:</b>
+          <input id="brandInput" value="${data.brand}">
+          <b>Número de Celular:</b>
+          <input id="phoneInput" value="${data.phone||'3127447977'}">
+          <b>Eslogan:</b>
+          <input id="sloganInput" value="${data.slogan||''}">
+          <b>Nequi:</b>
+          <input id="nequiInput" value="${data.nequi||''}">
+          <b>Bancolombia:</b>
+          <input id="bancoInput" value="${data.bancolombia||''}">
+          <b>🕐 Horario (solo vie–dom):</b>
+          <div class="horario-row">
+            <div><small>Hora apertura (0–23)</small><input id="horaAbreInput" type="number" min="0" max="23" value="${data.horaAbre!==undefined?data.horaAbre:18}"></div>
+            <div><small>Hora cierre (0–23)</small><input id="horaCierraInput" type="number" min="0" max="23" value="${data.horaCierra||23}"></div>
+          </div>
+          <div class="switch-row">
+            <div>
+              <div class="switch-label">🌙 Cerrado temporalmente</div>
+              <small style="margin:0;">Bloquea el carrito y muestra un aviso</small>
             </div>
-            <button class="btn btn-del" style="width:100%;margin-top:8px;" onclick="deleteItem(${ci},${ii})">Quitar Plato</button>
-          </div>`;
+            <label class="toggle-switch">
+              <input type="checkbox" id="cerradoToggle" ${data.cerradoManual?'checked':''} onchange="toggleCerrado(this.checked)">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <input id="mensajeCerradoInput" placeholder="Mensaje de cierre (ej: Volvemos el viernes 🙏)" value="${data.mensajeCerrado||''}">
+        </div>`;
+
+      data.cats.forEach((cat, ci) => {
+        h += `
+          <div class="admin-card">
+            <div style="display:flex;gap:10px;">
+              <input style="font-weight:bold;color:var(--primary)" value="${cat.name}" onchange="data.cats[${ci}].name=this.value">
+              <button class="btn btn-del" onclick="deleteCat(${ci})">Eliminar Cat</button>
+            </div>`;
+        (cat.items||[]).forEach((item, ii) => {
+          const b = item.badge||'';
+          h += `
+            <div class="ed-item-block">
+              <input placeholder="Nombre Plato" value="${item.name}" onchange="updateItem(${ci},${ii},'name',this.value)">
+              <input placeholder="Precio" value="${item.price}" onchange="updateItem(${ci},${ii},'price',this.value)">
+              <input placeholder="Descripción / ingredientes" value="${item.desc}" onchange="updateItem(${ci},${ii},'desc',this.value)">
+              <input placeholder="URL de foto (opcional)" value="${item.img||''}" onchange="updateItem(${ci},${ii},'img',this.value)">
+              <div style="margin:6px 0 2px;font-size:12px;font-weight:600;color:#555;">Etiqueta:</div>
+              <div class="badge-selector">
+                <button type="button" class="badge-opt ${b==='hot'?'active-hot':''}" onclick="setBadge(${ci},${ii},'hot')">🔥 El más pedido</button>
+                <button type="button" class="badge-opt ${b==='new'?'active-new':''}" onclick="setBadge(${ci},${ii},'new')">✨ Nuevo</button>
+                <button type="button" class="badge-opt ${b==='sold'?'active-sold':''}" onclick="setBadge(${ci},${ii},'sold')">❌ Agotado</button>
+                <button type="button" class="badge-opt" onclick="setBadge(${ci},${ii},'')" style="${b===''?'border-color:#aaa;background:#f0f0f0;color:#555':''}">Sin etiqueta</button>
+              </div>
+              <button class="btn btn-del" style="width:100%;margin-top:8px;" onclick="deleteItem(${ci},${ii})">Quitar Plato</button>
+            </div>`;
+        });
+        h += `<button class="btn btn-add" onclick="addItem(${ci})">+ Añadir Plato</button></div>`;
       });
-      h += `<button class="btn btn-add" onclick="addItem(${ci})">+ Añadir Plato</button></div>`;
+
+      el.innerHTML = h;
     });
-    el.innerHTML = h;
   }
 
-  function toggleCerrado(val) { data.cerradoManual = val; }
-
-  function resetStats() {
-    if (!confirm('¿Reiniciar los contadores de pedidos?')) return;
-    data.pedidosHoy = 0; data.pedidosSemana = 0;
-    db.ref('menuData/pedidosHoy').set(0);
-    db.ref('menuData/pedidosSemana').set(0);
-    renderAdminEditor();
+  function toggleCerrado(val) {
+    data.cerradoManual = val;
+    // Actualizar en tiempo real para que renderItems() refleje el cambio
+    renderItems();
   }
 
   function setBadge(ci, ii, val) { data.cats[ci].items[ii].badge = val; renderAdminEditor(); }
@@ -612,12 +689,12 @@
     if (!items.length||!zonaSeleccionada) return;
     const notas = (document.getElementById('pedido-notas')?.value||'').trim();
     const bar = document.getElementById('cart-bar');
+    const tp = items.reduce((s,i) => s+(parseInt((i.precio||'').replace(/[^0-9]/g,''))||0)*i.qty, 0);
 
     function construirMensaje(ubicacion) {
       let msg = `🍔 *Pedido - ${data.brand}*\n\n`;
       items.forEach(i => { msg += `• ${i.nombre} x${i.qty} — ${i.precio}\n`; });
       if (notas) msg += `\n📝 *Nota:* ${notas}`;
-      const tp = items.reduce((s,i) => s+(parseInt((i.precio||'').replace(/[^0-9]/g,''))||0)*i.qty, 0);
       msg += `\n\n🛒 *Subtotal: $${tp.toLocaleString('es-CO')}*`;
       if (zonaSeleccionada.presencial) {
         msg += `\n🏠 *Pedido presencial*\n💰 *Total: $${tp.toLocaleString('es-CO')}*`;
@@ -629,11 +706,10 @@
       }
       const phone = (data.phone||'3127447977').replace(/\D/g,'');
       window.open(`https://wa.me/57${phone}?text=${encodeURIComponent(msg)}`, '_blank');
-      const nuevosHoy = (data.pedidosHoy||0)+1;
-      const nuevosSem = (data.pedidosSemana||0)+1;
-      data.pedidosHoy = nuevosHoy; data.pedidosSemana = nuevosSem;
-      db.ref('menuData/pedidosHoy').set(nuevosHoy);
-      db.ref('menuData/pedidosSemana').set(nuevosSem);
+
+      // ── REGISTRAR ESTADÍSTICA REAL ──
+      registrarPedidoStats(items, tp);
+
       zonaSeleccionada=null; carrito={};
       if (document.getElementById('pedido-notas')) document.getElementById('pedido-notas').value='';
       document.getElementById('notes-area').classList.remove('open');
