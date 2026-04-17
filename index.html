@@ -255,19 +255,19 @@
   };
   let ratings = {};
 
-  // ── Si no hay internet al abrir, mostrar caché de inmediato ──
+  // ── Si no hay internet → mostrar PDF directo ──
   let modoOffline = false;
   if (!navigator.onLine) {
+    modoOffline = true;
     setBanner(true);
-    const cached = leerMenuCache();
-    if (cached) {
-      data = cached;
-      modoOffline = true;
-      setTimeout(() => renderClientMenu(), 0);
-    } else {
-      // Sin caché y sin internet → abrir el PDF directamente
-      window.location.href = './menu_antojo_express.pdf';
-    }
+    document.getElementById('menu-content').innerHTML = `
+      <object data="./menu_antojo_express.pdf" type="application/pdf"
+        style="width:100%;height:88vh;border:none;border-radius:12px;">
+        <a href="./menu_antojo_express.pdf"
+          style="display:block;text-align:center;background:#D85A30;color:white;padding:16px;border-radius:14px;font-weight:700;font-size:15px;text-decoration:none;margin-top:20px;">
+          📄 Abrir menú en PDF
+        </a>
+      </object>`;
   }
 
   // ── ID DE SESIÓN ──
@@ -898,12 +898,37 @@
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      // Usamos ./ para que GitHub Pages entienda bien la ruta
       navigator.serviceWorker.register('./sw.js')
         .then(reg => console.log('PWA lista 🚀'))
         .catch(err => console.log('Error PWA: ', err));
     });
   }
+
+  // ── PRE-CACHEAR EL PDF apenas haya internet ──
+  // Usa la Cache API directamente desde la página, sin depender del SW
+  function cachearPDF() {
+    if (!navigator.onLine) return;
+    const PDF_URL = './menu_antojo_express.pdf';
+    const CACHE   = 'antojo-express-v2';
+    if ('caches' in window) {
+      caches.open(CACHE).then(cache => {
+        cache.match(PDF_URL).then(cached => {
+          if (!cached) {
+            fetch(PDF_URL).then(res => {
+              if (res && res.status === 200) {
+                cache.put(PDF_URL, res);
+                console.log('📄 PDF cacheado para offline');
+              }
+            }).catch(() => {});
+          }
+        });
+      });
+    }
+  }
+
+  // Cachear al cargar si hay internet, y también cuando se recupere la conexión
+  window.addEventListener('load',   cachearPDF);
+  window.addEventListener('online', cachearPDF);
 </script>
 
 </body>
