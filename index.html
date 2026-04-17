@@ -3,8 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title> Menú Digital — Antojo Express</title>
+  <title>Menú Digital — Antojo Express</title>
   <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#D85A30">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/1046/1046784.png">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
   <style>
     :root { --primary: #D85A30; --bg: #f8f9fa; --text: #2d3436; --white: #ffffff; }
@@ -123,6 +127,10 @@
     /* Historial de pedidos en admin */
     .pedido-hist { background: #f8f9fa; border-radius: 10px; padding: 10px 14px; margin-top: 8px; font-size: 12px; border-left: 3px solid var(--primary); }
     .pedido-hist-time { font-size: 10px; color: #888; margin-top: 3px; }
+
+    /* ── Banner offline ── */
+    #offline-banner { display:none; background:#2d3436; color:white; text-align:center; padding:10px 16px; font-size:12px; font-weight:700; border-radius:12px; margin-bottom:14px; letter-spacing:0.3px; }
+    #offline-banner.show { display:flex; align-items:center; justify-content:center; gap:6px; }
   </style>
 </head>
 <body>
@@ -130,6 +138,7 @@
 <div id="closed-toast">⛔ Estamos cerrados ahora mismo</div>
 
 <div class="container" id="client-view">
+  <div id="offline-banner">📵 Sin internet · Mostrando menú guardado</div>
   <div id="menu-content">Cargando delicias...</div>
 </div>
 
@@ -176,6 +185,26 @@
   </div>
 </div>
 
+<!-- ── MODAL PEDIDO PRESENCIAL ── -->
+<div id="presencial-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.65); z-index:2500; align-items:center; justify-content:center; padding:20px;">
+  <div style="background:white; width:100%; max-width:400px; border-radius:24px; overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+    <div style="background:#05c46b; padding:22px 20px 18px; text-align:center;">
+      <div style="font-size:36px; margin-bottom:6px;">🏠</div>
+      <div style="font-size:18px; font-weight:800; color:white;">Pedido en el local</div>
+      <div style="font-size:12px; color:rgba(255,255,255,0.85); margin-top:3px;">Anota este pedido en tu cuaderno</div>
+    </div>
+    <div style="padding:20px;">
+      <div id="presencial-items" style="margin-bottom:16px;"></div>
+      <div id="presencial-nota" style="display:none; background:#fff8e6; border-radius:10px; padding:10px 14px; margin-bottom:16px; font-size:13px; color:#636e72; border-left:3px solid #ffa801;"></div>
+      <div style="background:#f8f9fa; border-radius:12px; padding:14px 16px; display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-size:14px; font-weight:700; color:#2d3436;">TOTAL</span>
+        <span id="presencial-total" style="font-size:20px; font-weight:800; color:#D85A30;"></span>
+      </div>
+      <button onclick="cerrarPresencial()" style="width:100%; margin-top:14px; background:#05c46b; color:white; border:none; border-radius:14px; padding:15px; font-size:15px; font-weight:700; cursor:pointer; font-family:'Poppins',sans-serif;">✅ Listo, anotado</button>
+    </div>
+  </div>
+</div>
+
 <div id="admin-panel">
   <button class="btn btn-close" onclick="closeAdmin()">← VOLVER AL MENÚ</button>
   <h2 style="margin-bottom:20px; text-align:center;">PANEL DE CONTROL</h2>
@@ -187,6 +216,26 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <script>
+  // ══════════════════════════════════════════
+  // CACHÉ OFFLINE — guarda el menú en localStorage
+  // para que funcione sin datos la próxima vez
+  // ══════════════════════════════════════════
+  const MENU_CACHE_KEY = 'menuData_cache_v1';
+
+  function guardarMenuCache(d) {
+    try { localStorage.setItem(MENU_CACHE_KEY, JSON.stringify(d)); } catch(e) {}
+  }
+  function leerMenuCache() {
+    try { return JSON.parse(localStorage.getItem(MENU_CACHE_KEY) || 'null'); } catch(e) { return null; }
+  }
+  function setBanner(visible) {
+    const b = document.getElementById('offline-banner');
+    if (b) b.className = visible ? 'show' : '';
+  }
+  // Reaccionar si el usuario pierde o recupera internet durante la sesión
+  window.addEventListener('online',  () => setBanner(false));
+  window.addEventListener('offline', () => setBanner(true));
+
   const firebaseConfig = {
     apiKey: "AIzaSyByKcM9Z2_PwW0Y9xdbFIfBI6AMviiI4uQ",
     authDomain: "mi-menu-2f5bd.firebaseapp.com",
@@ -203,6 +252,25 @@
     horaAbre:18, horaCierra:23, cerradoManual:false, mensajeCerrado:"",
     cats:[]
   };
+  let ratings = {};
+
+  // ── Si no hay internet al abrir, mostrar caché de inmediato ──
+  if (!navigator.onLine) {
+    setBanner(true);
+    const cached = leerMenuCache();
+    if (cached) {
+      data = cached;
+      // Renderizar con datos del caché (calificaciones en blanco, el resto completo)
+      setTimeout(() => renderClientMenu(), 0);
+    } else {
+      document.getElementById('menu-content').innerHTML = `
+        <div style="text-align:center;padding:70px 20px 40px;color:#636e72;">
+          <div style="font-size:56px;margin-bottom:14px;">📵</div>
+          <div style="font-size:17px;font-weight:800;color:#2d3436;margin-bottom:8px;">Sin conexión a internet</div>
+          <div style="font-size:13px;line-height:1.6;">Abre el menú <b>una vez con internet</b><br>y la próxima vez lo verás sin datos. 🙌</div>
+        </div>`;
+    }
+  }
 
   // ── ID DE SESIÓN ──
   function getClientId() {
@@ -216,8 +284,6 @@
   function cargarMisVotos() { try { misVotos = JSON.parse(localStorage.getItem('menuMisVotos') || '{}'); } catch(e) { misVotos = {}; } }
   function guardarMisVotos() { localStorage.setItem('menuMisVotos', JSON.stringify(misVotos)); }
   cargarMisVotos();
-
-  let ratings = {};
 
   // ── FUNCIÓN CENTRAL: ¿está abierto ahora? ──
   function estaAbierto() {
@@ -255,6 +321,8 @@
         if (!c.items) c.items = [];
         c.items.forEach(i => { if (!i.badge) i.badge=''; if (!i.img) i.img=''; });
       });
+      guardarMenuCache(data); // ← Guardar siempre que haya datos frescos
+      setBanner(false);
     }
     loadRatings();
   });
@@ -687,19 +755,52 @@
 
   function enviarPedido() {
     const items = Object.values(carrito);
-    if (!items.length||!zonaSeleccionada) return;
-    const notas = (document.getElementById('pedido-notas')?.value||'').trim();
-    const bar = document.getElementById('cart-bar');
-    const tp = items.reduce((s,i) => s+(parseInt((i.precio||'').replace(/[^0-9]/g,''))||0)*i.qty, 0);
+    if (!items.length || !zonaSeleccionada) return;
+    const notas = (document.getElementById('pedido-notas')?.value || '').trim();
+    const tp = items.reduce((s,i) => s + (parseInt((i.precio||'').replace(/[^0-9]/g,''))||0)*i.qty, 0);
 
+    // ── PRESENCIAL: mostrar resumen en pantalla, sin WhatsApp ──
+    if (zonaSeleccionada.presencial) {
+      let itemsHtml = '';
+      items.forEach(i => {
+        const subtotal = (parseInt((i.precio||'').replace(/[^0-9]/g,''))||0) * i.qty;
+        itemsHtml += `
+          <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #f1f2f6;">
+            <div>
+              <div style="font-size:14px; font-weight:700; color:#1e272e;">${i.nombre}</div>
+              <div style="font-size:12px; color:#888;">${i.precio} × ${i.qty}</div>
+            </div>
+            <div style="font-size:14px; font-weight:800; color:#D85A30;">$${subtotal.toLocaleString('es-CO')}</div>
+          </div>`;
+      });
+      document.getElementById('presencial-items').innerHTML = itemsHtml;
+      document.getElementById('presencial-total').textContent = '$' + tp.toLocaleString('es-CO');
+      const notaEl = document.getElementById('presencial-nota');
+      if (notas) {
+        notaEl.innerHTML = `📝 <b>Nota:</b> ${notas}`;
+        notaEl.style.display = 'block';
+      } else {
+        notaEl.style.display = 'none';
+      }
+      document.getElementById('presencial-modal').style.display = 'flex';
+
+      registrarPedidoStats(items, tp);
+      zonaSeleccionada = null; carrito = {};
+      if (document.getElementById('pedido-notas')) document.getElementById('pedido-notas').value = '';
+      document.getElementById('notes-area').classList.remove('open');
+      document.getElementById('notes-toggle').textContent = '✏️ Agregar nota al pedido';
+      actualizarCarrito();
+      return;
+    }
+
+    // ── DOMICILIO: enviar por WhatsApp ──
+    const bar = document.getElementById('cart-bar');
     function construirMensaje(ubicacion) {
       let msg = `🍔 *Pedido - ${data.brand}*\n\n`;
       items.forEach(i => { msg += `• ${i.nombre} x${i.qty} — ${i.precio}\n`; });
       if (notas) msg += `\n📝 *Nota:* ${notas}`;
       msg += `\n\n🛒 *Subtotal: $${tp.toLocaleString('es-CO')}*`;
-      if (zonaSeleccionada.presencial) {
-        msg += `\n🏠 *Pedido presencial*\n💰 *Total: $${tp.toLocaleString('es-CO')}*`;
-      } else if (zonaSeleccionada.minDom===0) {
+      if (zonaSeleccionada.minDom === 0) {
         msg += `\n🛵 *Domicilio (${zonaSeleccionada.nombre}): ¡GRATIS! 🎉*\n💰 *Total: $${tp.toLocaleString('es-CO')}*\n\n📍 *Ubicación:*\n${ubicacion}`;
       } else {
         msg += `\n🛵 *Domicilio (${zonaSeleccionada.nombre}): $${zonaSeleccionada.minDom.toLocaleString('es-CO')} – $${zonaSeleccionada.maxDom.toLocaleString('es-CO')}*`;
@@ -707,18 +808,14 @@
       }
       const phone = (data.phone||'3127447977').replace(/\D/g,'');
       window.open(`https://wa.me/57${phone}?text=${encodeURIComponent(msg)}`, '_blank');
-
-      // ── REGISTRAR ESTADÍSTICA REAL ──
       registrarPedidoStats(items, tp);
-
-      zonaSeleccionada=null; carrito={};
-      if (document.getElementById('pedido-notas')) document.getElementById('pedido-notas').value='';
+      zonaSeleccionada = null; carrito = {};
+      if (document.getElementById('pedido-notas')) document.getElementById('pedido-notas').value = '';
       document.getElementById('notes-area').classList.remove('open');
-      document.getElementById('notes-toggle').textContent='✏️ Agregar nota al pedido';
+      document.getElementById('notes-toggle').textContent = '✏️ Agregar nota al pedido';
       actualizarCarrito();
     }
 
-    if (zonaSeleccionada.presencial) { construirMensaje(''); return; }
     bar.querySelector('.cart-bar-left').textContent = '📍 Obteniendo ubicación...';
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -727,6 +824,10 @@
         {timeout:8000}
       );
     } else { construirMensaje('_(Ubicación no disponible)_'); }
+  }
+
+  function cerrarPresencial() {
+    document.getElementById('presencial-modal').style.display = 'none';
   }
 
   function copiarTexto(texto, btn) {
@@ -786,5 +887,6 @@
     });
   }
 </script>
+
 </body>
 </html>
