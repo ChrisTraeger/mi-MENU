@@ -1,9 +1,10 @@
 // ── VERSIÓN DEL CACHÉ — cambia este número para forzar actualización ──
-const CACHE_NAME = 'antojo-express-v1';
+const CACHE_NAME = 'antojo-express-v2';
 
 // Recursos que se guardan en el primer install (shell de la app)
 const PRECACHE = [
   './index.html',
+  './menu_antojo_express.pdf',   // ← PDF del menú para modo offline
   'https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap',
   'https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js',
   'https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js'
@@ -38,8 +39,8 @@ self.addEventListener('fetch', (e) => {
   // No interceptar Firebase Realtime Database (tiene offline propio)
   if (url.includes('firebaseio.com') || url.includes('identitytoolkit')) return;
 
-  // Imágenes: Cache first, luego red
-  if (e.request.destination === 'image') {
+  // PDF e imágenes: Cache first, luego red
+  if (e.request.destination === 'image' || url.endsWith('.pdf')) {
     e.respondWith(
       caches.match(e.request).then(cached => {
         if (cached) return cached;
