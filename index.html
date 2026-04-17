@@ -779,7 +779,8 @@
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('data:text/javascript,self.addEventListener("fetch", ()=>false);')
+      // Usamos ./ para que GitHub Pages entienda bien la ruta
+      navigator.serviceWorker.register('./sw.js')
         .then(reg => console.log('PWA lista 🚀'))
         .catch(err => console.log('Error PWA: ', err));
     });
