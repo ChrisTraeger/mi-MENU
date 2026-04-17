@@ -8,647 +8,540 @@
   <style>
     :root { --primary: #D85A30; --bg: #f8f9fa; --text: #2d3436; --white: #ffffff; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    
-    body { 
-      font-family: 'Poppins', sans-serif; 
-      background: var(--bg); 
-      color: var(--text); 
-      overflow-y: auto; 
-      min-height: 100vh;
-    }
-    
-    .container { max-width: 600px; margin: 0 auto; padding: 20px; padding-bottom: 60px; }
+    body { font-family: 'Poppins', sans-serif; background: var(--bg); color: var(--text); overflow-y: auto; min-height: 100vh; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; padding-bottom: 100px; }
 
-    /* VISTA CLIENTE */
-    .brand { 
-      text-align: center; 
-      padding: 40px 20px; 
-      background: var(--white); 
-      border-radius: 0 0 30px 30px; 
-      box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
-      margin: -20px -20px 30px -20px; 
-    }
-    .brand-logos { 
-      font-size: 65px;
-      cursor: pointer; 
-      user-select: none; 
-      -webkit-tap-highlight-color: transparent; 
-      margin-bottom: 5px; 
-      display: block;
-      letter-spacing: 5px;
-    }
+    /* BRAND */
+    .brand { text-align: center; padding: 40px 20px; background: var(--white); border-radius: 0 0 30px 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin: -20px -20px 30px -20px; }
+    .brand-logos { font-size: 65px; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; margin-bottom: 5px; display: block; letter-spacing: 5px; }
     .brand-name { font-size: 32px; font-weight: 800; color: var(--primary); text-transform: uppercase; line-height: 1.1; }
     @keyframes pulso { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(1.3)} }
-    
+
     .cat-title { font-size: 18px; font-weight: 700; margin: 35px 0 15px; padding-left: 10px; border-left: 5px solid var(--primary); color: #2d3436; }
-    .item-card { background: var(--white); border-radius: 18px; padding: 18px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 15px; border: 1px solid rgba(0,0,0,0.02); }
-    .item-info { flex: 1; padding-right: 15px; }
-    .item-name { font-size: 16px; font-weight: 700; color: #1e272e; }
-    .item-desc { font-size: 13px; color: #636e72; line-height: 1.4; margin-top: 2px; }
-    .item-price { font-size: 16px; font-weight: 800; color: var(--primary); background: #fff5f2; padding: 6px 14px; border-radius: 12px; white-space: nowrap; }
 
-    /* TARJETA DE CONTACTO */
-    .contact-card {
-      background: #1a1a1a;
-      border-radius: 20px;
-      overflow: hidden;
-      margin-bottom: 30px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.12);
-    }
-    .contact-header {
-      background: #111;
-      padding: 20px;
-      text-align: center;
-      border-bottom: 1px solid #2a2a2a;
-    }
-    .contact-business-name {
-      font-size: 22px;
-      font-weight: 800;
-      color: #EF9F27;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-    }
-    .contact-slogan {
-      font-size: 12px;
-      color: #888;
-      margin-top: 4px;
-      font-style: italic;
-    }
-    .contact-body {
-      padding: 16px 20px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: nowrap;
-    }
-    .contact-icon-circle {
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
-      background: rgba(239,159,39,0.15);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-    .contact-label {
-      font-size: 11px;
-      color: #888;
-      margin-bottom: 2px;
-    }
-    .contact-number {
-      font-size: 15px;
-      font-weight: 700;
-      color: #EF9F27;
-      letter-spacing: 1px;
-      white-space: nowrap;
-    }
-    .contact-call-btn {
-      background: #EF9F27;
-      color: #1a1a1a;
-      font-size: 11px;
-      font-weight: 700;
-      padding: 8px 10px;
-      border-radius: 12px;
-      text-decoration: none;
-      border: none;
-      cursor: pointer;
-      font-family: 'Poppins', sans-serif;
-      white-space: nowrap;
-    }
-    .contact-call-btn:hover { background: #d48a1a; }
-    .contact-buttons {
-      display: flex;
-      gap: 8px;
-      margin-left: auto;
-      align-items: center;
-      flex-shrink: 0;
-    }
-    .contact-wa-btn {
-      background: #25D366;
-      color: #fff;
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
-      text-decoration: none;
-      border: none;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-    .contact-wa-btn:hover { background: #1ebe5d; }
+    /* ITEM CARD */
+    .item-card { background: var(--white); border-radius: 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 15px; border: 1px solid rgba(0,0,0,0.02); overflow: hidden; }
+    .item-img { width: 100%; height: 170px; object-fit: cover; display: block; }
+    .item-body { padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+    .item-info { flex: 1; }
+    .item-name { font-size: 15px; font-weight: 700; color: #1e272e; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .item-desc { font-size: 12px; color: #636e72; line-height: 1.4; margin-top: 3px; }
+    .item-price { font-size: 15px; font-weight: 800; color: var(--primary); background: #fff5f2; padding: 5px 12px; border-radius: 10px; white-space: nowrap; }
 
-    /* CARRITO */
-    .item-card { background: var(--white); border-radius: 18px; padding: 18px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 15px; border: 1px solid rgba(0,0,0,0.02); gap: 10px; }
-    .qty-controls { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+    /* BADGES */
+    .badge { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 20px; white-space: nowrap; }
+    .badge-hot { background: #fff0eb; color: #D85A30; }
+    .badge-new { background: #e8f8f2; color: #05c46b; }
+    .badge-sold { background: #f0f0f0; color: #888; }
+
+    /* QTY */
+    .qty-controls { display: flex; align-items: center; gap: 8px; flex-shrink: 0; flex-direction: column; }
     .qty-btn { width: 30px; height: 30px; border-radius: 50%; border: none; font-size: 18px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; background: #f0f0f0; color: #333; }
     .qty-btn.plus { background: var(--primary); color: white; }
+    .qty-btn:disabled { background: #e0e0e0; color: #aaa; cursor: not-allowed; }
     .qty-num { font-size: 15px; font-weight: 700; min-width: 16px; text-align: center; }
-    .cart-bar {
-      position: fixed; bottom: 0; left: 0; right: 0;
-      background: #25D366; color: white;
-      padding: 14px 20px; display: none;
-      justify-content: space-between; align-items: center;
-      z-index: 999; cursor: pointer;
-      max-width: 600px; margin: 0 auto;
-      border-radius: 20px 20px 0 0;
-      box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
-    }
+
+    /* CARRITO BAR */
+    .cart-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #25D366; color: white; padding: 14px 20px; display: none; flex-direction: column; align-items: stretch; z-index: 999; cursor: pointer; max-width: 600px; margin: 0 auto; border-radius: 20px 20px 0 0; box-shadow: 0 -4px 20px rgba(0,0,0,0.15); }
     .cart-bar.visible { display: flex; }
+    .cart-bar-row { display: flex; justify-content: space-between; align-items: center; }
     .cart-bar-left { font-size: 14px; font-weight: 700; }
     .cart-bar-right { font-size: 13px; font-weight: 600; background: white; color: #25D366; padding: 6px 16px; border-radius: 20px; }
+    .cart-notes-area { margin-top: 10px; display: none; }
+    .cart-notes-area.open { display: block; }
+    .cart-notes-area textarea { width: 100%; padding: 10px; border-radius: 12px; border: none; font-family: 'Poppins', sans-serif; font-size: 13px; color: #1e272e; resize: none; outline: none; }
+    .cart-notes-toggle { font-size: 12px; color: rgba(255,255,255,0.85); text-align: center; margin-top: 6px; cursor: pointer; text-decoration: underline; }
 
-    /* PANEL ADMINISTRADOR (OCULTO) */
-    #admin-panel { 
-      display: none; 
-      background: #1e272e; 
-      color: white; 
-      position: fixed; 
-      top: 0; left: 0; 
-      width: 100%; height: 100%; 
-      z-index: 1000; 
-      padding: 20px; 
-      overflow-y: scroll; 
-    }
+    /* TARJETA DE CONTACTO */
+    .contact-card { background: #1a1a1a; border-radius: 20px; overflow: hidden; margin-bottom: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.12); }
+    .contact-header { background: #111; padding: 20px; text-align: center; border-bottom: 1px solid #2a2a2a; }
+    .contact-business-name { font-size: 22px; font-weight: 800; color: #EF9F27; letter-spacing: 2px; text-transform: uppercase; }
+    .contact-slogan { font-size: 12px; color: #888; margin-top: 4px; font-style: italic; }
+    .contact-body { padding: 16px 20px; display: flex; align-items: center; gap: 10px; flex-wrap: nowrap; }
+    .contact-icon-circle { width: 42px; height: 42px; border-radius: 50%; background: rgba(239,159,39,0.15); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .contact-label { font-size: 11px; color: #888; margin-bottom: 2px; }
+    .contact-number { font-size: 15px; font-weight: 700; color: #EF9F27; letter-spacing: 1px; white-space: nowrap; }
+    .contact-call-btn { background: #EF9F27; color: #1a1a1a; font-size: 11px; font-weight: 700; padding: 8px 10px; border-radius: 12px; text-decoration: none; border: none; cursor: pointer; font-family: 'Poppins', sans-serif; white-space: nowrap; }
+    .contact-call-btn:hover { background: #d48a1a; }
+    .contact-buttons { display: flex; gap: 8px; margin-left: auto; align-items: center; flex-shrink: 0; }
+    .contact-wa-btn { background: #25D366; color: #fff; width: 42px; height: 42px; border-radius: 50%; text-decoration: none; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .contact-wa-btn:hover { background: #1ebe5d; }
+
+    /* MODAL ZONAS */
+    #zona-modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:2000; align-items:flex-end; justify-content:center; }
+
+    /* PANEL ADMIN */
+    #admin-panel { display: none; background: #1e272e; color: white; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1000; padding: 20px; overflow-y: scroll; }
     .admin-card { background: white; color: #333; padding: 20px; border-radius: 20px; margin-bottom: 20px; }
     .ed-item-block { background: #f1f2f6; padding: 15px; border-radius: 12px; margin-top: 10px; border: 1px solid #dfe4ea; }
-    
-    input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ccc; border-radius: 10px; font-family: inherit; font-size: 14px; }
-    .btn { cursor: pointer; border: none; font-weight: 600; border-radius: 12px; padding: 12px; width: 100%; margin-top: 10px; }
+    .badge-selector { display: flex; gap: 8px; margin: 8px 0; flex-wrap: wrap; }
+    .badge-opt { padding: 5px 12px; border-radius: 20px; border: 2px solid #ddd; font-size: 12px; font-weight: 600; cursor: pointer; background: white; font-family: 'Poppins', sans-serif; }
+    .badge-opt.active-hot { border-color: #D85A30; background: #fff0eb; color: #D85A30; }
+    .badge-opt.active-new { border-color: #05c46b; background: #e8f8f2; color: #05c46b; }
+    .badge-opt.active-sold { border-color: #888; background: #f0f0f0; color: #888; }
+    input, select { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ccc; border-radius: 10px; font-family: inherit; font-size: 14px; }
+    .btn { cursor: pointer; border: none; font-weight: 600; border-radius: 12px; padding: 12px; width: 100%; margin-top: 10px; font-family: 'Poppins', sans-serif; }
     .btn-save { background: #05c46b; color: white; font-size: 18px; margin: 20px 0 40px 0; }
     .btn-add { background: #ffa801; color: white; }
     .btn-cat { background: #3c40c6; color: white; margin-top: 20px; }
     .btn-del { background: #ff5e57; color: white; font-size: 12px; width: auto; padding: 5px 15px; }
     .btn-close { background: #808e9b; color: white; margin-bottom: 20px; }
+    .horario-row { display: flex; gap: 10px; }
+    .horario-row input { flex: 1; }
+    small { font-size: 11px; color: #888; display: block; margin-top: -4px; margin-bottom: 6px; }
   </style>
 </head>
 <body>
 
-  <div class="container" id="client-view">
-    <div id="menu-content">Cargando delicias...</div>
-  </div>
+<div class="container" id="client-view">
+  <div id="menu-content">Cargando delicias...</div>
+</div>
 
-  <div class="cart-bar" id="cart-bar" onclick="abrirZonas()">
-    <div class="cart-bar-left">
-      🛒 <span id="cart-count">0</span> productos · <span id="cart-total">$0</span>
-    </div>
+<!-- CARRITO BAR -->
+<div class="cart-bar" id="cart-bar">
+  <div class="cart-bar-row" onclick="abrirZonas()">
+    <div class="cart-bar-left">🛒 <span id="cart-count">0</span> productos · <span id="cart-total">$0</span></div>
     <div class="cart-bar-right">Pedir por WhatsApp</div>
   </div>
+  <div class="cart-notes-toggle" id="notes-toggle" onclick="toggleNotas()">✏️ Agregar nota al pedido</div>
+  <div class="cart-notes-area" id="notes-area">
+    <textarea id="pedido-notas" rows="2" placeholder="Ej: sin cebolla, extra salsa, entregar en portería..."></textarea>
+  </div>
+</div>
 
-  <!-- MODAL ZONAS -->
-  <div id="zona-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:2000; align-items:flex-end; justify-content:center;">
-    <div style="background:white; width:100%; max-width:600px; border-radius:24px 24px 0 0; padding:28px 20px 40px;">
-      <div style="text-align:center; margin-bottom:20px;">
-        <div style="font-size:28px; margin-bottom:6px;">🛵</div>
-        <div style="font-size:18px; font-weight:800; color:#1e272e;">¿Cómo quieres tu pedido?</div>
-        <div style="font-size:13px; color:#888; margin-top:4px;">Selecciona tu zona o si vas a recoger en el local</div>
-      </div>
-      <div style="display:flex; flex-direction:column; gap:10px;">
-
-        <!-- PRESENCIAL / LOCAL -->
-        <button onclick="seleccionarZona('Presencial en el local', 0, 0, true)" style="background:#f0fff4; border:2px solid #05c46b; border-radius:14px; padding:16px; cursor:pointer; font-family:'Poppins',sans-serif; text-align:left;">
-          <div style="font-size:15px; font-weight:700; color:#05c46b;">🏠 Recoger en el local</div>
-          <div style="font-size:13px; color:#888; margin-top:2px;">Estoy aquí · Sin costo de domicilio</div>
-        </button>
-
-        <!-- BERASTEGUI GRATIS -->
-        <button onclick="seleccionarZona('Berasteguí', 0, 0, false)" style="background:#f0fff4; border:2px solid #05c46b; border-radius:14px; padding:16px; cursor:pointer; font-family:'Poppins',sans-serif; text-align:left;">
-          <div style="display:flex; align-items:center; justify-content:space-between;">
-            <div style="font-size:15px; font-weight:700; color:#05c46b;">📍 Berasteguí</div>
-            <div style="background:#05c46b; color:white; font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px;">¡GRATIS!</div>
-          </div>
-          <div style="font-size:13px; color:#888; margin-top:2px;">Domicilio sin costo 🎉</div>
-        </button>
-
-        <!-- CERETÉ / CIÉNAGA -->
-        <button onclick="seleccionarZona('Cereté / Ciénaga', 2000, 3000, false)" style="background:#fff5f2; border:2px solid #D85A30; border-radius:14px; padding:16px; cursor:pointer; font-family:'Poppins',sans-serif; text-align:left;">
-          <div style="font-size:15px; font-weight:700; color:#D85A30;">📍 Cereté / Ciénaga</div>
-          <div style="font-size:13px; color:#888; margin-top:2px;">Domicilio: $2.000 – $3.000</div>
-        </button>
-
-        <!-- ZONA LEJANA -->
-        <button onclick="seleccionarZona('Zona lejana', 4000, 5000, false)" style="background:#f8f9fa; border:2px solid #ddd; border-radius:14px; padding:16px; cursor:pointer; font-family:'Poppins',sans-serif; text-align:left;">
-          <div style="font-size:15px; font-weight:700; color:#636e72;">📍 Más lejos</div>
-          <div style="font-size:13px; color:#888; margin-top:2px;">Domicilio: $4.000 – $5.000</div>
-        </button>
-
-        <button onclick="cerrarZonas()" style="background:#f0f0f0; border:none; border-radius:14px; padding:14px; cursor:pointer; font-family:'Poppins',sans-serif; font-size:14px; color:#636e72; font-weight:600;">
-          Cancelar
-        </button>
-      </div>
+<!-- MODAL ZONAS -->
+<div id="zona-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:2000; align-items:flex-end; justify-content:center;">
+  <div style="background:white; width:100%; max-width:600px; border-radius:24px 24px 0 0; padding:28px 20px 40px;">
+    <div style="text-align:center; margin-bottom:20px;">
+      <div style="font-size:28px; margin-bottom:6px;">🛵</div>
+      <div style="font-size:18px; font-weight:800; color:#1e272e;">¿Cómo quieres tu pedido?</div>
+      <div style="font-size:13px; color:#888; margin-top:4px;">Selecciona tu zona o si vas a recoger en el local</div>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:10px;">
+      <button onclick="seleccionarZona('Presencial en el local', 0, 0, true)" style="background:#f0fff4; border:2px solid #05c46b; border-radius:14px; padding:16px; cursor:pointer; font-family:'Poppins',sans-serif; text-align:left;">
+        <div style="font-size:15px; font-weight:700; color:#05c46b;">🏠 Recoger en el local</div>
+        <div style="font-size:13px; color:#888; margin-top:2px;">Estoy aquí · Sin costo de domicilio</div>
+      </button>
+      <button onclick="seleccionarZona('Berasteguí', 0, 0, false)" style="background:#f0fff4; border:2px solid #05c46b; border-radius:14px; padding:16px; cursor:pointer; font-family:'Poppins',sans-serif; text-align:left;">
+        <div style="display:flex; align-items:center; justify-content:space-between;">
+          <div style="font-size:15px; font-weight:700; color:#05c46b;">📍 Berasteguí</div>
+          <div style="background:#05c46b; color:white; font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px;">¡GRATIS!</div>
+        </div>
+        <div style="font-size:13px; color:#888; margin-top:2px;">Domicilio sin costo 🎉</div>
+      </button>
+      <button onclick="seleccionarZona('Cereté / Ciénaga', 2000, 3000, false)" style="background:#fff5f2; border:2px solid #D85A30; border-radius:14px; padding:16px; cursor:pointer; font-family:'Poppins',sans-serif; text-align:left;">
+        <div style="font-size:15px; font-weight:700; color:#D85A30;">📍 Cereté / Ciénaga</div>
+        <div style="font-size:13px; color:#888; margin-top:2px;">Domicilio: $2.000 – $3.000</div>
+      </button>
+      <button onclick="seleccionarZona('Zona lejana', 4000, 5000, false)" style="background:#f8f9fa; border:2px solid #ddd; border-radius:14px; padding:16px; cursor:pointer; font-family:'Poppins',sans-serif; text-align:left;">
+        <div style="font-size:15px; font-weight:700; color:#636e72;">📍 Más lejos</div>
+        <div style="font-size:13px; color:#888; margin-top:2px;">Domicilio: $4.000 – $5.000</div>
+      </button>
+      <button onclick="cerrarZonas()" style="background:#f0f0f0; border:none; border-radius:14px; padding:14px; cursor:pointer; font-family:'Poppins',sans-serif; font-size:14px; color:#636e72; font-weight:600;">Cancelar</button>
     </div>
   </div>
+</div>
 
-  <div id="admin-panel">
-    <button class="btn btn-close" onclick="closeAdmin()">← VOLVER AL MENÚ</button>
-    <h2 style="margin-bottom:20px; text-align:center;">PANEL DE CONTROL</h2>
-    <div id="editor-content"></div>
-    <button class="btn btn-cat" onclick="addCat()">+ NUEVA CATEGORÍA</button>
-    <button class="btn btn-save" onclick="applyChanges()">💾 GUARDAR EN LA NUBE</button>
-  </div>
+<!-- PANEL ADMIN -->
+<div id="admin-panel">
+  <button class="btn btn-close" onclick="closeAdmin()">← VOLVER AL MENÚ</button>
+  <h2 style="margin-bottom:20px; text-align:center;">PANEL DE CONTROL</h2>
+  <div id="editor-content"></div>
+  <button class="btn btn-cat" onclick="addCat()">+ NUEVA CATEGORÍA</button>
+  <button class="btn btn-save" onclick="applyChanges()">💾 GUARDAR EN LA NUBE</button>
+</div>
 
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyByKcM9Z2_PwW0Y9xdbFIfBI6AMviiI4uQ",
-      authDomain: "mi-menu-2f5bd.firebaseapp.com",
-      databaseURL: "https://mi-menu-2f5bd-default-rtdb.firebaseio.com",
-      projectId: "mi-menu-2f5bd",
-      appId: "1:524735114538:web:f7095bb24eedcfe2ff4253"
-    };
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyByKcM9Z2_PwW0Y9xdbFIfBI6AMviiI4uQ",
+    authDomain: "mi-menu-2f5bd.firebaseapp.com",
+    databaseURL: "https://mi-menu-2f5bd-default-rtdb.firebaseio.com",
+    projectId: "mi-menu-2f5bd",
+    appId: "1:524735114538:web:f7095bb24eedcfe2ff4253"
+  };
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-    let data = { brand: "Comida Express", phone: "3127447977", slogan: "Porque el hambre no espera.", nequi: "3127447977", bancolombia: "000-000000-00", cats: [] };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
 
-    db.ref('menuData').on('value', (snap) => {
-      const cloud = snap.val();
-      if(cloud) {
-        data = cloud;
-        if(!data.cats) data.cats = [];
-        if(!data.phone) data.phone = "3127447977";
-        if(!data.slogan) data.slogan = "Porque el hambre no espera.";
-        if(!data.nequi) data.nequi = "3127447977";
-        if(!data.bancolombia) data.bancolombia = "000-000000-00";
-        data.cats.forEach(c => { if(!c.items) c.items = []; });
-      }
-      renderClientMenu();
+  let data = {
+    brand: "Comida Express",
+    phone: "3127447977",
+    slogan: "Porque el hambre no espera.",
+    nequi: "3127447977",
+    bancolombia: "000-000000-00",
+    horaAbre: 18,
+    horaCierra: 23,
+    cats: []
+  };
+
+  db.ref('menuData').on('value', (snap) => {
+    const cloud = snap.val();
+    if (cloud) {
+      data = cloud;
+      if (!data.cats) data.cats = [];
+      if (!data.phone) data.phone = "3127447977";
+      if (!data.slogan) data.slogan = "Porque el hambre no espera.";
+      if (!data.nequi) data.nequi = "3127447977";
+      if (!data.bancolombia) data.bancolombia = "000-000000-00";
+      if (data.horaAbre === undefined) data.horaAbre = 18;
+      if (data.horaCierra === undefined) data.horaCierra = 23;
+      data.cats.forEach(c => {
+        if (!c.items) c.items = [];
+        c.items.forEach(i => { if (!i.badge) i.badge = ''; if (!i.img) i.img = ''; });
+      });
+    }
+    renderClientMenu();
+  });
+
+  // ── ADMIN SECRET ──
+  let clicks = 0;
+  function handleLogoClick() {
+    clicks++;
+    if (clicks === 5) {
+      let clave = prompt("🔐 Clave de Administrador:");
+      if (clave === "1234") { openAdmin(); }
+      else if (clave !== null) { alert("❌ Clave incorrecta"); }
+      clicks = 0;
+    }
+    setTimeout(() => { clicks = 0; }, 3000);
+  }
+
+  function formatPhone(p) {
+    const clean = (p || '').replace(/\D/g, '');
+    return clean.length === 10 ? clean.replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3') : clean;
+  }
+
+  // ── ESTADO NEGOCIO (horario dinámico) ──
+  function estadoNegocio() {
+    const h = new Date().getHours();
+    const abre = parseInt(data.horaAbre) || 18;
+    const cierra = parseInt(data.horaCierra) || 23;
+    const abierto = h >= abre && h < cierra;
+    const fmtH = (n) => { const suffix = n >= 12 ? 'pm' : 'am'; const h12 = n % 12 || 12; return h12 + suffix; };
+    return abierto
+      ? `<div style="display:inline-flex;align-items:center;gap:6px;background:#05c46b20;border:1px solid #05c46b50;padding:5px 14px;border-radius:20px;margin-top:10px;">
+          <span style="width:8px;height:8px;border-radius:50%;background:#05c46b;display:inline-block;animation:pulso 1.2s infinite;"></span>
+          <span style="font-size:12px;font-weight:700;color:#05c46b;">ABIERTO AHORA · Hasta las ${fmtH(cierra)}</span>
+         </div>`
+      : `<div style="display:inline-flex;align-items:center;gap:6px;background:#ff5e5720;border:1px solid #ff5e5750;padding:5px 14px;border-radius:20px;margin-top:10px;">
+          <span style="width:8px;height:8px;border-radius:50%;background:#ff5e57;display:inline-block;"></span>
+          <span style="font-size:12px;font-weight:700;color:#ff5e57;">CERRADO · Abrimos a las ${fmtH(abre)}</span>
+         </div>`;
+  }
+
+  // ── BADGE HTML ──
+  function badgeHtml(badge) {
+    if (badge === 'hot') return '<span class="badge badge-hot">🔥 El más pedido</span>';
+    if (badge === 'new') return '<span class="badge badge-new">✨ Nuevo</span>';
+    if (badge === 'sold') return '<span class="badge badge-sold">❌ Agotado</span>';
+    return '';
+  }
+
+  // ── RENDER CLIENTE ──
+  function renderClientMenu() {
+    const el = document.getElementById('menu-content');
+    let h = `
+      <div class="brand">
+        <div class="brand-logos" onclick="handleLogoClick()">🍔🍟🥤</div>
+        <div class="brand-name">${data.brand}</div>
+        ${estadoNegocio()}
+      </div>
+
+      <div class="contact-card">
+        <div class="contact-header">
+          <div class="contact-business-name">${data.brand}</div>
+          <div class="contact-slogan">"${data.slogan}"</div>
+        </div>
+        <div class="contact-body">
+          <div class="contact-icon-circle">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#EF9F27" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+            </svg>
+          </div>
+          <div>
+            <div class="contact-label">Llámanos</div>
+            <div class="contact-number">${formatPhone(data.phone)}</div>
+          </div>
+          <div class="contact-buttons">
+            <a class="contact-call-btn" href="tel:${(data.phone||'').replace(/\D/g,'')}">Llamar</a>
+            <a class="contact-wa-btn" href="https://wa.me/57${(data.phone||'').replace(/\D/g,'')}" target="_blank">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="#fff"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.124.558 4.118 1.534 5.845L.057 23.492a.75.75 0 0 0 .917.928l5.85-1.532A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.907 0-3.698-.512-5.24-1.407l-.374-.22-3.892 1.02 1.001-3.796-.242-.389A9.96 9.96 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+            </a>
+          </div>
+        </div>
+        <div style="border-top:1px solid #2a2a2a; padding:14px 20px;">
+          <div style="font-size:11px; color:#666; letter-spacing:2px; text-transform:uppercase; margin-bottom:12px; text-align:center;">Métodos de pago</div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+            <div style="background:#1e0a3c; border:1px solid #8B5CF640; border-radius:14px; padding:14px; display:flex; flex-direction:column; gap:8px;">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <div style="width:28px; height:28px; border-radius:50%; background:#8B5CF6; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><rect x="2" y="5" width="20" height="14" rx="3"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                </div>
+                <span style="font-size:13px; font-weight:700; color:#8B5CF6;">Nequi</span>
+              </div>
+              <div style="font-size:16px; font-weight:800; color:#fff; letter-spacing:1px;">${formatPhone(data.nequi)}</div>
+              <button onclick="copiarTexto('${(data.nequi||'').replace(/\D/g,'')}', this)" style="background:#8B5CF6; color:#fff; border:none; border-radius:8px; padding:7px; font-size:12px; font-weight:700; cursor:pointer; font-family:'Poppins',sans-serif; width:100%;">📋 Copiar número</button>
+            </div>
+            <div style="background:#1c1500; border:1px solid #CA8A0440; border-radius:14px; padding:14px; display:flex; flex-direction:column; gap:8px;">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <div style="width:28px; height:28px; border-radius:50%; background:#CA8A04; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><rect x="2" y="5" width="20" height="14" rx="3"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                </div>
+                <span style="font-size:13px; font-weight:700; color:#CA8A04;">Bancolombia</span>
+              </div>
+              <div style="font-size:14px; font-weight:800; color:#fff; letter-spacing:1px; word-break:break-all;">${data.bancolombia}</div>
+              <button onclick="copiarTexto('${data.bancolombia}', this)" style="background:#CA8A04; color:#fff; border:none; border-radius:8px; padding:7px; font-size:12px; font-weight:700; cursor:pointer; font-family:'Poppins',sans-serif; width:100%;">📋 Copiar número</button>
+            </div>
+          </div>
+        </div>
+      </div>`;
+
+    data.cats.forEach(cat => {
+      h += `<div class="cat-title">${cat.name}</div>`;
+      (cat.items || []).forEach((item) => {
+        const itemKey = `${cat.name}__${item.name}`;
+        const safeKey = itemKey.replace(/[^a-z0-9]/gi, '_');
+        const agotado = item.badge === 'sold';
+        h += `
+          <div class="item-card">
+            ${item.img ? `<img class="item-img" src="${item.img}" alt="${item.name}" onerror="this.style.display='none'">` : ''}
+            <div class="item-body">
+              <div class="item-info">
+                <div class="item-name">
+                  ${item.name || 'Producto'}
+                  ${badgeHtml(item.badge)}
+                </div>
+                <div class="item-desc">${item.desc || ''}</div>
+              </div>
+              <div style="display:flex; flex-direction:column; align-items:flex-end; gap:8px; flex-shrink:0;">
+                <div class="item-price">${item.price || ''}</div>
+                <div class="qty-controls">
+                  <button class="qty-btn" onclick="cambiarQty('${itemKey}','${item.name}','${item.price}', -1)" ${agotado ? 'disabled' : ''}>−</button>
+                  <span class="qty-num" id="qty-${safeKey}">0</span>
+                  <button class="qty-btn plus" onclick="cambiarQty('${itemKey}','${item.name}','${item.price}', 1)" ${agotado ? 'disabled' : ''}>+</button>
+                </div>
+              </div>
+            </div>
+          </div>`;
+      });
     });
 
-    // Lógica Secreta mejorada
-    let clicks = 0;
-    function handleLogoClick() {
-      clicks++;
-      if(clicks === 5) {
-        let clave = prompt("🔐 Clave de Administrador:");
-        if(clave === "1234") { openAdmin(); }
-        else if(clave !== null) { alert("❌ Clave incorrecta"); }
-        clicks = 0;
-      }
-      setTimeout(() => { clicks = 0; }, 3000);
-    }
+    el.innerHTML = h;
+  }
 
-    function formatPhone(p) {
-      const clean = (p || '').replace(/\D/g, '');
-      return clean.length === 10 ? clean.replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3') : clean;
-    }
-
-    function renderClientMenu() {
-      const el = document.getElementById('menu-content');
-      let h = `
-        <div class="brand">
-          <div class="brand-logos" onclick="handleLogoClick()">🍔🍟🥤</div>
-          <div class="brand-name">${data.brand}</div>
-          ${estadoNegocio()}
+  // ── RENDER ADMIN ──
+  function renderAdminEditor() {
+    const el = document.getElementById('editor-content');
+    let h = `
+      <div class="admin-card">
+        <b>Nombre del Negocio:</b>
+        <input id="brandInput" value="${data.brand}">
+        <b>Número de Celular:</b>
+        <input id="phoneInput" value="${data.phone || '3127447977'}" placeholder="Ej: 3127447977">
+        <b>Eslogan:</b>
+        <input id="sloganInput" value="${data.slogan || ''}" placeholder="Tu eslogan aquí">
+        <b>Nequi:</b>
+        <input id="nequiInput" value="${data.nequi || ''}" placeholder="Número Nequi">
+        <b>Bancolombia (cuenta):</b>
+        <input id="bancoInput" value="${data.bancolombia || ''}" placeholder="Ej: 123-456789-00">
+        <b>🕐 Horario de atención:</b>
+        <div class="horario-row">
+          <div>
+            <small>Hora de apertura (0–23)</small>
+            <input id="horaAbreInput" type="number" min="0" max="23" value="${data.horaAbre !== undefined ? data.horaAbre : 18}" placeholder="Ej: 18">
+          </div>
+          <div>
+            <small>Hora de cierre (0–23)</small>
+            <input id="horaCierraInput" type="number" min="0" max="23" value="${data.horaCierra !== undefined ? data.horaCierra : 23}" placeholder="Ej: 23">
+          </div>
         </div>
+      </div>`;
 
-        <div class="contact-card">
-          <div class="contact-header">
-            <div class="contact-business-name">${data.brand}</div>
-            <div class="contact-slogan">"${data.slogan}"</div>
-          </div>
-          <div class="contact-body">
-            <div class="contact-icon-circle">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#EF9F27" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
-              </svg>
-            </div>
-            <div>
-              <div class="contact-label">Llámanos</div>
-              <div class="contact-number">${formatPhone(data.phone)}</div>
-            </div>
-            <div class="contact-buttons">
-              <a class="contact-call-btn" href="tel:${(data.phone||'').replace(/\D/g,'')}">Llamar</a>
-              <a class="contact-wa-btn" href="https://wa.me/57${(data.phone||'').replace(/\D/g,'')}" target="_blank">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="#fff"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.124.558 4.118 1.534 5.845L.057 23.492a.75.75 0 0 0 .917.928l5.85-1.532A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.907 0-3.698-.512-5.24-1.407l-.374-.22-3.892 1.02 1.001-3.796-.242-.389A9.96 9.96 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
-              </a>
-            </div>
-          </div>
-          <div style="border-top:1px solid #2a2a2a; padding:14px 20px;">
-            <div style="font-size:11px; color:#666; letter-spacing:2px; text-transform:uppercase; margin-bottom:12px; text-align:center;">Métodos de pago</div>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-              
-              <div style="background:#1e0a3c; border:1px solid #8B5CF640; border-radius:14px; padding:14px; display:flex; flex-direction:column; gap:8px;">
-                <div style="display:flex; align-items:center; gap:8px;">
-                  <div style="width:28px; height:28px; border-radius:50%; background:#8B5CF6; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><rect x="2" y="5" width="20" height="14" rx="3"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-                  </div>
-                  <span style="font-size:13px; font-weight:700; color:#8B5CF6;">Nequi</span>
-                </div>
-                <div style="font-size:16px; font-weight:800; color:#fff; letter-spacing:1px;">${formatPhone(data.nequi)}</div>
-                <button onclick="copiarTexto('${(data.nequi||'').replace(/\D/g,'')}', this)" style="background:#8B5CF6; color:#fff; border:none; border-radius:8px; padding:7px; font-size:12px; font-weight:700; cursor:pointer; font-family:'Poppins',sans-serif; width:100%;">📋 Copiar número</button>
-              </div>
-
-              <div style="background:#1c1500; border:1px solid #CA8A0440; border-radius:14px; padding:14px; display:flex; flex-direction:column; gap:8px;">
-                <div style="display:flex; align-items:center; gap:8px;">
-                  <div style="width:28px; height:28px; border-radius:50%; background:#CA8A04; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><rect x="2" y="5" width="20" height="14" rx="3"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-                  </div>
-                  <span style="font-size:13px; font-weight:700; color:#CA8A04;">Bancolombia</span>
-                </div>
-                <div style="font-size:14px; font-weight:800; color:#fff; letter-spacing:1px; word-break:break-all;">${data.bancolombia}</div>
-                <button onclick="copiarTexto('${data.bancolombia}', this)" style="background:#CA8A04; color:#fff; border:none; border-radius:8px; padding:7px; font-size:12px; font-weight:700; cursor:pointer; font-family:'Poppins',sans-serif; width:100%;">📋 Copiar número</button>
-              </div>
-
-            </div>
-          </div>
-        </div>`;
-      
-      data.cats.forEach(cat => {
-        h += `<div class="cat-title">${cat.name}</div>`;
-        if(cat.items) {
-          cat.items.forEach((item, ii) => {
-            const itemKey = `${cat.name}__${item.name}`;
-            h += `
-              <div class="item-card">
-                <div class="item-info">
-                  <div class="item-name">${item.name || 'Producto'}</div>
-                  <div class="item-desc">${item.desc || ''}</div>
-                </div>
-                <div style="display:flex; flex-direction:column; align-items:flex-end; gap:8px; flex-shrink:0;">
-                  <div class="item-price">${item.price || ''}</div>
-                  <div class="qty-controls">
-                    <button class="qty-btn" onclick="cambiarQty('${itemKey}','${item.name}','${item.price}', -1)">−</button>
-                    <span class="qty-num" id="qty-${itemKey.replace(/[^a-z0-9]/gi,'_')}">0</span>
-                    <button class="qty-btn plus" onclick="cambiarQty('${itemKey}','${item.name}','${item.price}', 1)">+</button>
-                  </div>
-                </div>
-              </div>`;
-          });
-        }
-      });
-      el.innerHTML = h;
-    }
-
-    function renderAdminEditor() {
-      const el = document.getElementById('editor-content');
-      let h = `
+    data.cats.forEach((cat, ci) => {
+      h += `
         <div class="admin-card">
-          <b>Nombre del Negocio:</b>
-          <input id="brandInput" value="${data.brand}">
-          <b>Número de Celular:</b>
-          <input id="phoneInput" value="${data.phone || '3127447977'}" placeholder="Ej: 3127447977">
-          <b>Eslogan:</b>
-          <input id="sloganInput" value="${data.slogan || ''}" placeholder="Tu eslogan aquí">
-          <b>Nequi:</b>
-          <input id="nequiInput" value="${data.nequi || '3127447977'}" placeholder="Número Nequi">
-          <b>Bancolombia (cuenta):</b>
-          <input id="bancoInput" value="${data.bancolombia || ''}" placeholder="Ej: 123-456789-00">
-        </div>`;
-      data.cats.forEach((cat, ci) => {
+          <div style="display:flex; gap:10px;">
+            <input style="font-weight:bold; color:var(--primary)" value="${cat.name}" onchange="data.cats[${ci}].name=this.value">
+            <button class="btn btn-del" onclick="deleteCat(${ci})">Eliminar Cat</button>
+          </div>`;
+      (cat.items || []).forEach((item, ii) => {
+        const b = item.badge || '';
         h += `
-          <div class="admin-card">
-            <div style="display:flex; gap:10px;">
-              <input style="font-weight:bold; color:var(--primary)" value="${cat.name}" onchange="data.cats[${ci}].name=this.value">
-              <button class="btn btn-del" onclick="deleteCat(${ci})">Eliminar Cat</button>
-            </div>`;
-        if(cat.items) {
-          cat.items.forEach((item, ii) => {
-            h += `
-              <div class="ed-item-block">
-                <input placeholder="Nombre Plato" value="${item.name}" onchange="updateItem(${ci},${ii},'name',this.value)">
-                <input placeholder="Precio" value="${item.price}" onchange="updateItem(${ci},${ii},'price',this.value)">
-                <input placeholder="Ingredientes" value="${item.desc}" onchange="updateItem(${ci},${ii},'desc',this.value)">
-                <button class="btn btn-del" style="width:100%" onclick="deleteItem(${ci},${ii})">Quitar Plato</button>
-              </div>`;
-          });
-        }
-        h += `<button class="btn btn-add" onclick="addItem(${ci})">+ Añadir Plato</button></div>`;
+          <div class="ed-item-block">
+            <input placeholder="Nombre Plato" value="${item.name}" onchange="updateItem(${ci},${ii},'name',this.value)">
+            <input placeholder="Precio" value="${item.price}" onchange="updateItem(${ci},${ii},'price',this.value)">
+            <input placeholder="Ingredientes / descripción" value="${item.desc}" onchange="updateItem(${ci},${ii},'desc',this.value)">
+            <input placeholder="URL de foto (opcional)" value="${item.img || ''}" onchange="updateItem(${ci},${ii},'img',this.value)">
+            <div style="margin:6px 0 2px; font-size:12px; font-weight:600; color:#555;">Etiqueta:</div>
+            <div class="badge-selector">
+              <button type="button" class="badge-opt ${b==='hot'?'active-hot':''}" onclick="setBadge(${ci},${ii},'hot',this)">🔥 El más pedido</button>
+              <button type="button" class="badge-opt ${b==='new'?'active-new':''}" onclick="setBadge(${ci},${ii},'new',this)">✨ Nuevo</button>
+              <button type="button" class="badge-opt ${b==='sold'?'active-sold':''}" onclick="setBadge(${ci},${ii},'sold',this)">❌ Agotado</button>
+              <button type="button" class="badge-opt ${b===''?'active-hot':''}" style="${b===''?'border-color:#aaa;background:#f0f0f0;color:#555':''}" onclick="setBadge(${ci},${ii},'',this)">Sin etiqueta</button>
+            </div>
+            <button class="btn btn-del" style="width:100%; margin-top:8px;" onclick="deleteItem(${ci},${ii})">Quitar Plato</button>
+          </div>`;
       });
-      el.innerHTML = h;
-    }
+      h += `<button class="btn btn-add" onclick="addItem(${ci})">+ Añadir Plato</button></div>`;
+    });
 
-    let carrito = {};
+    el.innerHTML = h;
+  }
 
-    function cambiarQty(key, nombre, precio, delta) {
-      if(!carrito[key]) carrito[key] = { nombre, precio, qty: 0 };
-      carrito[key].qty = Math.max(0, carrito[key].qty + delta);
-      if(carrito[key].qty === 0) delete carrito[key];
-      const safeKey = key.replace(/[^a-z0-9]/gi,'_');
-      const el = document.getElementById('qty-' + safeKey);
-      if(el) el.textContent = carrito[key] ? carrito[key].qty : 0;
+  function setBadge(ci, ii, val, btn) {
+    data.cats[ci].items[ii].badge = val;
+    renderAdminEditor();
+  }
+
+  // ── CARRITO ──
+  let carrito = {};
+
+  function cambiarQty(key, nombre, precio, delta) {
+    if (!carrito[key]) carrito[key] = { nombre, precio, qty: 0 };
+    carrito[key].qty = Math.max(0, carrito[key].qty + delta);
+    if (carrito[key].qty === 0) delete carrito[key];
+    const safeKey = key.replace(/[^a-z0-9]/gi, '_');
+    const el = document.getElementById('qty-' + safeKey);
+    if (el) el.textContent = carrito[key] ? carrito[key].qty : 0;
+    actualizarCarrito();
+  }
+
+  function actualizarCarrito() {
+    const items = Object.values(carrito);
+    const total = items.reduce((s, i) => {
+      const num = parseInt((i.precio || '').replace(/[^0-9]/g, '')) || 0;
+      return s + num * i.qty;
+    }, 0);
+    const count = items.reduce((s, i) => s + i.qty, 0);
+    document.getElementById('cart-count').textContent = count;
+    document.getElementById('cart-total').textContent = '$' + total.toLocaleString('es-CO');
+    const bar = document.getElementById('cart-bar');
+    if (count > 0) bar.classList.add('visible');
+    else bar.classList.remove('visible');
+  }
+
+  function toggleNotas() {
+    const area = document.getElementById('notes-area');
+    const toggle = document.getElementById('notes-toggle');
+    area.classList.toggle('open');
+    toggle.textContent = area.classList.contains('open') ? '✖ Cerrar nota' : '✏️ Agregar nota al pedido';
+  }
+
+  let zonaSeleccionada = null;
+
+  function abrirZonas() {
+    if (!Object.keys(carrito).length) return;
+    document.getElementById('zona-modal').style.display = 'flex';
+  }
+
+  function cerrarZonas() {
+    document.getElementById('zona-modal').style.display = 'none';
+  }
+
+  function seleccionarZona(nombre, minDom, maxDom, presencial) {
+    zonaSeleccionada = { nombre, minDom, maxDom, presencial };
+    cerrarZonas();
+    enviarPedido();
+  }
+
+  function enviarPedido() {
+    const items = Object.values(carrito);
+    if (!items.length) return;
+    if (!zonaSeleccionada) { abrirZonas(); return; }
+
+    const notas = (document.getElementById('pedido-notas')?.value || '').trim();
+    const bar = document.getElementById('cart-bar');
+
+    function construirMensaje(ubicacion) {
+      let msg = `🍔 *Pedido - ${data.brand}*\n\n`;
+      items.forEach(i => { msg += `• ${i.nombre} x${i.qty} — ${i.precio}\n`; });
+      if (notas) msg += `\n📝 *Nota:* ${notas}`;
+      const totalProductos = items.reduce((s, i) => {
+        const num = parseInt((i.precio || '').replace(/[^0-9]/g, '')) || 0;
+        return s + num * i.qty;
+      }, 0);
+      msg += `\n\n🛒 *Subtotal: $${totalProductos.toLocaleString('es-CO')}*`;
+
+      if (zonaSeleccionada.presencial) {
+        msg += `\n🏠 *Pedido presencial en el local*`;
+        msg += `\n💰 *Total: $${totalProductos.toLocaleString('es-CO')}*`;
+      } else if (zonaSeleccionada.minDom === 0) {
+        msg += `\n🛵 *Domicilio (${zonaSeleccionada.nombre}): ¡GRATIS! 🎉*`;
+        msg += `\n💰 *Total: $${totalProductos.toLocaleString('es-CO')}*`;
+        msg += `\n\n📍 *Ubicación del cliente:*\n${ubicacion}`;
+      } else {
+        msg += `\n🛵 *Domicilio (${zonaSeleccionada.nombre}): $${zonaSeleccionada.minDom.toLocaleString('es-CO')} – $${zonaSeleccionada.maxDom.toLocaleString('es-CO')}*`;
+        const totalMin = totalProductos + zonaSeleccionada.minDom;
+        const totalMax = totalProductos + zonaSeleccionada.maxDom;
+        msg += `\n💰 *Total aprox: $${totalMin.toLocaleString('es-CO')} – $${totalMax.toLocaleString('es-CO')}*`;
+        msg += `\n\n📍 *Ubicación del cliente:*\n${ubicacion}`;
+      }
+
+      const phone = (data.phone || '3127447977').replace(/\D/g, '');
+      window.open(`https://wa.me/57${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+      zonaSeleccionada = null;
+      carrito = {};
+      if (document.getElementById('pedido-notas')) document.getElementById('pedido-notas').value = '';
+      document.getElementById('notes-area').classList.remove('open');
+      document.getElementById('notes-toggle').textContent = '✏️ Agregar nota al pedido';
       actualizarCarrito();
     }
 
-    function actualizarCarrito() {
-      const items = Object.values(carrito);
-      const total = items.reduce((s, i) => {
-        const num = parseInt((i.precio || '').replace(/[^0-9]/g,'')) || 0;
-        return s + num * i.qty;
-      }, 0);
-      const count = items.reduce((s, i) => s + i.qty, 0);
-      document.getElementById('cart-count').textContent = count;
-      document.getElementById('cart-total').textContent = '$' + total.toLocaleString('es-CO');
-      const bar = document.getElementById('cart-bar');
-      if(count > 0) bar.classList.add('visible');
-      else bar.classList.remove('visible');
+    if (zonaSeleccionada.presencial) { construirMensaje(''); return; }
+
+    bar.querySelector('.cart-bar-left').textContent = '📍 Obteniendo ubicación...';
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const lat = pos.coords.latitude.toFixed(6);
+          const lng = pos.coords.longitude.toFixed(6);
+          construirMensaje(`https://maps.google.com/?q=${lat},${lng}`);
+        },
+        () => { construirMensaje('_(El cliente no compartió su ubicación)_'); },
+        { timeout: 8000 }
+      );
+    } else {
+      construirMensaje('_(Ubicación no disponible en este dispositivo)_');
     }
+  }
 
-    let zonaSeleccionada = null;
+  function copiarTexto(texto, btn) {
+    navigator.clipboard.writeText(texto).then(() => {
+      const orig = btn.innerHTML; btn.innerHTML = '✅ ¡Copiado!'; btn.style.background = '#05c46b';
+      setTimeout(() => { btn.innerHTML = orig; btn.style.background = ''; }, 2000);
+    }).catch(() => {
+      const ta = document.createElement('textarea'); ta.value = texto;
+      document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+      const orig = btn.innerHTML; btn.innerHTML = '✅ ¡Copiado!'; btn.style.background = '#05c46b';
+      setTimeout(() => { btn.innerHTML = orig; btn.style.background = ''; }, 2000);
+    });
+  }
 
-    function abrirZonas() {
-      if(!Object.keys(carrito).length) return;
-      const modal = document.getElementById('zona-modal');
-      modal.style.display = 'flex';
-    }
+  function openAdmin() { document.getElementById('admin-panel').style.display = 'block'; renderAdminEditor(); }
+  function closeAdmin() { document.getElementById('admin-panel').style.display = 'none'; }
+  function updateItem(ci, ii, f, v) { data.cats[ci].items[ii][f] = v; }
+  function deleteItem(ci, ii) { data.cats[ci].items.splice(ii, 1); renderAdminEditor(); }
+  function deleteCat(ci) { data.cats.splice(ci, 1); renderAdminEditor(); }
+  function addItem(ci) { if (!data.cats[ci].items) data.cats[ci].items = []; data.cats[ci].items.push({ name: "", desc: "", price: "", img: "", badge: "" }); renderAdminEditor(); }
+  function addCat() { data.cats.push({ name: "Nueva Categoría", items: [] }); renderAdminEditor(); }
 
-    function cerrarZonas() {
-      document.getElementById('zona-modal').style.display = 'none';
-    }
-
-    // presencial = true omite solicitar ubicación GPS
-    function seleccionarZona(nombre, minDom, maxDom, presencial) {
-      zonaSeleccionada = { nombre, minDom, maxDom, presencial };
-      cerrarZonas();
-      enviarPedido();
-    }
-
-    function enviarPedido() {
-      const items = Object.values(carrito);
-      if(!items.length) return;
-      if(!zonaSeleccionada) { abrirZonas(); return; }
-
-      const bar = document.getElementById('cart-bar');
-
-      function construirMensaje(ubicacion) {
-        let msg = `🍔 *Pedido - ${data.brand}*\n\n`;
-        items.forEach(i => { msg += `• ${i.nombre} x${i.qty} — ${i.precio}\n`; });
-        const totalProductos = items.reduce((s, i) => {
-          const num = parseInt((i.precio || '').replace(/[^0-9]/g,'')) || 0;
-          return s + num * i.qty;
-        }, 0);
-        msg += `\n🛒 *Subtotal: $${totalProductos.toLocaleString('es-CO')}*`;
-
-        if(zonaSeleccionada.presencial) {
-          msg += `\n🏠 *Pedido presencial en el local*`;
-          msg += `\n💰 *Total: $${totalProductos.toLocaleString('es-CO')}*`;
-        } else if(zonaSeleccionada.minDom === 0) {
-          msg += `\n🛵 *Domicilio (${zonaSeleccionada.nombre}): ¡GRATIS! 🎉*`;
-          msg += `\n💰 *Total: $${totalProductos.toLocaleString('es-CO')}*`;
-          msg += `\n\n📍 *Ubicación del cliente:*\n${ubicacion}`;
-        } else {
-          msg += `\n🛵 *Domicilio (${zonaSeleccionada.nombre}): $${zonaSeleccionada.minDom.toLocaleString('es-CO')} – $${zonaSeleccionada.maxDom.toLocaleString('es-CO')}*`;
-          const totalMin = totalProductos + zonaSeleccionada.minDom;
-          const totalMax = totalProductos + zonaSeleccionada.maxDom;
-          msg += `\n💰 *Total aprox: $${totalMin.toLocaleString('es-CO')} – $${totalMax.toLocaleString('es-CO')}*`;
-          msg += `\n\n📍 *Ubicación del cliente:*\n${ubicacion}`;
-        }
-
-        const phone = (data.phone || '3127447977').replace(/\D/g,'');
-        window.open(`https://wa.me/57${phone}?text=${encodeURIComponent(msg)}`, '_blank');
-        zonaSeleccionada = null;
-        carrito = {};
-        actualizarCarrito();
-      }
-
-      // Si es presencial NO pedimos ubicación
-      if(zonaSeleccionada.presencial) {
-        construirMensaje('');
-        return;
-      }
-
-      // Berasteguí gratis o zonas con costo: pedir ubicación
-      bar.innerHTML = `<div class="cart-bar-left">📍 Obteniendo ubicación...</div>`;
-
-      if(navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (pos) => {
-            const lat = pos.coords.latitude.toFixed(6);
-            const lng = pos.coords.longitude.toFixed(6);
-            const link = `https://maps.google.com/?q=${lat},${lng}`;
-            construirMensaje(link);
-          },
-          () => { construirMensaje('_(El cliente no compartió su ubicación)_'); },
-          { timeout: 8000 }
-        );
-      } else {
-        construirMensaje('_(Ubicación no disponible en este dispositivo)_');
-      }
-    }
-
-    function estadoNegocio() {
-      const now = new Date();
-      const h = now.getHours();
-      const abierto = h >= 18 && h < 23;
-      return abierto
-        ? `<div style="display:inline-flex;align-items:center;gap:6px;background:#05c46b20;border:1px solid #05c46b50;padding:5px 14px;border-radius:20px;margin-top:10px;">
-            <span style="width:8px;height:8px;border-radius:50%;background:#05c46b;display:inline-block;animation:pulso 1.2s infinite;"></span>
-            <span style="font-size:12px;font-weight:700;color:#05c46b;">ABIERTO AHORA · Hasta las 11pm</span>
-           </div>`
-        : `<div style="display:inline-flex;align-items:center;gap:6px;background:#ff5e5720;border:1px solid #ff5e5750;padding:5px 14px;border-radius:20px;margin-top:10px;">
-            <span style="width:8px;height:8px;border-radius:50%;background:#ff5e57;display:inline-block;"></span>
-            <span style="font-size:12px;font-weight:700;color:#ff5e57;">CERRADO · Abrimos a las 6pm</span>
-           </div>`;
-    }
-
-    function copiarTexto(texto, btn) {
-      navigator.clipboard.writeText(texto).then(() => {
-        const original = btn.innerHTML;
-        btn.innerHTML = '✅ ¡Copiado!';
-        btn.style.background = '#05c46b';
-        setTimeout(() => { btn.innerHTML = original; btn.style.background = ''; }, 2000);
-      }).catch(() => {
-        const ta = document.createElement('textarea');
-        ta.value = texto;
-        document.body.appendChild(ta);
-        ta.select();
-        document.execCommand('copy');
-        document.body.removeChild(ta);
-        const original = btn.innerHTML;
-        btn.innerHTML = '✅ ¡Copiado!';
-        btn.style.background = '#05c46b';
-        setTimeout(() => { btn.innerHTML = original; btn.style.background = ''; }, 2000);
-      });
-    }
-
-    function openAdmin() { document.getElementById('admin-panel').style.display = 'block'; renderAdminEditor(); }
-    function closeAdmin() { document.getElementById('admin-panel').style.display = 'none'; }
-    function updateItem(ci, ii, f, v) { data.cats[ci].items[ii][f] = v; }
-    function deleteItem(ci, ii) { data.cats[ci].items.splice(ii, 1); renderAdminEditor(); }
-    function deleteCat(ci) { data.cats.splice(ci, 1); renderAdminEditor(); }
-    function addItem(ci) { if(!data.cats[ci].items) data.cats[ci].items = []; data.cats[ci].items.push({name:"", desc:"", price:""}); renderAdminEditor(); }
-    function addCat() { data.cats.push({name:"Nueva Categoría", items:[]}); renderAdminEditor(); }
-
-    function applyChanges() {
-      data.brand = document.getElementById('brandInput').value;
-      data.phone = document.getElementById('phoneInput').value;
-      data.slogan = document.getElementById('sloganInput').value;
-      data.nequi = document.getElementById('nequiInput').value;
-      data.bancolombia = document.getElementById('bancoInput').value;
-      db.ref('menuData').set(data).then(() => {
-        alert("✅ ¡Menú actualizado para todos!");
-        closeAdmin();
-      });
-    }
-  </script>
-</body>
-</html>
-          () => { construirMensaje('_(El cliente no compartió su ubicación)_'); },
-          { timeout: 8000 }
-        );
-      } else {
-        construirMensaje('_(Ubicación no disponible en este dispositivo)_');
-      }
-    }
-
-    function estadoNegocio() {
-      const now = new Date();
-      const h = now.getHours();
-      const abierto = h >= 18 && h < 23;
-      return abierto
-        ? `<div style="display:inline-flex;align-items:center;gap:6px;background:#05c46b20;border:1px solid #05c46b50;padding:5px 14px;border-radius:20px;margin-top:10px;">
-            <span style="width:8px;height:8px;border-radius:50%;background:#05c46b;display:inline-block;animation:pulso 1.2s infinite;"></span>
-            <span style="font-size:12px;font-weight:700;color:#05c46b;">ABIERTO AHORA · Hasta las 11pm</span>
-           </div>`
-        : `<div style="display:inline-flex;align-items:center;gap:6px;background:#ff5e5720;border:1px solid #ff5e5750;padding:5px 14px;border-radius:20px;margin-top:10px;">
-            <span style="width:8px;height:8px;border-radius:50%;background:#ff5e57;display:inline-block;"></span>
-            <span style="font-size:12px;font-weight:700;color:#ff5e57;">CERRADO · Abrimos a las 6pm</span>
-           </div>`;
-    }
-
-    function copiarTexto(texto, btn) {
-      navigator.clipboard.writeText(texto).then(() => {
-        const original = btn.innerHTML;
-        btn.innerHTML = '✅ ¡Copiado!';
-        btn.style.background = '#05c46b';
-        setTimeout(() => { btn.innerHTML = original; btn.style.background = ''; }, 2000);
-      }).catch(() => {
-        const ta = document.createElement('textarea');
-        ta.value = texto;
-        document.body.appendChild(ta);
-        ta.select();
-        document.execCommand('copy');
-        document.body.removeChild(ta);
-        const original = btn.innerHTML;
-        btn.innerHTML = '✅ ¡Copiado!';
-        btn.style.background = '#05c46b';
-        setTimeout(() => { btn.innerHTML = original; btn.style.background = ''; }, 2000);
-      });
-    }
-
-    function openAdmin() { document.getElementById('admin-panel').style.display = 'block'; renderAdminEditor(); }
-    function closeAdmin() { document.getElementById('admin-panel').style.display = 'none'; }
-    function updateItem(ci, ii, f, v) { data.cats[ci].items[ii][f] = v; }
-    function deleteItem(ci, ii) { data.cats[ci].items.splice(ii, 1); renderAdminEditor(); }
-    function deleteCat(ci) { data.cats.splice(ci, 1); renderAdminEditor(); }
-    function addItem(ci) { if(!data.cats[ci].items) data.cats[ci].items = []; data.cats[ci].items.push({name:"", desc:"", price:""}); renderAdminEditor(); }
-    function addCat() { data.cats.push({name:"Nueva Categoría", items:[]}); renderAdminEditor(); }
-
-    function applyChanges() {
-      data.brand = document.getElementById('brandInput').value;
-      data.phone = document.getElementById('phoneInput').value;
-      data.slogan = document.getElementById('sloganInput').value;
-      data.nequi = document.getElementById('nequiInput').value;
-      data.bancolombia = document.getElementById('bancoInput').value;
-      db.ref('menuData').set(data).then(() => {
-        alert("✅ ¡Menú actualizado para todos!");
-        closeAdmin();
-      });
-    }
-  </script>
+  function applyChanges() {
+    data.brand = document.getElementById('brandInput').value;
+    data.phone = document.getElementById('phoneInput').value;
+    data.slogan = document.getElementById('sloganInput').value;
+    data.nequi = document.getElementById('nequiInput').value;
+    data.bancolombia = document.getElementById('bancoInput').value;
+    data.horaAbre = parseInt(document.getElementById('horaAbreInput').value) || 18;
+    data.horaCierra = parseInt(document.getElementById('horaCierraInput').value) || 23;
+    db.ref('menuData').set(data).then(() => {
+      alert("✅ ¡Menú actualizado para todos!");
+      closeAdmin();
+    });
+  }
+</script>
 </body>
 </html>
