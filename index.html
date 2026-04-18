@@ -93,7 +93,19 @@
 
     .no-results { text-align: center; padding: 40px 20px; color: #888; font-size: 15px; }
 
-    #admin-panel { display: none; background: #1e272e; color: white; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1000; padding: 20px; overflow-y: scroll; }
+    #admin-panel { display: none; background: #1e272e; color: white; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1000; overflow: hidden; flex-direction: column; }
+    #admin-panel.visible { display: flex; }
+    .admin-topbar { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px 0; flex-shrink: 0; }
+    .admin-topbar-title { font-size: 16px; font-weight: 800; color: white; letter-spacing: 1px; }
+    .admin-back { background: #808e9b; color: white; border: none; border-radius: 10px; padding: 8px 14px; font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; }
+    .admin-tabs { display: flex; gap: 0; padding: 12px 16px 0; flex-shrink: 0; }
+    .admin-tab { flex: 1; padding: 10px 4px; border: none; background: #2d3436; color: #b2bec3; font-family: 'Poppins', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; border-radius: 10px 10px 0 0; transition: all 0.15s; text-align: center; }
+    .admin-tab.active { background: white; color: #1e272e; }
+    .admin-body { flex: 1; overflow-y: auto; padding: 0; background: #f1f2f6; }
+    .admin-pane { display: none; padding: 16px; }
+    .admin-pane.active { display: block; }
+    .admin-footer { flex-shrink: 0; padding: 12px 16px; background: #1e272e; }
+    .btn-save-fixed { background: #05c46b; color: white; font-size: 16px; font-weight: 700; border: none; border-radius: 14px; padding: 14px; width: 100%; cursor: pointer; font-family: 'Poppins', sans-serif; }
     .admin-card { background: white; color: #333; padding: 20px; border-radius: 20px; margin-bottom: 20px; }
     .ed-item-block { background: #f1f2f6; padding: 15px; border-radius: 12px; margin-top: 10px; border: 1px solid #dfe4ea; }
     .badge-selector { display: flex; gap: 8px; margin: 8px 0; flex-wrap: wrap; }
@@ -208,11 +220,30 @@
 </div>
 
 <div id="admin-panel">
-  <button class="btn btn-close" onclick="closeAdmin()">← VOLVER AL MENÚ</button>
-  <h2 style="margin-bottom:20px; text-align:center;">PANEL DE CONTROL</h2>
-  <div id="editor-content"></div>
-  <button class="btn btn-cat" onclick="addCat()">+ NUEVA CATEGORÍA</button>
-  <button class="btn btn-save" onclick="applyChanges()">💾 GUARDAR EN LA NUBE</button>
+  <div class="admin-topbar">
+    <div class="admin-topbar-title">⚙️ PANEL DE CONTROL</div>
+    <button class="admin-back" onclick="closeAdmin()">← Volver</button>
+  </div>
+  <div class="admin-tabs">
+    <button class="admin-tab active" onclick="switchTab('stats')">📊 Stats</button>
+    <button class="admin-tab" onclick="switchTab('negocio')">⚙️ Negocio</button>
+    <button class="admin-tab" onclick="switchTab('menu')">🍽️ Menú</button>
+  </div>
+  <div class="admin-body">
+    <div class="admin-pane active" id="pane-stats">
+      <div id="stats-content"></div>
+    </div>
+    <div class="admin-pane" id="pane-negocio">
+      <div id="negocio-content"></div>
+    </div>
+    <div class="admin-pane" id="pane-menu">
+      <div id="menu-editor-content"></div>
+      <button class="btn btn-cat" onclick="addCat()" style="margin-top:8px;">+ NUEVA CATEGORÍA</button>
+    </div>
+  </div>
+  <div class="admin-footer">
+    <button class="btn-save-fixed" onclick="applyChanges()">💾 GUARDAR EN LA NUBE</button>
+  </div>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -684,7 +715,6 @@
   }
 
   function renderAdminEditor() {
-    const el = document.getElementById('editor-content');
     cargarEstadisticas(stats => {
       const hoy = stats.hoy || 0;
       const sem = stats.semana || 0;
@@ -700,7 +730,8 @@
         histHtml = '<div style="font-size:12px;color:#aaa;text-align:center;padding:10px 0;">Aún no hay pedidos hoy</div>';
       }
 
-      let h = `
+      // ── PANEL STATS
+      let hStats = `
         <div class="admin-card">
           <b>📊 Estadísticas en tiempo real</b>
           <div class="stat-grid" style="margin-top:12px;">
@@ -709,8 +740,11 @@
           </div>
           <div style="margin-top:12px;"><b style="font-size:13px;">📋 Últimos pedidos de hoy</b>${histHtml}</div>
           <button class="btn-reset-stats" onclick="resetStats()">Reiniciar contadores</button>
-        </div>
-        <div class="admin-card">
+        </div>`;
+      document.getElementById('stats-content').innerHTML = hStats;
+
+      // ── PANEL NEGOCIO
+      let hNeg = `<div class="admin-card">
           <b>Nombre del Negocio:</b>
           <input id="brandInput" value="${data.brand}">
           <b>Número de Celular:</b>
@@ -738,9 +772,12 @@
           </div>
           <input id="mensajeCerradoInput" placeholder="Mensaje de cierre (ej: Volvemos el viernes 🙏)" value="${data.mensajeCerrado||''}">
         </div>`;
+      document.getElementById('negocio-content').innerHTML = hNeg;
 
+      // ── PANEL MENÚ
+      let hMenu = '';
       data.cats.forEach((cat, ci) => {
-        h += `
+        hMenu += `
           <div class="admin-card">
             <div style="display:flex;gap:10px;">
               <input style="font-weight:bold;color:var(--primary)" value="${cat.name}" onchange="data.cats[${ci}].name=this.value">
@@ -748,7 +785,7 @@
             </div>`;
         (cat.items||[]).forEach((item, ii) => {
           const b = item.badge||'';
-          h += `
+          hMenu += `
             <div class="ed-item-block">
               <input placeholder="Nombre Plato" value="${item.name}" onchange="updateItem(${ci},${ii},'name',this.value)">
               <input placeholder="Precio actual (ej: $12.000)" value="${item.price}" onchange="updateItem(${ci},${ii},'price',this.value)">
@@ -765,10 +802,10 @@
               <button class="btn btn-del" style="width:100%;margin-top:8px;" onclick="deleteItem(${ci},${ii})">Quitar Plato</button>
             </div>`;
         });
-        h += `<button class="btn btn-add" onclick="addItem(${ci})">+ Añadir Plato</button></div>`;
+        hMenu += `<button class="btn btn-add" onclick="addItem(${ci})">+ Añadir Plato</button></div>`;
       });
 
-      el.innerHTML = h;
+      document.getElementById('menu-editor-content').innerHTML = hMenu;
     });
   }
 
@@ -913,8 +950,18 @@
     setTimeout(()=>{clicks=0;},3000);
   }
 
-  function openAdmin() { document.getElementById('admin-panel').style.display='block'; renderAdminEditor(); }
-  function closeAdmin() { document.getElementById('admin-panel').style.display='none'; }
+  function switchTab(tab) {
+    document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.admin-pane').forEach(p => p.classList.remove('active'));
+    event.target.classList.add('active');
+    document.getElementById('pane-' + tab).classList.add('active');
+  }
+
+  function openAdmin() {
+    document.getElementById('admin-panel').classList.add('visible');
+    renderAdminEditor();
+  }
+  function closeAdmin() { document.getElementById('admin-panel').classList.remove('visible'); }
   function updateItem(ci,ii,f,v) { data.cats[ci].items[ii][f]=v; }
   function deleteItem(ci,ii) { data.cats[ci].items.splice(ii,1); renderAdminEditor(); }
   function deleteCat(ci) { data.cats.splice(ci,1); renderAdminEditor(); }
