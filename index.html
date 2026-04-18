@@ -148,9 +148,12 @@
     .admin-cat-body.open { display: block; }
     .admin-cat-name-input { font-weight: 700; color: var(--primary); flex: 1; min-width: 0; padding: 8px 10px; border: 1px solid #ddd; border-radius: 10px; font-family: 'Poppins', sans-serif; font-size: 14px; margin: 0; width: auto; }
 
-    /* ── Botón compartir ── */
-    .share-btn { display: flex; align-items: center; gap: 6px; background: white; border: 2px solid #e0e0e0; border-radius: 20px; padding: 7px 16px; font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 600; color: #636e72; cursor: pointer; white-space: nowrap; transition: all 0.15s; }
-    .share-btn:hover, .share-btn:active { background: var(--primary); border-color: var(--primary); color: white; }
+    /* ── Botón compartir flotante ── */
+    #share-fab { position: fixed; bottom: 24px; right: 18px; width: 52px; height: 52px; border-radius: 50%; background: var(--primary); color: white; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 18px rgba(216,90,48,0.45); z-index: 998; transition: transform 0.18s, box-shadow 0.18s; -webkit-tap-highlight-color: transparent; }
+    #share-fab:active { transform: scale(0.92); box-shadow: 0 2px 8px rgba(216,90,48,0.35); }
+    #share-fab svg { width: 24px; height: 24px; }
+    /* Sube el FAB cuando aparece el carrito */
+    .cart-bar.visible ~ #share-fab { bottom: 100px; }
 
     /* Historial de pedidos en admin */
     .pedido-hist { background: #f8f9fa; border-radius: 10px; padding: 10px 14px; margin-top: 8px; font-size: 12px; border-left: 3px solid var(--primary); }
@@ -165,6 +168,13 @@
 <body>
 
 <div id="closed-toast">⛔ Estamos cerrados ahora mismo</div>
+
+<button id="share-fab" onclick="compartirMenu()" title="Compartir menú">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+  </svg>
+</button>
 
 <div class="container" id="client-view">
   <div id="offline-banner">📵 Sin internet · Mostrando menú guardado · Solo lectura</div>
@@ -638,10 +648,7 @@
       ${data.cerradoManual && data.mensajeCerrado ? `<div class="closed-banner"><div class="closed-banner-title">⏸ Cerrado temporalmente</div><div class="closed-banner-msg">${data.mensajeCerrado}</div></div>` : ''}
       ${contactBlock}
       <div id="mas-vendidos-section">${seccionMasVendidosHtml()}</div>
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
-        <div class="cat-nav" id="cat-nav" style="flex:1;margin-bottom:0;">${navBtns}</div>
-        <button class="share-btn" onclick="compartirMenu()" title="Compartir menú">🔗 Compartir</button>
-      </div>
+      <div class="cat-nav" id="cat-nav">${navBtns}</div>
       <div class="search-wrap">
         <span class="search-icon">🔍</span>
         <input type="text" placeholder="Buscar plato..." oninput="filtrarMenu(this.value)" value="${busqueda}">
@@ -1000,8 +1007,13 @@
       navigator.share({ title: titulo, text: texto, url }).catch(() => {});
     } else {
       navigator.clipboard.writeText(url).then(() => {
-        const btn = document.querySelector('.share-btn');
-        if (btn) { const o=btn.innerHTML; btn.innerHTML='✅ ¡Link copiado!'; btn.style.background='#05c46b'; btn.style.borderColor='#05c46b'; btn.style.color='white'; setTimeout(()=>{btn.innerHTML=o;btn.style.background='';btn.style.borderColor='';btn.style.color='';},2500); }
+        const fab = document.getElementById('share-fab');
+        if (fab) {
+          const orig = fab.innerHTML;
+          fab.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+          fab.style.background = '#05c46b';
+          setTimeout(() => { fab.innerHTML = orig; fab.style.background = ''; }, 2200);
+        }
       }).catch(() => { prompt('Copia este link:', url); });
     }
   }
