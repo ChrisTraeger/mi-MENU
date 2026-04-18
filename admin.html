@@ -237,7 +237,7 @@
 <script>
   // ══ CREDENCIALES POR DEFECTO ══
   const DEFAULT_USER = "admin";
-  const DEFAULT_PASS = "1234";   // ← cambia esto antes de subir por primera vez
+  const DEFAULT_PASS = "1234";
 
   const MAX_INTENTOS      = 5;
   const BLOQUEO_SEGUNDOS  = 60;
@@ -261,11 +261,13 @@
     horaAbre:18, horaCierra:23, cerradoManual:false, mensajeCerrado:"", cats:[]
   };
 
-  // ══ CREDENCIALES (localStorage) ══
+  // ══ CREDENCIALES (localStorage) — VERSIÓN CORREGIDA ══
   function getCreds() {
     try {
-      const c = JSON.parse(localStorage.getItem(CREDS_KEY) || 'null');
-      if (c && c.user && c.pass) return c;
+      const raw = localStorage.getItem(CREDS_KEY);
+      if (!raw) return { user: DEFAULT_USER, pass: DEFAULT_PASS };
+      const c = JSON.parse(raw);
+      if (c && typeof c.user === 'string' && typeof c.pass === 'string' && c.user && c.pass) return c;
     } catch(e) {}
     return { user: DEFAULT_USER, pass: DEFAULT_PASS };
   }
@@ -288,8 +290,9 @@
 
   function verificarClave() {
     if (esBloqueado()) return;
+    // FIX: trim solo en usuario, NO en contraseña
     const userVal = (document.getElementById('user-input').value || '').trim();
-    const passVal = (document.getElementById('pass-input').value || '').trim();
+    const passVal = document.getElementById('pass-input').value || '';
     if (!userVal) { document.getElementById('user-input').focus(); return; }
     if (!passVal) { document.getElementById('pass-input').focus(); return; }
 
@@ -345,6 +348,17 @@
   }
 
   window.addEventListener('load', () => {
+    // FIX: limpiar credenciales corruptas antes de verificar sesión
+    try {
+      const raw = localStorage.getItem(CREDS_KEY);
+      if (raw) {
+        const c = JSON.parse(raw);
+        if (!c || typeof c.user !== 'string' || typeof c.pass !== 'string' || !c.user || !c.pass) {
+          localStorage.removeItem(CREDS_KEY);
+        }
+      }
+    } catch(e) { localStorage.removeItem(CREDS_KEY); }
+
     try {
       const s = JSON.parse(localStorage.getItem(SESSION_KEY) || 'null');
       if (s && Date.now() - s.ts < 8 * 60 * 60 * 1000) { abrirPanel(s.user || ''); return; }
@@ -491,7 +505,6 @@
     const finalPass = newPass || creds.pass;
     saveCreds(finalUser, finalPass);
 
-    // Actualizar sesión y badge
     try { const s=JSON.parse(localStorage.getItem(SESSION_KEY)||'{}'); s.user=finalUser; localStorage.setItem(SESSION_KEY,JSON.stringify(s)); } catch(e) {}
     const badge = document.getElementById('session-badge');
     if (badge) badge.textContent = `● ${finalUser}`;
@@ -499,7 +512,6 @@
     ok.textContent = `✅ ¡Listo! Nuevo usuario: "${finalUser}". Cierra sesión para probar.`;
     ok.classList.add('show');
 
-    // Limpiar y refrescar
     ['sec-actual','sec-new-user','sec-new-pass','sec-confirm'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
     setTimeout(() => renderSeguridad(), 2000);
   }
