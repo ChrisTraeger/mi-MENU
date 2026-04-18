@@ -9,82 +9,46 @@
     :root { --primary: #D85A30; --bg: #f1f2f6; --dark: #1e272e; --white: #ffffff; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Poppins', sans-serif; background: var(--bg); color: var(--dark); min-height: 100vh; }
-
-    /* ══ LOGIN ══ */
-    #login-screen {
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      min-height: 100vh; padding: 30px 24px;
-      background: linear-gradient(160deg, #1e272e 0%, #2d3436 60%, #D85A3015 100%);
-    }
+    #login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 30px 24px; background: linear-gradient(160deg, #1e272e 0%, #2d3436 60%, #D85A3015 100%); }
     .login-logo { font-size: 56px; margin-bottom: 16px; letter-spacing: 6px; }
     .login-brand { font-size: 22px; font-weight: 800; color: #D85A30; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 6px; }
     .login-sub { font-size: 12px; color: #636e72; margin-bottom: 40px; }
-    .login-card {
-      background: white; border-radius: 24px; padding: 32px 28px;
-      width: 100%; max-width: 380px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.35);
-    }
+    .login-card { background: white; border-radius: 24px; padding: 32px 28px; width: 100%; max-width: 380px; box-shadow: 0 20px 60px rgba(0,0,0,0.35); }
     .login-title { font-size: 18px; font-weight: 800; color: #1e272e; margin-bottom: 6px; }
     .login-hint { font-size: 12px; color: #888; margin-bottom: 20px; }
     .login-field { margin-bottom: 14px; }
     .login-field-label { font-size: 12px; font-weight: 700; color: #555; margin-bottom: 5px; display: block; }
     .login-input-wrap { position: relative; }
-    .login-input {
-      width: 100%; padding: 14px 46px 14px 16px; border-radius: 14px;
-      border: 2px solid #e0e0e0; font-family: 'Poppins', sans-serif;
-      font-size: 15px; color: #1e272e; outline: none;
-      transition: border-color 0.2s;
-    }
+    .login-input { width: 100%; padding: 14px 46px 14px 16px; border-radius: 14px; border: 2px solid #e0e0e0; font-family: 'Poppins', sans-serif; font-size: 15px; color: #1e272e; outline: none; transition: border-color 0.2s; }
     .login-input.pass { letter-spacing: 3px; font-size: 18px; }
     .login-input:focus { border-color: #D85A30; }
     .login-eye { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 20px; padding: 4px; }
-    .login-btn {
-      width: 100%; padding: 16px; background: #D85A30; color: white;
-      border: none; border-radius: 14px; font-family: 'Poppins', sans-serif;
-      font-size: 16px; font-weight: 700; cursor: pointer;
-      transition: background 0.15s, transform 0.1s; margin-top: 4px;
-    }
+    .login-btn { width: 100%; padding: 16px; background: #D85A30; color: white; border: none; border-radius: 14px; font-family: 'Poppins', sans-serif; font-size: 16px; font-weight: 700; cursor: pointer; transition: background 0.15s, transform 0.1s; margin-top: 4px; }
     .login-btn:active { transform: scale(0.98); background: #c04e26; }
-    .login-back {
-      display: block; text-align: center; margin-top: 18px;
-      font-size: 13px; font-weight: 600; color: #636e72;
-      text-decoration: none; padding: 10px;
-      border-radius: 12px; transition: background 0.15s, color 0.15s;
-    }
+    .login-back { display: block; text-align: center; margin-top: 18px; font-size: 13px; font-weight: 600; color: #636e72; text-decoration: none; padding: 10px; border-radius: 12px; transition: background 0.15s, color 0.15s; }
     .login-back:hover { background: #f1f2f6; color: #1e272e; }
-    .login-error {
-      background: #fff0eb; border: 1px solid #D85A3040; border-radius: 10px;
-      padding: 10px 14px; font-size: 13px; color: #D85A30; font-weight: 600;
-      text-align: center; margin-top: 14px; display: none;
-    }
+    .login-error { background: #fff0eb; border: 1px solid #D85A3040; border-radius: 10px; padding: 10px 14px; font-size: 13px; color: #D85A30; font-weight: 600; text-align: center; margin-top: 14px; display: none; }
     .login-error.show { display: block; }
     .login-attempts { font-size: 11px; color: #aaa; text-align: center; margin-top: 10px; }
     .login-blocked { background: #fff0eb; border-radius: 14px; padding: 20px; text-align: center; margin-bottom: 14px; display: none; }
     .login-blocked.show { display: block; }
     .login-blocked-title { font-size: 15px; font-weight: 700; color: #D85A30; }
     .login-blocked-msg { font-size: 12px; color: #888; margin-top: 6px; }
-
-    /* ══ PANEL ══ */
     #admin-panel { display: none; flex-direction: column; height: 100vh; overflow: hidden; }
     #admin-panel.visible { display: flex; }
-
     .admin-topbar { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; background: var(--dark); flex-shrink: 0; }
     .admin-topbar-title { font-size: 16px; font-weight: 800; color: white; letter-spacing: 1px; }
     .admin-topbar-right { display: flex; align-items: center; gap: 8px; }
     .admin-back-menu { background: #2d3436; color: #b2bec3; border: 1px solid #4a5568; border-radius: 10px; padding: 8px 12px; font-family: 'Poppins', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; }
     .admin-logout { background: #ff5e57; color: white; border: none; border-radius: 10px; padding: 8px 14px; font-family: 'Poppins', sans-serif; font-size: 12px; font-weight: 700; cursor: pointer; }
-
     .admin-tabs { display: flex; padding: 0 8px; background: var(--dark); flex-shrink: 0; gap: 4px; }
     .admin-tab { flex: 1; padding: 10px 2px; border: none; background: #2d3436; color: #b2bec3; font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 600; cursor: pointer; border-radius: 10px 10px 0 0; transition: all 0.15s; text-align: center; }
     .admin-tab.active { background: white; color: var(--dark); }
-
     .admin-body { flex: 1; overflow-y: auto; background: var(--bg); }
     .admin-pane { display: none; padding: 16px; }
     .admin-pane.active { display: block; }
-
     .admin-footer { flex-shrink: 0; padding: 12px 16px; background: var(--dark); }
     .btn-save-fixed { background: #05c46b; color: white; font-size: 16px; font-weight: 700; border: none; border-radius: 14px; padding: 14px; width: 100%; cursor: pointer; font-family: 'Poppins', sans-serif; }
-
     .admin-card { background: white; color: #333; padding: 20px; border-radius: 20px; margin-bottom: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
     .admin-card h3 { font-size: 15px; font-weight: 800; color: #1e272e; margin-bottom: 16px; }
     .ed-item-block { background: var(--bg); padding: 15px; border-radius: 12px; margin-top: 10px; border: 1px solid #dfe4ea; }
@@ -93,7 +57,6 @@
     .badge-opt.active-hot { border-color: #D85A30; background: #fff0eb; color: #D85A30; }
     .badge-opt.active-new { border-color: #05c46b; background: #e8f8f2; color: #05c46b; }
     .badge-opt.active-sold { border-color: #888; background: #f0f0f0; color: #888; }
-
     .switch-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-top: 1px solid #eee; margin-top: 10px; }
     .switch-label { font-size: 14px; font-weight: 600; color: #333; }
     .toggle-switch { position: relative; width: 52px; height: 28px; }
@@ -102,13 +65,11 @@
     .toggle-slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 4px; bottom: 4px; background: white; border-radius: 50%; transition: .3s; }
     input:checked + .toggle-slider { background: #ff5e57; }
     input:checked + .toggle-slider:before { transform: translateX(24px); }
-
     .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 10px 0; }
     .stat-box { background: var(--bg); border-radius: 14px; padding: 14px; text-align: center; }
     .stat-num { font-size: 28px; font-weight: 800; color: var(--primary); }
     .stat-label { font-size: 12px; color: #636e72; margin-top: 2px; }
     .btn-reset-stats { background: #636e72; color: white; font-size: 12px; padding: 6px 16px; border-radius: 10px; border: none; cursor: pointer; font-family: 'Poppins', sans-serif; font-weight: 600; margin-top: 8px; }
-
     input[type="text"], input[type="number"], input:not([type]) { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ccc; border-radius: 10px; font-family: inherit; font-size: 14px; }
     .btn { cursor: pointer; border: none; font-weight: 600; border-radius: 12px; padding: 12px; width: 100%; margin-top: 10px; font-family: 'Poppins', sans-serif; }
     .btn-primary { background: #D85A30; color: white; }
@@ -118,8 +79,6 @@
     .horario-row { display: flex; gap: 10px; }
     .horario-row input { flex: 1; }
     small { font-size: 11px; color: #888; display: block; margin-top: -4px; margin-bottom: 6px; }
-
-    /* ── Seguridad ── */
     .sec-current { background: #f8f9fa; border-radius: 14px; padding: 16px; margin-bottom: 16px; border: 1px solid #e0e0e0; display: flex; justify-content: space-between; align-items: center; }
     .sec-current-label { font-size: 11px; color: #888; margin-bottom: 3px; }
     .sec-current-value { font-size: 15px; font-weight: 700; color: #1e272e; }
@@ -128,22 +87,14 @@
     .sec-field { margin-bottom: 14px; }
     .sec-field label { font-size: 12px; font-weight: 700; color: #555; margin-bottom: 5px; display: block; }
     .sec-input-wrap { position: relative; }
-    .sec-input {
-      width: 100%; padding: 13px 44px 13px 14px;
-      border: 1.5px solid #ddd; border-radius: 12px;
-      font-family: 'Poppins', sans-serif; font-size: 14px;
-      color: #1e272e; outline: none; transition: border-color 0.2s;
-      margin: 0;
-    }
+    .sec-input { width: 100%; padding: 13px 44px 13px 14px; border: 1.5px solid #ddd; border-radius: 12px; font-family: 'Poppins', sans-serif; font-size: 14px; color: #1e272e; outline: none; transition: border-color 0.2s; margin: 0; }
     .sec-input.pass { letter-spacing: 3px; }
     .sec-input:focus { border-color: #D85A30; }
     .sec-eye { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 18px; padding: 2px; }
     .alert-box { border-radius: 12px; padding: 12px 14px; font-size: 13px; font-weight: 600; margin-top: 12px; display: none; }
     .alert-box.show { display: block; }
     .alert-success { background: #e8f8f2; color: #05c46b; border: 1px solid #05c46b30; }
-    .alert-error   { background: #fff0eb; color: #D85A30;  border: 1px solid #D85A3030; }
-
-    /* Cats */
+    .alert-error { background: #fff0eb; color: #D85A30; border: 1px solid #D85A3030; }
     .admin-cat-block { background: white; border-radius: 20px; margin-bottom: 14px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
     .admin-cat-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 18px; cursor: pointer; gap: 10px; user-select: none; -webkit-tap-highlight-color: transparent; }
     .admin-cat-header-left { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
@@ -153,7 +104,6 @@
     .admin-cat-body { display: none; padding: 0 16px 16px; border-top: 1px solid var(--bg); }
     .admin-cat-body.open { display: block; }
     .admin-cat-name-input { font-weight: 700; color: var(--primary); flex: 1; min-width: 0; padding: 8px 10px; border: 1px solid #ddd; border-radius: 10px; font-family: 'Poppins', sans-serif; font-size: 14px; margin: 0; width: auto; }
-
     .pedido-hist { background: var(--bg); border-radius: 10px; padding: 10px 14px; margin-top: 8px; font-size: 12px; border-left: 3px solid var(--primary); }
     .pedido-hist-time { font-size: 10px; color: #888; margin-top: 3px; }
     .session-badge { font-size: 10px; color: #05c46b; font-weight: 700; background: #05c46b15; padding: 3px 10px; border-radius: 20px; }
@@ -161,91 +111,84 @@
 </head>
 <body>
 
-<!-- ══ LOGIN ══ -->
+<!-- LOGIN -->
 <div id="login-screen">
-  <div class="login-logo">🍔🍟🥤</div>
+  <div class="login-logo">&#127828;&#127839;&#127780;</div>
   <div class="login-brand">Antojo Express</div>
-  <div class="login-sub">Panel de Administración</div>
+  <div class="login-sub">Panel de Administracion</div>
   <div class="login-card">
-    <div class="login-title">🔐 Acceso Administrador</div>
-    <div class="login-hint">Ingresa tu usuario y contraseña</div>
-
+    <div class="login-title">&#128272; Acceso Administrador</div>
+    <div class="login-hint">Ingresa tu usuario y contrasena</div>
     <div id="login-blocked" class="login-blocked">
-      <div class="login-blocked-title">🔒 Acceso bloqueado</div>
+      <div class="login-blocked-title">&#128274; Acceso bloqueado</div>
       <div class="login-blocked-msg">Demasiados intentos fallidos. Espera <span id="blocked-timer">60</span>s</div>
     </div>
-
     <div id="login-form">
       <div class="login-field">
-        <label class="login-field-label">👤 Usuario</label>
+        <label class="login-field-label">&#128100; Usuario</label>
         <div class="login-input-wrap">
-          <input id="user-input" class="login-input" type="text" placeholder="admin"
-            onkeydown="if(event.key==='Enter') document.getElementById('pass-input').focus()">
+          <input id="user-input" class="login-input" type="text" placeholder="admin">
         </div>
       </div>
       <div class="login-field">
-        <label class="login-field-label">🔑 Contraseña</label>
+        <label class="login-field-label">&#128273; Contrasena</label>
         <div class="login-input-wrap">
-          <input id="pass-input" class="login-input pass" type="password" placeholder="••••" maxlength="30"
-            onkeydown="if(event.key==='Enter') verificarClave()">
-          <button class="login-eye" onclick="toggleVer('pass-input','eye-login')" id="eye-login">👁️</button>
+          <input id="pass-input" class="login-input pass" type="password" placeholder="1234" maxlength="30">
+          <button class="login-eye" id="eye-login">&#128065;</button>
         </div>
       </div>
-      <button class="login-btn" onclick="verificarClave()">Entrar al Panel →</button>
-      <div class="login-error" id="login-error">❌ Usuario o contraseña incorrectos</div>
+      <button class="login-btn" id="btn-entrar">Entrar al Panel &#8594;</button>
+      <div class="login-error" id="login-error">&#10060; Usuario o contrasena incorrectos</div>
       <div class="login-attempts" id="login-attempts"></div>
     </div>
-
-    <a href="./index.html" class="login-back">← Volver al menú</a>
+    <a href="./index.html" class="login-back">&#8592; Volver al menu</a>
   </div>
 </div>
 
-<!-- ══ PANEL ══ -->
+<!-- PANEL -->
 <div id="admin-panel">
   <div class="admin-topbar">
     <div>
-      <div class="admin-topbar-title">⚙️ PANEL DE CONTROL</div>
-      <span class="session-badge" id="session-badge">● Sesión activa</span>
+      <div class="admin-topbar-title">&#9881;&#65039; PANEL DE CONTROL</div>
+      <span class="session-badge" id="session-badge">&#9679; Sesion activa</span>
     </div>
     <div class="admin-topbar-right">
-      <a href="./index.html" class="admin-back-menu">🍔 Menú</a>
-      <button class="admin-logout" onclick="cerrarSesion()">🚪 Salir</button>
+      <a href="./index.html" class="admin-back-menu">&#127828; Menu</a>
+      <button class="admin-logout" id="btn-logout">&#128682; Salir</button>
     </div>
   </div>
   <div class="admin-tabs">
-    <button class="admin-tab active" onclick="switchTab('stats',this)">📊 Stats</button>
-    <button class="admin-tab" onclick="switchTab('negocio',this)">⚙️ Negocio</button>
-    <button class="admin-tab" onclick="switchTab('menu',this)">🍽️ Menú</button>
-    <button class="admin-tab" onclick="switchTab('seguridad',this)">🔒 Acceso</button>
+    <button class="admin-tab active" data-tab="stats">&#128202; Stats</button>
+    <button class="admin-tab" data-tab="negocio">&#9881;&#65039; Negocio</button>
+    <button class="admin-tab" data-tab="menu">&#127869;&#65039; Menu</button>
+    <button class="admin-tab" data-tab="seguridad">&#128274; Acceso</button>
   </div>
   <div class="admin-body">
     <div class="admin-pane active" id="pane-stats"><div id="stats-content"></div></div>
     <div class="admin-pane" id="pane-negocio"><div id="negocio-content"></div></div>
     <div class="admin-pane" id="pane-menu">
       <div id="menu-editor-content"></div>
-      <button class="btn btn-cat" onclick="addCat()">+ NUEVA CATEGORÍA</button>
+      <button class="btn btn-cat" id="btn-add-cat">+ NUEVA CATEGORIA</button>
     </div>
     <div class="admin-pane" id="pane-seguridad"><div id="seguridad-content"></div></div>
   </div>
   <div class="admin-footer">
-    <button class="btn-save-fixed" onclick="applyChanges()">💾 GUARDAR EN LA NUBE</button>
+    <button class="btn-save-fixed" id="btn-guardar">&#128190; GUARDAR EN LA NUBE</button>
   </div>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <script>
-  // ══ CREDENCIALES POR DEFECTO ══
-  const DEFAULT_USER = "admin";
-  const DEFAULT_PASS = "1234";
+(function() {
+  var DEFAULT_USER = "admin";
+  var DEFAULT_PASS = "1234";
+  var MAX_INTENTOS = 5;
+  var BLOQUEO_SEG  = 60;
+  var SESSION_KEY  = "adminSession_v2";
+  var CREDS_KEY    = "adminCreds_v1";
 
-  const MAX_INTENTOS      = 5;
-  const BLOQUEO_SEGUNDOS  = 60;
-  const SESSION_KEY       = 'adminSession_v2';
-  const CREDS_KEY         = 'adminCreds_v1';
-
-  // ══ FIREBASE ══
-  const firebaseConfig = {
+  var firebaseConfig = {
     apiKey: "AIzaSyByKcM9Z2_PwW0Y9xdbFIfBI6AMviiI4uQ",
     authDomain: "mi-menu-2f5bd.firebaseapp.com",
     databaseURL: "https://mi-menu-2f5bd-default-rtdb.firebaseio.com",
@@ -253,369 +196,425 @@
     appId: "1:524735114538:web:f7095bb24eedcfe2ff4253"
   };
   firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
+  var db = firebase.database();
 
-  let data = {
-    brand:"Comida Express", phone:"3127447977", slogan:"Porque el hambre no espera.",
-    nequi:"3127447977", bancolombia:"000-000000-00",
-    horaAbre:18, horaCierra:23, cerradoManual:false, mensajeCerrado:"", cats:[]
+  var data = {
+    brand: "Comida Express", phone: "3127447977", slogan: "Porque el hambre no espera.",
+    nequi: "3127447977", bancolombia: "000-000000-00",
+    horaAbre: 18, horaCierra: 23, cerradoManual: false, mensajeCerrado: "", cats: []
   };
 
-  // ══ CREDENCIALES (localStorage) — VERSIÓN CORREGIDA ══
+  /* ── CREDENCIALES ── */
   function getCreds() {
     try {
-      const raw = localStorage.getItem(CREDS_KEY);
+      var raw = localStorage.getItem(CREDS_KEY);
       if (!raw) return { user: DEFAULT_USER, pass: DEFAULT_PASS };
-      const c = JSON.parse(raw);
-      if (c && typeof c.user === 'string' && typeof c.pass === 'string' && c.user && c.pass) return c;
+      var c = JSON.parse(raw);
+      if (c && typeof c.user === "string" && typeof c.pass === "string" && c.user && c.pass) return c;
     } catch(e) {}
     return { user: DEFAULT_USER, pass: DEFAULT_PASS };
   }
-  function saveCreds(user, pass) {
-    localStorage.setItem(CREDS_KEY, JSON.stringify({ user, pass }));
+  function saveCreds(u, p) {
+    localStorage.setItem(CREDS_KEY, JSON.stringify({ user: u, pass: p }));
   }
 
-  // ══ LOGIN ══
-  let intentosFallidos = 0, bloqueadoHasta = 0, timerBloqueo = null;
+  /* ── LOGIN ── */
+  var intentosFallidos = 0;
+  var bloqueadoHasta   = 0;
+  var timerBloqueo     = null;
+
   function esBloqueado() { return Date.now() < bloqueadoHasta; }
 
-  function toggleVer(inputId, btnId) {
-    const inp = document.getElementById(inputId);
-    const btn = btnId ? document.getElementById(btnId) : null;
-    if (!inp) return;
-    inp.type = inp.type === 'password' ? 'text' : 'password';
-    if (btn) btn.textContent = inp.type === 'password' ? '👁️' : '🙈';
-    inp.focus();
-  }
+  document.getElementById("eye-login").addEventListener("click", function() {
+    var inp = document.getElementById("pass-input");
+    inp.type = inp.type === "password" ? "text" : "password";
+  });
+
+  document.getElementById("user-input").addEventListener("keydown", function(e) {
+    if (e.key === "Enter") document.getElementById("pass-input").focus();
+  });
+  document.getElementById("pass-input").addEventListener("keydown", function(e) {
+    if (e.key === "Enter") verificarClave();
+  });
+  document.getElementById("btn-entrar").addEventListener("click", verificarClave);
 
   function verificarClave() {
     if (esBloqueado()) return;
-    // FIX: trim solo en usuario, NO en contraseña
-    const userVal = (document.getElementById('user-input').value || '').trim();
-    const passVal = document.getElementById('pass-input').value || '';
-    if (!userVal) { document.getElementById('user-input').focus(); return; }
-    if (!passVal) { document.getElementById('pass-input').focus(); return; }
-
-    const creds = getCreds();
+    var userVal = (document.getElementById("user-input").value || "").trim();
+    var passVal = document.getElementById("pass-input").value || "";
+    if (!userVal) { document.getElementById("user-input").focus(); return; }
+    if (!passVal) { document.getElementById("pass-input").focus(); return; }
+    var creds = getCreds();
     if (userVal === creds.user && passVal === creds.pass) {
       try { localStorage.setItem(SESSION_KEY, JSON.stringify({ ts: Date.now(), user: userVal })); } catch(e) {}
       abrirPanel(userVal);
     } else {
       intentosFallidos++;
-      document.getElementById('pass-input').value = '';
-      document.getElementById('pass-input').focus();
-      const errEl = document.getElementById('login-error');
-      errEl.classList.add('show');
-      setTimeout(() => errEl.classList.remove('show'), 2500);
+      document.getElementById("pass-input").value = "";
+      document.getElementById("pass-input").focus();
+      var errEl = document.getElementById("login-error");
+      errEl.classList.add("show");
+      setTimeout(function() { errEl.classList.remove("show"); }, 2500);
       if (intentosFallidos >= MAX_INTENTOS) {
-        bloqueadoHasta = Date.now() + BLOQUEO_SEGUNDOS * 1000;
+        bloqueadoHasta = Date.now() + BLOQUEO_SEG * 1000;
         intentosFallidos = 0;
         activarBloqueo();
       } else {
-        document.getElementById('login-attempts').textContent = `Intentos restantes: ${MAX_INTENTOS - intentosFallidos}`;
+        document.getElementById("login-attempts").textContent = "Intentos restantes: " + (MAX_INTENTOS - intentosFallidos);
       }
     }
   }
 
   function activarBloqueo() {
-    const form = document.getElementById('login-form');
-    form.style.opacity = '0.4'; form.style.pointerEvents = 'none';
-    document.getElementById('login-blocked').classList.add('show');
-    document.getElementById('login-attempts').textContent = '';
-    timerBloqueo = setInterval(() => {
-      const r = Math.ceil((bloqueadoHasta - Date.now()) / 1000);
+    var form = document.getElementById("login-form");
+    form.style.opacity = "0.4"; form.style.pointerEvents = "none";
+    document.getElementById("login-blocked").classList.add("show");
+    document.getElementById("login-attempts").textContent = "";
+    timerBloqueo = setInterval(function() {
+      var r = Math.ceil((bloqueadoHasta - Date.now()) / 1000);
       if (r <= 0) {
         clearInterval(timerBloqueo);
-        form.style.opacity = ''; form.style.pointerEvents = '';
-        document.getElementById('login-blocked').classList.remove('show');
-        document.getElementById('user-input').focus();
-      } else { document.getElementById('blocked-timer').textContent = r; }
+        form.style.opacity = ""; form.style.pointerEvents = "";
+        document.getElementById("login-blocked").classList.remove("show");
+        document.getElementById("user-input").focus();
+      } else { document.getElementById("blocked-timer").textContent = r; }
     }, 1000);
   }
 
   function abrirPanel(user) {
-    document.getElementById('login-screen').style.display = 'none';
-    document.getElementById('admin-panel').classList.add('visible');
-    const badge = document.getElementById('session-badge');
-    if (badge) badge.textContent = `● ${user || 'admin'}`;
+    document.getElementById("login-screen").style.display = "none";
+    document.getElementById("admin-panel").classList.add("visible");
+    var badge = document.getElementById("session-badge");
+    if (badge) badge.textContent = user || "admin";
     cargarDatos();
   }
 
-  function cerrarSesion() {
-    if (!confirm('¿Cerrar sesión?')) return;
+  document.getElementById("btn-logout").addEventListener("click", function() {
+    if (!confirm("Cerrar sesion?")) return;
     try { localStorage.removeItem(SESSION_KEY); } catch(e) {}
-    window.location.href = './index.html';
-  }
+    window.location.href = "./index.html";
+  });
 
-  window.addEventListener('load', () => {
-    // FIX: limpiar credenciales corruptas antes de verificar sesión
+  /* ── SESION AUTO ── */
+  window.addEventListener("load", function() {
     try {
-      const raw = localStorage.getItem(CREDS_KEY);
+      var raw = localStorage.getItem(CREDS_KEY);
       if (raw) {
-        const c = JSON.parse(raw);
-        if (!c || typeof c.user !== 'string' || typeof c.pass !== 'string' || !c.user || !c.pass) {
+        var c = JSON.parse(raw);
+        if (!c || typeof c.user !== "string" || typeof c.pass !== "string" || !c.user || !c.pass) {
           localStorage.removeItem(CREDS_KEY);
         }
       }
     } catch(e) { localStorage.removeItem(CREDS_KEY); }
-
     try {
-      const s = JSON.parse(localStorage.getItem(SESSION_KEY) || 'null');
-      if (s && Date.now() - s.ts < 8 * 60 * 60 * 1000) { abrirPanel(s.user || ''); return; }
+      var s = JSON.parse(localStorage.getItem(SESSION_KEY) || "null");
+      if (s && Date.now() - s.ts < 8 * 60 * 60 * 1000) { abrirPanel(s.user || ""); return; }
     } catch(e) {}
-    setTimeout(() => document.getElementById('user-input').focus(), 300);
+    setTimeout(function() { document.getElementById("user-input").focus(); }, 300);
   });
 
-  // ══ FIREBASE ══
+  /* ── TABS ── */
+  document.querySelectorAll(".admin-tab").forEach(function(btn) {
+    btn.addEventListener("click", function() {
+      var tab = this.getAttribute("data-tab");
+      document.querySelectorAll(".admin-tab").forEach(function(t) { t.classList.remove("active"); });
+      document.querySelectorAll(".admin-pane").forEach(function(p) { p.classList.remove("active"); });
+      this.classList.add("active");
+      document.getElementById("pane-" + tab).classList.add("active");
+      if (tab === "stats") cargarEstadisticas(renderStats);
+      if (tab === "menu") renderAdminEditor();
+      if (tab === "seguridad") renderSeguridad();
+    });
+  });
+
+  /* ── FIREBASE ── */
   function cargarDatos() {
-    db.ref('menuData').once('value', snap => {
-      const cloud = snap.val();
+    db.ref("menuData").once("value", function(snap) {
+      var cloud = snap.val();
       if (cloud) {
         data = cloud;
         if (!data.cats) data.cats = [];
-        data.cats.forEach(c => {
+        data.cats.forEach(function(c) {
           if (!c.items) c.items = [];
-          c.items.forEach(i => { if (!i.badge) i.badge=''; if (!i.img) i.img=''; if (!i.precioAntes) i.precioAntes=''; });
+          c.items.forEach(function(i) {
+            if (!i.badge) i.badge = "";
+            if (!i.img) i.img = "";
+            if (!i.precioAntes) i.precioAntes = "";
+          });
         });
       }
       renderAdminEditor();
     });
-    db.ref('menuData').on('value', snap => {
-      const cloud = snap.val();
+    db.ref("menuData").on("value", function(snap) {
+      var cloud = snap.val();
       if (cloud) { data = cloud; if (!data.cats) data.cats = []; }
     });
   }
 
-  // ══ TABS ══
-  function switchTab(tab, btn) {
-    document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.admin-pane').forEach(p => p.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById('pane-' + tab).classList.add('active');
-    if (tab === 'stats') cargarEstadisticas(renderStats);
-    if (tab === 'menu') renderAdminEditor();
-    if (tab === 'seguridad') renderSeguridad();
+  /* ── STATS ── */
+  function getFechaHoy() {
+    var n = new Date();
+    return n.getFullYear() + "-" + String(n.getMonth()+1).padStart(2,"0") + "-" + String(n.getDate()).padStart(2,"0");
   }
-
-  // ══ STATS ══
-  function getFechaHoy() { const n=new Date(); return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')}`; }
-  function getSemanaKey() { const n=new Date(),s=new Date(n.getFullYear(),0,1),w=Math.ceil(((n-s)/86400000+s.getDay()+1)/7); return `${n.getFullYear()}-W${String(w).padStart(2,'0')}`; }
+  function getSemanaKey() {
+    var n = new Date(), s = new Date(n.getFullYear(),0,1);
+    var w = Math.ceil(((n-s)/86400000+s.getDay()+1)/7);
+    return n.getFullYear() + "-W" + String(w).padStart(2,"0");
+  }
   function cargarEstadisticas(cb) {
-    Promise.all([db.ref(`stats/dias/${getFechaHoy()}`).once('value'), db.ref(`stats/semanas/${getSemanaKey()}/count`).once('value')])
-      .then(([sd,ss]) => { const d=sd.val()||{count:0,pedidos:[]}; cb({hoy:d.count||0,semana:ss.val()||0,pedidosHoy:d.pedidos||}); });
+    Promise.all([
+      db.ref("stats/dias/" + getFechaHoy()).once("value"),
+      db.ref("stats/semanas/" + getSemanaKey() + "/count").once("value")
+    ]).then(function(res) {
+      var d = res[0].val() || { count: 0, pedidos: [] };
+      cb({ hoy: d.count || 0, semana: res[1].val() || 0, pedidosHoy: d.pedidos || [] });
+    });
   }
   function renderStats(stats) {
-    const hist = stats.pedidosHoy.length
-      ? [...stats.pedidosHoy].reverse().slice(0,10).map(p=>`<div class="pedido-hist">🛒 ${p.resumen}<div class="pedido-hist-time">🕐 ${p.hora} · Total: $${(p.total||0).toLocaleString('es-CO')}</div></div>`).join('')
-      : '<div style="font-size:12px;color:#aaa;text-align:center;padding:10px 0;">Aún no hay pedidos hoy</div>';
-    document.getElementById('stats-content').innerHTML = `
-      <div class="admin-card">
-        <b>📊 Estadísticas en tiempo real</b>
-        <div class="stat-grid">
-          <div class="stat-box"><div class="stat-num">${stats.hoy}</div><div class="stat-label">Pedidos hoy</div></div>
-          <div class="stat-box"><div class="stat-num">${stats.semana}</div><div class="stat-label">Esta semana</div></div>
-        </div>
-        <div style="margin-top:12px;"><b style="font-size:13px;">📋 Últimos pedidos de hoy</b>${hist}</div>
-        <button class="btn-reset-stats" onclick="resetStats()">Reiniciar contadores</button>
-      </div>`;
-  }
-  function resetStats() {
-    if (!confirm('¿Reiniciar los contadores de hoy y esta semana?')) return;
-    db.ref(`stats/dias/${getFechaHoy()}`).remove();
-    db.ref(`stats/semanas/${getSemanaKey()}`).remove();
-    cargarEstadisticas(renderStats);
-    alert('✅ Contadores reiniciados');
-  }
-
-  // ══ SEGURIDAD ══
-  function renderSeguridad() {
-    const creds = getCreds();
-    document.getElementById('seguridad-content').innerHTML = `
-      <div class="admin-card">
-        <h3>🔒 Credenciales de acceso</h3>
-
-        <div class="sec-current">
-          <div><div class="sec-current-label">Usuario actual</div><div class="sec-current-value">👤 ${creds.user}</div></div>
-          <div style="text-align:right;"><div class="sec-current-label">Contraseña</div><div class="sec-current-value">🔑 ${'•'.repeat(Math.min(creds.pass.length,10))}</div></div>
-        </div>
-
-        <hr class="sec-divider">
-        <div class="sec-section-title">🔑 Confirmar contraseña actual</div>
-
-        <div class="sec-field">
-          <label>Contraseña actual</label>
-          <div class="sec-input-wrap">
-            <input id="sec-actual" class="sec-input pass" type="password" placeholder="Tu contraseña actual">
-            <button class="sec-eye" onclick="toggleVer('sec-actual',null)">👁️</button>
-          </div>
-        </div>
-
-        <hr class="sec-divider">
-        <div class="sec-section-title">✏️ Nuevos datos <span style="font-weight:400;color:#aaa;">(deja vacío lo que no cambies)</span></div>
-
-        <div class="sec-field">
-          <label>Nuevo usuario</label>
-          <div class="sec-input-wrap">
-            <input id="sec-new-user" class="sec-input" type="text" placeholder="Ej: mitienda2025">
-          </div>
-        </div>
-
-        <div class="sec-field">
-          <label>Nueva contraseña</label>
-          <div class="sec-input-wrap">
-            <input id="sec-new-pass" class="sec-input pass" type="password" placeholder="Mín. 4 caracteres">
-            <button class="sec-eye" onclick="toggleVer('sec-new-pass',null)">👁️</button>
-          </div>
-        </div>
-
-        <div class="sec-field">
-          <label>Confirmar nueva contraseña</label>
-          <div class="sec-input-wrap">
-            <input id="sec-confirm" class="sec-input pass" type="password" placeholder="Repite la nueva contraseña">
-            <button class="sec-eye" onclick="toggleVer('sec-confirm',null)">👁️</button>
-          </div>
-        </div>
-
-        <button class="btn btn-primary" onclick="guardarCreds()" style="margin-top:4px;">💾 Guardar cambios</button>
-
-        <div id="sec-ok"  class="alert-box alert-success"></div>
-        <div id="sec-err" class="alert-box alert-error"></div>
-      </div>`;
-  }
-
-  function guardarCreds() {
-    const creds   = getCreds();
-    const actual  = document.getElementById('sec-actual').value;
-    const newUser = document.getElementById('sec-new-user').value.trim();
-    const newPass = document.getElementById('sec-new-pass').value;
-    const confirm = document.getElementById('sec-confirm').value;
-
-    const ok  = document.getElementById('sec-ok');
-    const err = document.getElementById('sec-err');
-    ok.classList.remove('show'); err.classList.remove('show');
-
-    function showErr(msg) { err.textContent = msg; err.classList.add('show'); }
-
-    if (actual !== creds.pass)  return showErr('❌ La contraseña actual es incorrecta.');
-    if (!newUser && !newPass)   return showErr('⚠️ Ingresa al menos un nuevo usuario o contraseña.');
-    if (newPass && newPass.length < 4) return showErr('⚠️ La nueva contraseña debe tener al menos 4 caracteres.');
-    if (newPass && newPass !== confirm) return showErr('❌ Las contraseñas nuevas no coinciden.');
-
-    const finalUser = newUser || creds.user;
-    const finalPass = newPass || creds.pass;
-    saveCreds(finalUser, finalPass);
-
-    try { const s=JSON.parse(localStorage.getItem(SESSION_KEY)||'{}'); s.user=finalUser; localStorage.setItem(SESSION_KEY,JSON.stringify(s)); } catch(e) {}
-    const badge = document.getElementById('session-badge');
-    if (badge) badge.textContent = `● ${finalUser}`;
-
-    ok.textContent = `✅ ¡Listo! Nuevo usuario: "${finalUser}". Cierra sesión para probar.`;
-    ok.classList.add('show');
-
-    ['sec-actual','sec-new-user','sec-new-pass','sec-confirm'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
-    setTimeout(() => renderSeguridad(), 2000);
-  }
-
-  // ══ EDITOR ══
-  function renderAdminEditor() {
-    cargarEstadisticas(stats => {
-      renderStats(stats);
-      document.getElementById('negocio-content').innerHTML = `
-        <div class="admin-card">
-          <b>Nombre del Negocio:</b><input id="brandInput" value="${data.brand||''}">
-          <b>Número de Celular:</b><input id="phoneInput" value="${data.phone||''}">
-          <b>Eslogan:</b><input id="sloganInput" value="${data.slogan||''}">
-          <b>Nequi:</b><input id="nequiInput" value="${data.nequi||''}">
-          <b>Bancolombia:</b><input id="bancoInput" value="${data.bancolombia||''}">
-          <b>🕐 Horario (solo vie–dom):</b>
-          <div class="horario-row">
-            <div><small>Hora apertura (0–23)</small><input id="horaAbreInput" type="number" min="0" max="23" value="${data.horaAbre!==undefined?data.horaAbre:18}"></div>
-            <div><small>Hora cierre (0–23)</small><input id="horaCierraInput" type="number" min="0" max="23" value="${data.horaCierra||23}"></div>
-          </div>
-          <div class="switch-row">
-            <div><div class="switch-label">🌙 Cerrado temporalmente</div><small style="margin:0;">Bloquea el carrito y muestra un aviso</small></div>
-            <label class="toggle-switch"><input type="checkbox" id="cerradoToggle" ${data.cerradoManual?'checked':''}><span class="toggle-slider"></span></label>
-          </div>
-          <input id="mensajeCerradoInput" placeholder="Mensaje de cierre (ej: Volvemos el viernes 🙏)" value="${data.mensajeCerrado||''}">
-        </div>`;
-
-      let hMenu = '';
-      (data.cats||[]).forEach((cat,ci) => {
-        const n = (cat.items||[]).length, isFirst = ci===0;
-        hMenu += `<div class="admin-cat-block">
-          <div class="admin-cat-header" onclick="toggleAdminCat(${ci})">
-            <div class="admin-cat-header-left">
-              <span style="font-size:18px;">📂</span>
-              <span style="font-size:15px;font-weight:700;color:#1e272e;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${cat.name||'Categoría'}</span>
-              <span class="admin-cat-count">${n} plato${n!==1?'s':''}</span>
-            </div>
-            <span class="admin-cat-chevron ${isFirst?'open':''}" id="chevron-cat-${ci}">▼</span>
-          </div>
-          <div class="admin-cat-body ${isFirst?'open':''}" id="body-cat-${ci}">
-            <div style="display:flex;gap:8px;margin:14px 0 10px;">
-              <input class="admin-cat-name-input" value="${cat.name||''}" placeholder="Nombre categoría" onchange="data.cats[${ci}].name=this.value">
-              <button class="btn btn-del" onclick="deleteCat(${ci})">🗑️ Eliminar</button>
-            </div>`;
-        (cat.items||[]).forEach((item,ii) => {
-          const b=item.badge||'';
-          hMenu += `<div class="ed-item-block">
-            <div style="font-size:12px;font-weight:700;color:#555;margin-bottom:4px;">🍽️ Plato ${ii+1}</div>
-            <input placeholder="Nombre Plato" value="${item.name||''}" onchange="updateItem(${ci},${ii},'name',this.value)">
-            <input placeholder="Precio actual (ej: $12.000)" value="${item.price||''}" onchange="updateItem(${ci},${ii},'price',this.value)">
-            <input placeholder="Precio anterior tachado — dejar vacío si no aplica" value="${item.precioAntes||''}" onchange="updateItem(${ci},${ii},'precioAntes',this.value)">
-            <input placeholder="Descripción / ingredientes" value="${item.desc||''}" onchange="updateItem(${ci},${ii},'desc',this.value)">
-            <input placeholder="URL de foto (opcional)" value="${item.img||''}" onchange="updateItem(${ci},${ii},'img',this.value)">
-            <div style="margin:6px 0 2px;font-size:12px;font-weight:600;color:#555;">Etiqueta:</div>
-            <div class="badge-selector">
-              <button type="button" class="badge-opt ${b==='hot'?'active-hot':''}" onclick="setBadge(${ci},${ii},'hot')">🔥 El más pedido</button>
-              <button type="button" class="badge-opt ${b==='new'?'active-new':''}" onclick="setBadge(${ci},${ii},'new')">✨ Nuevo</button>
-              <button type="button" class="badge-opt ${b==='sold'?'active-sold':''}" onclick="setBadge(${ci},${ii},'sold')">❌ Agotado</button>
-              <button type="button" class="badge-opt" onclick="setBadge(${ci},${ii},'')" style="${b===''?'border-color:#aaa;background:#f0f0f0;color:#555':''}">Sin etiqueta</button>
-            </div>
-            <button class="btn btn-del" style="width:100%;margin-top:8px;" onclick="deleteItem(${ci},${ii})">Quitar Plato</button>
-          </div>`;
-        });
-        hMenu += `<button class="btn btn-add" onclick="addItem(${ci})" style="margin-top:10px;">+ Añadir Plato</button></div></div>`;
+    var hist = "";
+    if (stats.pedidosHoy && stats.pedidosHoy.length) {
+      stats.pedidosHoy.slice().reverse().slice(0,10).forEach(function(p) {
+        hist += "<div class='pedido-hist'>" + p.resumen + "<div class='pedido-hist-time'>" + p.hora + " - $" + (p.total||0).toLocaleString("es-CO") + "</div></div>";
       });
-      document.getElementById('menu-editor-content').innerHTML = hMenu;
+    } else {
+      hist = "<div style='font-size:12px;color:#aaa;text-align:center;padding:10px 0;'>Aun no hay pedidos hoy</div>";
+    }
+    document.getElementById("stats-content").innerHTML =
+      "<div class='admin-card'><b>Estadisticas</b>" +
+      "<div class='stat-grid'>" +
+        "<div class='stat-box'><div class='stat-num'>" + stats.hoy + "</div><div class='stat-label'>Pedidos hoy</div></div>" +
+        "<div class='stat-box'><div class='stat-num'>" + stats.semana + "</div><div class='stat-label'>Esta semana</div></div>" +
+      "</div>" +
+      "<div style='margin-top:12px;'><b style='font-size:13px;'>Ultimos pedidos</b>" + hist + "</div>" +
+      "<button class='btn-reset-stats' id='btn-reset-stats'>Reiniciar contadores</button>" +
+      "</div>";
+    document.getElementById("btn-reset-stats").addEventListener("click", function() {
+      if (!confirm("Reiniciar contadores?")) return;
+      db.ref("stats/dias/" + getFechaHoy()).remove();
+      db.ref("stats/semanas/" + getSemanaKey()).remove();
+      cargarEstadisticas(renderStats);
     });
   }
 
-  function toggleAdminCat(ci) {
-    const body=document.getElementById('body-cat-'+ci), chev=document.getElementById('chevron-cat-'+ci);
-    if (!body) return;
-    const open=body.classList.contains('open');
-    body.classList.toggle('open',!open); chev.classList.toggle('open',!open);
-  }
-  function updateItem(ci,ii,f,v) { data.cats[ci].items[ii][f]=v; }
-  function deleteItem(ci,ii) { data.cats[ci].items.splice(ii,1); renderAdminEditor(); }
-  function deleteCat(ci) { if(!confirm('¿Eliminar esta categoría y todos sus platos?')) return; data.cats.splice(ci,1); renderAdminEditor(); }
-  function addItem(ci) {
-    if (!data.cats[ci].items) data.cats[ci].items=[];
-    data.cats[ci].items.push({name:"",desc:"",price:"",img:"",badge:"",precioAntes:""});
-    renderAdminEditor();
-    setTimeout(()=>{ const b=document.getElementById('body-cat-'+ci),c=document.getElementById('chevron-cat-'+ci); if(b&&!b.classList.contains('open')){b.classList.add('open');c.classList.add('open');} },50);
-  }
-  function addCat() { data.cats.push({name:"Nueva Categoría",items:[]}); renderAdminEditor(); }
-  function setBadge(ci,ii,val) { data.cats[ci].items[ii].badge=val; renderAdminEditor(); }
+  /* ── SEGURIDAD ── */
+  function renderSeguridad() {
+    var creds = getCreds();
+    var puntos = Array(Math.min(creds.pass.length,10)+1).join("*");
+    document.getElementById("seguridad-content").innerHTML =
+      "<div class='admin-card'><h3>Credenciales de acceso</h3>" +
+      "<div class='sec-current'>" +
+        "<div><div class='sec-current-label'>Usuario</div><div class='sec-current-value'>" + creds.user + "</div></div>" +
+        "<div style='text-align:right;'><div class='sec-current-label'>Contrasena</div><div class='sec-current-value'>" + puntos + "</div></div>" +
+      "</div><hr class='sec-divider'>" +
+      "<div class='sec-field'><label>Contrasena actual</label><div class='sec-input-wrap'>" +
+        "<input id='sec-actual' class='sec-input pass' type='password' placeholder='Tu contrasena actual'>" +
+        "<button class='sec-eye' id='eye-actual'>ver</button></div></div><hr class='sec-divider'>" +
+      "<div class='sec-field'><label>Nuevo usuario (opcional)</label><input id='sec-new-user' class='sec-input' type='text' placeholder='Nuevo usuario'></div>" +
+      "<div class='sec-field'><label>Nueva contrasena (opcional)</label><div class='sec-input-wrap'>" +
+        "<input id='sec-new-pass' class='sec-input pass' type='password' placeholder='Min. 4 caracteres'>" +
+        "<button class='sec-eye' id='eye-new'>ver</button></div></div>" +
+      "<div class='sec-field'><label>Confirmar nueva contrasena</label><div class='sec-input-wrap'>" +
+        "<input id='sec-confirm' class='sec-input pass' type='password' placeholder='Repite la nueva contrasena'>" +
+        "<button class='sec-eye' id='eye-confirm'>ver</button></div></div>" +
+      "<button class='btn btn-primary' id='btn-guardar-creds'>Guardar cambios</button>" +
+      "<div id='sec-ok' class='alert-box alert-success'></div>" +
+      "<div id='sec-err' class='alert-box alert-error'></div></div>";
 
-  function applyChanges() {
-    data.brand=document.getElementById('brandInput').value;
-    data.phone=document.getElementById('phoneInput').value;
-    data.slogan=document.getElementById('sloganInput').value;
-    data.nequi=document.getElementById('nequiInput').value;
-    data.bancolombia=document.getElementById('bancoInput').value;
-    data.horaAbre=parseInt(document.getElementById('horaAbreInput').value)||18;
-    data.horaCierra=parseInt(document.getElementById('horaCierraInput').value)||23;
-    data.cerradoManual=document.getElementById('cerradoToggle').checked;
-    data.mensajeCerrado=document.getElementById('mensajeCerradoInput').value;
-    const btn=document.querySelector('.btn-save-fixed');
-    btn.textContent='⏳ Guardando...'; btn.disabled=true;
-    db.ref('menuData').set(data).then(()=>{
-      btn.textContent='✅ ¡Guardado!'; btn.style.background='#3c40c6';
-      setTimeout(()=>{ btn.textContent='💾 GUARDAR EN LA NUBE'; btn.style.background=''; btn.disabled=false; },2000);
-    }).catch(()=>{ btn.textContent='❌ Error al guardar'; btn.style.background='#ff5e57'; btn.disabled=false; });
+    function toggleEye(id, btn) {
+      var el = document.getElementById(id);
+      el.type = el.type === "password" ? "text" : "password";
+      btn.textContent = el.type === "password" ? "ver" : "ocultar";
+    }
+    document.getElementById("eye-actual").addEventListener("click", function() { toggleEye("sec-actual", this); });
+    document.getElementById("eye-new").addEventListener("click", function() { toggleEye("sec-new-pass", this); });
+    document.getElementById("eye-confirm").addEventListener("click", function() { toggleEye("sec-confirm", this); });
+    document.getElementById("btn-guardar-creds").addEventListener("click", guardarCreds);
   }
+
+  function guardarCreds() {
+    var creds   = getCreds();
+    var actual  = document.getElementById("sec-actual").value;
+    var newUser = (document.getElementById("sec-new-user").value || "").trim();
+    var newPass = document.getElementById("sec-new-pass").value;
+    var conf    = document.getElementById("sec-confirm").value;
+    var ok  = document.getElementById("sec-ok");
+    var err = document.getElementById("sec-err");
+    ok.classList.remove("show"); err.classList.remove("show");
+    function showErr(m) { err.textContent = m; err.classList.add("show"); }
+    if (actual !== creds.pass)         return showErr("La contrasena actual es incorrecta.");
+    if (!newUser && !newPass)          return showErr("Ingresa al menos un nuevo usuario o contrasena.");
+    if (newPass && newPass.length < 4) return showErr("La nueva contrasena debe tener al menos 4 caracteres.");
+    if (newPass && newPass !== conf)   return showErr("Las contrasenas nuevas no coinciden.");
+    var fu = newUser || creds.user;
+    var fp = newPass || creds.pass;
+    saveCreds(fu, fp);
+    try { var s = JSON.parse(localStorage.getItem(SESSION_KEY)||"{}"); s.user=fu; localStorage.setItem(SESSION_KEY,JSON.stringify(s)); } catch(e) {}
+    var badge = document.getElementById("session-badge");
+    if (badge) badge.textContent = fu;
+    ok.textContent = "Listo! Usuario: " + fu + ". Cierra sesion para probar.";
+    ok.classList.add("show");
+    ["sec-actual","sec-new-user","sec-new-pass","sec-confirm"].forEach(function(id) { var el=document.getElementById(id); if(el) el.value=""; });
+    setTimeout(renderSeguridad, 2000);
+  }
+
+  /* ── EDITOR MENU ── */
+  function esc(str) {
+    return String(str||"").replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  }
+
+  function renderAdminEditor() {
+    cargarEstadisticas(function(stats) {
+      renderStats(stats);
+      document.getElementById("negocio-content").innerHTML =
+        "<div class='admin-card'>" +
+        "<b>Nombre del Negocio:</b><input id='brandInput' value='" + esc(data.brand) + "'>" +
+        "<b>Numero de Celular:</b><input id='phoneInput' value='" + esc(data.phone) + "'>" +
+        "<b>Eslogan:</b><input id='sloganInput' value='" + esc(data.slogan) + "'>" +
+        "<b>Nequi:</b><input id='nequiInput' value='" + esc(data.nequi) + "'>" +
+        "<b>Bancolombia:</b><input id='bancoInput' value='" + esc(data.bancolombia) + "'>" +
+        "<b>Horario:</b><div class='horario-row'>" +
+          "<div><small>Apertura (0-23)</small><input id='horaAbreInput' type='number' min='0' max='23' value='" + (data.horaAbre!==undefined?data.horaAbre:18) + "'></div>" +
+          "<div><small>Cierre (0-23)</small><input id='horaCierraInput' type='number' min='0' max='23' value='" + (data.horaCierra||23) + "'></div>" +
+        "</div>" +
+        "<div class='switch-row'><div><div class='switch-label'>Cerrado temporalmente</div><small style='margin:0;'>Bloquea el carrito</small></div>" +
+          "<label class='toggle-switch'><input type='checkbox' id='cerradoToggle' " + (data.cerradoManual?"checked":"") + "><span class='toggle-slider'></span></label>" +
+        "</div>" +
+        "<input id='mensajeCerradoInput' placeholder='Mensaje de cierre' value='" + esc(data.mensajeCerrado) + "'>" +
+        "</div>";
+
+      var hMenu = "";
+      (data.cats||[]).forEach(function(cat, ci) {
+        var n = (cat.items||[]).length;
+        hMenu += "<div class='admin-cat-block'>" +
+          "<div class='admin-cat-header' data-ci='" + ci + "'>" +
+            "<div class='admin-cat-header-left'>" +
+              "<span style='font-size:18px;'>&#128194;</span>" +
+              "<span style='font-size:15px;font-weight:700;color:#1e272e;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;'>" + esc(cat.name||"Categoria") + "</span>" +
+              "<span class='admin-cat-count'>" + n + " plato" + (n!==1?"s":"") + "</span>" +
+            "</div>" +
+            "<span class='admin-cat-chevron" + (ci===0?" open":"") + "' id='chevron-cat-" + ci + "'>&#9660;</span>" +
+          "</div>" +
+          "<div class='admin-cat-body" + (ci===0?" open":"") + "' id='body-cat-" + ci + "'>" +
+            "<div style='display:flex;gap:8px;margin:14px 0 10px;'>" +
+              "<input class='admin-cat-name-input' value='" + esc(cat.name||"") + "' placeholder='Nombre categoria' data-ci='" + ci + "' data-role='catname'>" +
+              "<button class='btn btn-del' data-ci='" + ci + "' data-role='delcat'>Eliminar</button>" +
+            "</div>";
+        (cat.items||[]).forEach(function(item, ii) {
+          var b = item.badge || "";
+          hMenu += "<div class='ed-item-block'>" +
+            "<div style='font-size:12px;font-weight:700;color:#555;margin-bottom:4px;'>Plato " + (ii+1) + "</div>" +
+            "<input placeholder='Nombre' value='" + esc(item.name) + "' data-ci='" + ci + "' data-ii='" + ii + "' data-field='name' data-role='item'>" +
+            "<input placeholder='Precio actual' value='" + esc(item.price) + "' data-ci='" + ci + "' data-ii='" + ii + "' data-field='price' data-role='item'>" +
+            "<input placeholder='Precio anterior (opcional)' value='" + esc(item.precioAntes) + "' data-ci='" + ci + "' data-ii='" + ii + "' data-field='precioAntes' data-role='item'>" +
+            "<input placeholder='Descripcion' value='" + esc(item.desc) + "' data-ci='" + ci + "' data-ii='" + ii + "' data-field='desc' data-role='item'>" +
+            "<input placeholder='URL foto (opcional)' value='" + esc(item.img) + "' data-ci='" + ci + "' data-ii='" + ii + "' data-field='img' data-role='item'>" +
+            "<div style='margin:6px 0 2px;font-size:12px;font-weight:600;color:#555;'>Etiqueta:</div>" +
+            "<div class='badge-selector'>" +
+              "<button class='badge-opt " + (b==="hot"?"active-hot":"") + "' data-ci='" + ci + "' data-ii='" + ii + "' data-badge='hot' data-role='badge'>El mas pedido</button>" +
+              "<button class='badge-opt " + (b==="new"?"active-new":"") + "' data-ci='" + ci + "' data-ii='" + ii + "' data-badge='new' data-role='badge'>Nuevo</button>" +
+              "<button class='badge-opt " + (b==="sold"?"active-sold":"") + "' data-ci='" + ci + "' data-ii='" + ii + "' data-badge='sold' data-role='badge'>Agotado</button>" +
+              "<button class='badge-opt " + (b===""?"active-sold":"") + "' data-ci='" + ci + "' data-ii='" + ii + "' data-badge='' data-role='badge'>Sin etiqueta</button>" +
+            "</div>" +
+            "<button class='btn btn-del' style='width:100%;margin-top:8px;' data-ci='" + ci + "' data-ii='" + ii + "' data-role='delitem'>Quitar Plato</button>" +
+          "</div>";
+        });
+        hMenu += "<button class='btn btn-add' style='margin-top:10px;' data-ci='" + ci + "' data-role='additem'>+ Anadir Plato</button>" +
+          "</div></div>";
+      });
+      document.getElementById("menu-editor-content").innerHTML = hMenu;
+      bindMenuEvents();
+    });
+  }
+
+  function bindMenuEvents() {
+    document.querySelectorAll(".admin-cat-header").forEach(function(h) {
+      h.addEventListener("click", function() {
+        var ci = this.getAttribute("data-ci");
+        var body = document.getElementById("body-cat-" + ci);
+        var chev = document.getElementById("chevron-cat-" + ci);
+        if (!body) return;
+        var isOpen = body.classList.contains("open");
+        body.classList.toggle("open", !isOpen);
+        chev.classList.toggle("open", !isOpen);
+      });
+    });
+    document.querySelectorAll("[data-role='item']").forEach(function(inp) {
+      inp.addEventListener("change", function() {
+        var ci = +this.getAttribute("data-ci");
+        var ii = +this.getAttribute("data-ii");
+        data.cats[ci].items[ii][this.getAttribute("data-field")] = this.value;
+      });
+    });
+    document.querySelectorAll("[data-role='catname']").forEach(function(inp) {
+      inp.addEventListener("change", function() {
+        data.cats[+this.getAttribute("data-ci")].name = this.value;
+      });
+    });
+    document.querySelectorAll("[data-role='delcat']").forEach(function(btn) {
+      btn.addEventListener("click", function() {
+        if (!confirm("Eliminar categoria y todos sus platos?")) return;
+        data.cats.splice(+this.getAttribute("data-ci"), 1);
+        renderAdminEditor();
+      });
+    });
+    document.querySelectorAll("[data-role='delitem']").forEach(function(btn) {
+      btn.addEventListener("click", function() {
+        data.cats[+this.getAttribute("data-ci")].items.splice(+this.getAttribute("data-ii"), 1);
+        renderAdminEditor();
+      });
+    });
+    document.querySelectorAll("[data-role='additem']").forEach(function(btn) {
+      btn.addEventListener("click", function() {
+        var ci = +this.getAttribute("data-ci");
+        if (!data.cats[ci].items) data.cats[ci].items = [];
+        data.cats[ci].items.push({ name:"", desc:"", price:"", img:"", badge:"", precioAntes:"" });
+        renderAdminEditor();
+        setTimeout(function() {
+          var b = document.getElementById("body-cat-" + ci);
+          var c = document.getElementById("chevron-cat-" + ci);
+          if (b && !b.classList.contains("open")) { b.classList.add("open"); c.classList.add("open"); }
+        }, 50);
+      });
+    });
+    document.querySelectorAll("[data-role='badge']").forEach(function(btn) {
+      btn.addEventListener("click", function() {
+        data.cats[+this.getAttribute("data-ci")].items[+this.getAttribute("data-ii")].badge = this.getAttribute("data-badge");
+        renderAdminEditor();
+      });
+    });
+  }
+
+  document.getElementById("btn-add-cat").addEventListener("click", function() {
+    data.cats.push({ name: "Nueva Categoria", items: [] });
+    renderAdminEditor();
+  });
+
+  /* ── GUARDAR EN FIREBASE ── */
+  document.getElementById("btn-guardar").addEventListener("click", function() {
+    function val(id) { var el = document.getElementById(id); return el ? el.value : ""; }
+    function num(id, def) { var el = document.getElementById(id); return el ? (parseInt(el.value)||def) : def; }
+    data.brand         = val("brandInput");
+    data.phone         = val("phoneInput");
+    data.slogan        = val("sloganInput");
+    data.nequi         = val("nequiInput");
+    data.bancolombia   = val("bancoInput");
+    data.horaAbre      = num("horaAbreInput", 18);
+    data.horaCierra    = num("horaCierraInput", 23);
+    var ct = document.getElementById("cerradoToggle");
+    if (ct) data.cerradoManual = ct.checked;
+    data.mensajeCerrado = val("mensajeCerradoInput");
+
+    var btn = document.getElementById("btn-guardar");
+    btn.textContent = "Guardando..."; btn.disabled = true;
+    db.ref("menuData").set(data).then(function() {
+      btn.textContent = "Guardado!"; btn.style.background = "#3c40c6";
+      setTimeout(function() { btn.textContent = "GUARDAR EN LA NUBE"; btn.style.background = ""; btn.disabled = false; }, 2000);
+    }).catch(function() {
+      btn.textContent = "Error al guardar"; btn.style.background = "#ff5e57"; btn.disabled = false;
+    });
+  });
+
+})();
 </script>
 </body>
 </html>
