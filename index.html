@@ -17,7 +17,7 @@
     .container { max-width: 600px; margin: 0 auto; padding: 20px; padding-bottom: 120px; }
 
     .brand { text-align: center; padding: 40px 20px 24px; background: var(--white); border-radius: 0 0 30px 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin: -20px -20px 20px -20px; }
-    .brand-logos { font-size: 65px; user-select: none; -webkit-tap-highlight-color: transparent; margin-bottom: 5px; display: block; letter-spacing: 5px; }
+    .brand-logos { font-size: 65px; user-select: none; -webkit-tap-highlight-color: transparent; margin-bottom: 5px; display: block; letter-spacing: 5px; cursor: pointer; }
     .brand-name { font-size: 32px; font-weight: 800; color: var(--primary); text-transform: uppercase; line-height: 1.1; }
     @keyframes pulso { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(1.3)} }
 
@@ -440,7 +440,7 @@
 
     el.innerHTML = `
       <div class="brand">
-        <div class="brand-logos">🍔🍟🥤</div>
+        <div class="brand-logos" onclick="secretTap()">🍔🍟🥤</div>
         <div class="brand-name">${data.brand}</div>
         ${estadoNegocio()}
       </div>
@@ -605,6 +605,19 @@
           setTimeout(() => { fab.innerHTML=orig; fab.style.background=''; }, 2200);
         }
       }).catch(() => { prompt('Copia este link:', url); });
+    }
+  }
+
+  // ── GESTO SECRETO: 5 taps en el logo → admin ──
+  let _taps = 0, _tapTimer;
+  function secretTap() {
+    _taps++;
+    clearTimeout(_tapTimer);
+    if (_taps >= 5) {
+      _taps = 0;
+      window.location.href = './admin.html';
+    } else {
+      _tapTimer = setTimeout(() => _taps = 0, 1500);
     }
   }
 </script>
