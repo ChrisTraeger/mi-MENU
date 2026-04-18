@@ -201,7 +201,7 @@
   var MAX_INTENTOS = 5;
   var BLOQUEO_SEG  = 60;
   var SESSION_KEY  = "adminSession_v2";
-  var CREDS_KEY    = "adminCreds_v1";
+  var credsFirebase = null; /* se cargan desde Firebase al iniciar */
 
   var firebaseConfig = {
     apiKey: "AIzaSyByKcM9Z2_PwW0Y9xdbFIfBI6AMviiI4uQ",
@@ -219,18 +219,16 @@
     horaAbre: 18, horaCierra: 23, cerradoManual: false, mensajeCerrado: "", cats: []
   };
 
-  /* ── CREDENCIALES ── */
+  /* ── CREDENCIALES EN FIREBASE ── */
   function getCreds() {
-    try {
-      var raw = localStorage.getItem(CREDS_KEY);
-      if (!raw) return { user: DEFAULT_USER, pass: DEFAULT_PASS };
-      var c = JSON.parse(raw);
-      if (c && typeof c.user === "string" && typeof c.pass === "string" && c.user && c.pass) return c;
-    } catch(e) {}
+    if (credsFirebase && credsFirebase.user && credsFirebase.pass) return credsFirebase;
     return { user: DEFAULT_USER, pass: DEFAULT_PASS };
   }
   function saveCreds(u, p) {
-    localStorage.setItem(CREDS_KEY, JSON.stringify({ user: u, pass: p }));
+    credsFirebase = { user: u, pass: p };
+    db.ref("adminCreds").set({ user: u, pass: p });
+    /* cache local por si no hay red */
+    try { localStorage.setItem("adminCredsCache", JSON.stringify({ user: u, pass: p })); } catch(e) {}
   }
 
   /* ── LOGIN ── */
@@ -256,7 +254,7 @@
   function verificarClave() {
     if (esBloqueado()) return;
     var userVal = (document.getElementById("user-input").value || "").trim();
-    var passVal = (document.getElementById("pass-input").value || "").trim();
+    var passVal = document.getElementById("pass-input").value || "";
     if (!userVal) { document.getElementById("user-input").focus(); return; }
     if (!passVal) { document.getElementById("pass-input").focus(); return; }
     var creds = getCreds();
@@ -310,22 +308,49 @@
     window.location.href = "./index.html";
   });
 
-  /* ── SESION AUTO ── */
+  /* ── SESION AUTO + CARGA CREDS DESDE FIREBASE ── */
   window.addEventListener("load", function() {
-    try {
-      var raw = localStorage.getItem(CREDS_KEY);
-      if (raw) {
-        var c = JSON.parse(raw);
-        if (!c || typeof c.user !== "string" || typeof c.pass !== "string" || !c.user || !c.pass) {
-          localStorage.removeItem(CREDS_KEY);
+    var btnEntrar = document.getElementById("btn-entrar");
+    btnEntrar.textContent = "Conectando..."; btnEntrar.disabled = true;
+
+    db.ref("adminCreds").once("value", function(snap) {
+      var fbCreds = snap.val();
+      if (fbCreds && fbCreds.user && fbCreds.pass) {
+        credsFirebase = fbCreds;
+        try { localStorage.setItem("adminCredsCache", JSON.stringify(fbCreds)); } catch(e) {}
+      } else {
+        /* primera vez: intentar cache local o usar defaults */
+        try {
+          var cached = JSON.parse(localStorage.getItem("adminCredsCache") || "null");
+          if (cached && cached.user && cached.pass) {
+            credsFirebase = cached;
+            db.ref("adminCreds").set(cached); /* sincronizar a Firebase */
+          } else {
+            credsFirebase = { user: DEFAULT_USER, pass: DEFAULT_PASS };
+            db.ref("adminCreds").set(credsFirebase);
+          }
+        } catch(e) {
+          credsFirebase = { user: DEFAULT_USER, pass: DEFAULT_PASS };
         }
       }
-    } catch(e) { localStorage.removeItem(CREDS_KEY); }
-    try {
-      var s = JSON.parse(localStorage.getItem(SESSION_KEY) || "null");
-      if (s && Date.now() - s.ts < 8 * 60 * 60 * 1000) { abrirPanel(s.user || ""); return; }
-    } catch(e) {}
-    setTimeout(function() { document.getElementById("user-input").focus(); }, 300);
+      btnEntrar.textContent = "Entrar al Panel →"; btnEntrar.disabled = false;
+
+      /* verificar sesion activa */
+      try {
+        var s = JSON.parse(localStorage.getItem(SESSION_KEY) || "null");
+        if (s && Date.now() - s.ts < 8 * 60 * 60 * 1000) { abrirPanel(s.user || ""); return; }
+      } catch(e) {}
+      setTimeout(function() { document.getElementById("user-input").focus(); }, 100);
+    }, function() {
+      /* error de red: usar cache */
+      try {
+        var cached = JSON.parse(localStorage.getItem("adminCredsCache") || "null");
+        if (cached && cached.user && cached.pass) credsFirebase = cached;
+        else credsFirebase = { user: DEFAULT_USER, pass: DEFAULT_PASS };
+      } catch(e) { credsFirebase = { user: DEFAULT_USER, pass: DEFAULT_PASS }; }
+      btnEntrar.textContent = "Entrar al Panel →"; btnEntrar.disabled = false;
+      setTimeout(function() { document.getElementById("user-input").focus(); }, 100);
+    });
   });
 
   /* ── TABS ── */
@@ -588,12 +613,15 @@
     if (newPass && newPass !== conf)   return showErr("Las contrasenas nuevas no coinciden.");
     var fu = newUser || creds.user;
     var fp = newPass || creds.pass;
+    var btnG = document.getElementById("btn-guardar-creds");
+    btnG.textContent = "Guardando..."; btnG.disabled = true;
     saveCreds(fu, fp);
     try { var s = JSON.parse(localStorage.getItem(SESSION_KEY)||"{}"); s.user=fu; localStorage.setItem(SESSION_KEY,JSON.stringify(s)); } catch(e) {}
     var badge = document.getElementById("session-badge");
     if (badge) badge.textContent = fu;
-    ok.textContent = "Listo! Usuario: " + fu + ". Cierra sesion para probar.";
+    ok.textContent = "✅ Guardado en la nube! Usuario: " + fu;
     ok.classList.add("show");
+    btnG.textContent = "Guardar cambios"; btnG.disabled = false;
     ["sec-actual","sec-new-user","sec-new-pass","sec-confirm"].forEach(function(id) { var el=document.getElementById(id); if(el) el.value=""; });
     setTimeout(renderSeguridad, 2000);
   }
