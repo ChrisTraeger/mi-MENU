@@ -42,6 +42,13 @@
       transition: background 0.15s, transform 0.1s;
     }
     .login-btn:active { transform: scale(0.98); background: #c04e26; }
+    .login-back {
+      display: block; text-align: center; margin-top: 18px;
+      font-size: 13px; font-weight: 600; color: #636e72;
+      text-decoration: none; padding: 10px;
+      border-radius: 12px; transition: background 0.15s, color 0.15s;
+    }
+    .login-back:hover { background: #f1f2f6; color: #1e272e; }
     .login-error {
       background: #fff0eb; border: 1px solid #D85A3040; border-radius: 10px;
       padding: 10px 14px; font-size: 13px; color: #D85A30; font-weight: 600;
@@ -63,6 +70,8 @@
 
     .admin-topbar { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; background: var(--dark); flex-shrink: 0; }
     .admin-topbar-title { font-size: 16px; font-weight: 800; color: white; letter-spacing: 1px; }
+    .admin-topbar-right { display: flex; align-items: center; gap: 8px; }
+    .admin-back-menu { background: #2d3436; color: #b2bec3; border: 1px solid #4a5568; border-radius: 10px; padding: 8px 12px; font-family: 'Poppins', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; }
     .admin-logout { background: #ff5e57; color: white; border: none; border-radius: 10px; padding: 8px 14px; font-family: 'Poppins', sans-serif; font-size: 12px; font-weight: 700; cursor: pointer; }
 
     .admin-tabs { display: flex; padding: 0 12px; background: var(--dark); flex-shrink: 0; }
@@ -150,6 +159,7 @@
       <div class="login-error" id="login-error">❌ Clave incorrecta</div>
       <div class="login-attempts" id="login-attempts"></div>
     </div>
+    <a href="./index.html" class="login-back">← Volver al menú</a>
   </div>
 </div>
 
@@ -160,7 +170,10 @@
       <div class="admin-topbar-title">⚙️ PANEL DE CONTROL</div>
       <span class="session-badge">● Sesión activa</span>
     </div>
-    <button class="admin-logout" onclick="cerrarSesion()">🚪 Salir</button>
+    <div class="admin-topbar-right">
+      <a href="./index.html" class="admin-back-menu">🍔 Menú</a>
+      <button class="admin-logout" onclick="cerrarSesion()">🚪 Salir</button>
+    </div>
   </div>
   <div class="admin-tabs">
     <button class="admin-tab active" onclick="switchTab('stats', this)">📊 Stats</button>
@@ -234,7 +247,6 @@
     if (!clave) { inp.focus(); return; }
 
     if (clave === ADMIN_PASS) {
-      // Guardar sesión
       try { localStorage.setItem(SESSION_KEY, JSON.stringify({ ts: Date.now() })); } catch(e) {}
       abrirPanel();
     } else {
@@ -287,9 +299,7 @@
   function cerrarSesion() {
     if (!confirm('¿Cerrar sesión?')) return;
     try { localStorage.removeItem(SESSION_KEY); } catch(e) {}
-    document.getElementById('admin-panel').classList.remove('visible');
-    document.getElementById('login-screen').style.display = 'flex';
-    document.getElementById('clave-input').value = '';
+    window.location.href = './index.html';
   }
 
   // Verificar sesión activa al cargar (válida por 8 horas)
@@ -321,7 +331,6 @@
       }
       renderAdminEditor();
     });
-    // Escuchar cambios en tiempo real
     db.ref('menuData').on('value', snap => {
       const cloud = snap.val();
       if (cloud) { data = cloud; if (!data.cats) data.cats = []; }
@@ -394,7 +403,6 @@
     cargarEstadisticas(stats => {
       renderStats(stats);
 
-      // Panel negocio
       document.getElementById('negocio-content').innerHTML = `
         <div class="admin-card">
           <b>Nombre del Negocio:</b>
@@ -425,7 +433,6 @@
           <input id="mensajeCerradoInput" placeholder="Mensaje de cierre (ej: Volvemos el viernes 🙏)" value="${data.mensajeCerrado||''}">
         </div>`;
 
-      // Panel menú con categorías colapsables
       let hMenu = '';
       (data.cats||[]).forEach((cat, ci) => {
         const numItems = (cat.items||[]).length;
@@ -490,7 +497,6 @@
     if (!data.cats[ci].items) data.cats[ci].items=[];
     data.cats[ci].items.push({name:"",desc:"",price:"",img:"",badge:"",precioAntes:""});
     renderAdminEditor();
-    // Abrir la categoría si estaba cerrada
     setTimeout(() => {
       const body = document.getElementById('body-cat-'+ci);
       const chevron = document.getElementById('chevron-cat-'+ci);
@@ -518,6 +524,20 @@
     db.ref('menuData').set(data).then(() => {
       btn.textContent = '✅ ¡Guardado!';
       btn.style.background = '#3c40c6';
+      setTimeout(() => {
+        btn.textContent = '💾 GUARDAR EN LA NUBE';
+        btn.style.background = '';
+        btn.disabled = false;
+      }, 2000);
+    }).catch(() => {
+      btn.textContent = '❌ Error al guardar';
+      btn.style.background = '#ff5e57';
+      btn.disabled = false;
+    });
+  }
+</script>
+</body>
+</html>
       setTimeout(() => {
         btn.textContent = '💾 GUARDAR EN LA NUBE';
         btn.style.background = '';
