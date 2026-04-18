@@ -65,11 +65,27 @@
     .toggle-slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 4px; bottom: 4px; background: white; border-radius: 50%; transition: .3s; }
     input:checked + .toggle-slider { background: #ff5e57; }
     input:checked + .toggle-slider:before { transform: translateX(24px); }
-    .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 10px 0; }
-    .stat-box { background: var(--bg); border-radius: 14px; padding: 14px; text-align: center; }
-    .stat-num { font-size: 28px; font-weight: 800; color: var(--primary); }
-    .stat-label { font-size: 12px; color: #636e72; margin-top: 2px; }
+
+    /* ── STATS DASHBOARD ── */
+    .stats-metrics { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 16px; }
+    .stats-mcard { background: #f8f9fa; border-radius: 14px; padding: 14px 16px; border: 1px solid #eee; }
+    .stats-mcard .s-lbl { font-size: 11px; color: #636e72; margin-bottom: 4px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+    .stats-mcard .s-val { font-size: 28px; font-weight: 800; color: var(--primary); line-height: 1; }
+    .stats-mcard .s-sub { font-size: 11px; color: #aaa; margin-top: 4px; }
+    .stats-chart-card { background: white; border-radius: 16px; padding: 14px 16px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+    .stats-chart-title { font-size: 13px; font-weight: 700; color: #555; margin-bottom: 10px; }
+    .stats-top-item { display: flex; align-items: center; gap: 8px; padding: 7px 0; border-bottom: 1px solid #f1f2f6; font-size: 13px; }
+    .stats-top-item:last-child { border-bottom: none; }
+    .stats-top-bar-wrap { flex: 1; height: 7px; background: #f1f2f6; border-radius: 4px; overflow: hidden; }
+    .stats-top-bar { height: 100%; border-radius: 4px; background: var(--primary); }
+    .stats-top-name { min-width: 90px; color: #333; font-weight: 600; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 110px; }
+    .stats-top-count { font-size: 11px; color: #636e72; min-width: 24px; text-align: right; font-weight: 700; }
+    .pedido-hist { background: var(--bg); border-radius: 10px; padding: 10px 14px; margin-top: 8px; font-size: 12px; border-left: 3px solid var(--primary); }
+    .pedido-hist-time { font-size: 10px; color: #888; margin-top: 3px; }
+    .stats-empty { font-size: 12px; color: #aaa; text-align: center; padding: 20px 0; }
+    .stats-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
     .btn-reset-stats { background: #636e72; color: white; font-size: 12px; padding: 6px 16px; border-radius: 10px; border: none; cursor: pointer; font-family: 'Poppins', sans-serif; font-weight: 600; margin-top: 8px; }
+
     input[type="text"], input[type="number"], input:not([type]) { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ccc; border-radius: 10px; font-family: inherit; font-size: 14px; }
     .btn { cursor: pointer; border: none; font-weight: 600; border-radius: 12px; padding: 12px; width: 100%; margin-top: 10px; font-family: 'Poppins', sans-serif; }
     .btn-primary { background: #D85A30; color: white; }
@@ -104,8 +120,6 @@
     .admin-cat-body { display: none; padding: 0 16px 16px; border-top: 1px solid var(--bg); }
     .admin-cat-body.open { display: block; }
     .admin-cat-name-input { font-weight: 700; color: var(--primary); flex: 1; min-width: 0; padding: 8px 10px; border: 1px solid #ddd; border-radius: 10px; font-family: 'Poppins', sans-serif; font-size: 14px; margin: 0; width: auto; }
-    .pedido-hist { background: var(--bg); border-radius: 10px; padding: 10px 14px; margin-top: 8px; font-size: 12px; border-left: 3px solid var(--primary); }
-    .pedido-hist-time { font-size: 10px; color: #888; margin-top: 3px; }
     .session-badge { font-size: 10px; color: #05c46b; font-weight: 700; background: #05c46b15; padding: 3px 10px; border-radius: 20px; }
   </style>
 </head>
@@ -177,6 +191,7 @@
   </div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <script>
@@ -321,7 +336,7 @@
       document.querySelectorAll(".admin-pane").forEach(function(p) { p.classList.remove("active"); });
       this.classList.add("active");
       document.getElementById("pane-" + tab).classList.add("active");
-      if (tab === "stats") cargarEstadisticas(renderStats);
+      if (tab === "stats") cargarYRenderStats();
       if (tab === "menu") renderAdminEditor();
       if (tab === "seguridad") renderSeguridad();
     });
@@ -343,7 +358,7 @@
           });
         });
       }
-      renderAdminEditor();
+      cargarYRenderStats();
     });
     db.ref("menuData").on("value", function(snap) {
       var cloud = snap.val();
@@ -351,7 +366,7 @@
     });
   }
 
-  /* ── STATS ── */
+  /* ── HELPERS FECHA ── */
   function getFechaHoy() {
     var n = new Date();
     return n.getFullYear() + "-" + String(n.getMonth()+1).padStart(2,"0") + "-" + String(n.getDate()).padStart(2,"0");
@@ -361,39 +376,164 @@
     var w = Math.ceil(((n-s)/86400000+s.getDay()+1)/7);
     return n.getFullYear() + "-W" + String(w).padStart(2,"0");
   }
-  function cargarEstadisticas(cb) {
+  function fmtCOP(v) {
+    if (v >= 1000000) return "$" + (v/1000000).toFixed(1) + "M";
+    if (v >= 1000) return "$" + Math.round(v/1000) + "K";
+    return "$" + Math.round(v);
+  }
+
+  /* ── STATS: carga y renderiza ── */
+  var chartHoraInst = null;
+  var chartSemanaInst = null;
+
+  function cargarYRenderStats() {
     Promise.all([
       db.ref("stats/dias/" + getFechaHoy()).once("value"),
-      db.ref("stats/semanas/" + getSemanaKey() + "/count").once("value")
+      db.ref("stats/semanas/" + getSemanaKey()).once("value")
     ]).then(function(res) {
-      var d = res[0].val() || { count: 0, pedidos: [] };
-      cb({ hoy: d.count || 0, semana: res[1].val() || 0, pedidosHoy: d.pedidos || [] });
+      var dHoy = res[0].val() || { count: 0, pedidos: [] };
+      var dSem = res[1].val() || { count: 0 };
+      renderStatsDashboard(dHoy, dSem);
     });
   }
-  function renderStats(stats) {
-    var hist = "";
-    if (stats.pedidosHoy && stats.pedidosHoy.length) {
-      stats.pedidosHoy.slice().reverse().slice(0,10).forEach(function(p) {
-        hist += "<div class='pedido-hist'>" + p.resumen + "<div class='pedido-hist-time'>" + p.hora + " - $" + (p.total||0).toLocaleString("es-CO") + "</div></div>";
+
+  function renderStatsDashboard(dHoy, dSem) {
+    var pedidos   = dHoy.pedidos || [];
+    var count     = dHoy.count || 0;
+    var semCount  = dSem.count || 0;
+    var total     = pedidos.reduce(function(s,p){ return s+(p.total||0); }, 0);
+    var avg       = count > 0 ? Math.round(total / count) : 0;
+
+    /* ── Últimos pedidos HTML ── */
+    var histHTML = "";
+    if (pedidos.length) {
+      pedidos.slice().reverse().slice(0,8).forEach(function(p) {
+        histHTML += "<div class='pedido-hist'>" + (p.resumen||"Pedido") +
+          "<div class='pedido-hist-time'>" + (p.hora||"") + " &mdash; $" + ((p.total||0)).toLocaleString("es-CO") + "</div></div>";
       });
     } else {
-      hist = "<div style='font-size:12px;color:#aaa;text-align:center;padding:10px 0;'>Aun no hay pedidos hoy</div>";
+      histHTML = "<div class='stats-empty'>Aun no hay pedidos hoy</div>";
     }
-    document.getElementById("stats-content").innerHTML =
-      "<div class='admin-card'><b>Estadisticas</b>" +
-      "<div class='stat-grid'>" +
-        "<div class='stat-box'><div class='stat-num'>" + stats.hoy + "</div><div class='stat-label'>Pedidos hoy</div></div>" +
-        "<div class='stat-box'><div class='stat-num'>" + stats.semana + "</div><div class='stat-label'>Esta semana</div></div>" +
-      "</div>" +
-      "<div style='margin-top:12px;'><b style='font-size:13px;'>Ultimos pedidos</b>" + hist + "</div>" +
-      "<button class='btn-reset-stats' id='btn-reset-stats'>Reiniciar contadores</button>" +
-      "</div>";
-    document.getElementById("btn-reset-stats").addEventListener("click", function() {
-      if (!confirm("Reiniciar contadores?")) return;
-      db.ref("stats/dias/" + getFechaHoy()).remove();
-      db.ref("stats/semanas/" + getSemanaKey()).remove();
-      cargarEstadisticas(renderStats);
+
+    /* ── Top platos ── */
+    var counts = {};
+    pedidos.forEach(function(p) {
+      if (p.resumen) {
+        p.resumen.split(",").forEach(function(part) {
+          var m = part.trim().match(/^(\d+)x?\s+(.+)/);
+          var nm = m ? m[2].trim() : part.trim();
+          if (nm) counts[nm] = (counts[nm]||0) + (m ? parseInt(m[1]) : 1);
+        });
+      }
     });
+    var topPlatos = Object.keys(counts).sort(function(a,b){ return counts[b]-counts[a]; }).slice(0,5);
+    var maxC = topPlatos.length ? counts[topPlatos[0]] : 1;
+    var topHTML = topPlatos.length
+      ? topPlatos.map(function(n) {
+          var pct = Math.round((counts[n]/maxC)*100);
+          return "<div class='stats-top-item'>" +
+            "<span class='stats-top-name'>" + n.substring(0,16) + "</span>" +
+            "<div class='stats-top-bar-wrap'><div class='stats-top-bar' style='width:" + pct + "%'></div></div>" +
+            "<span class='stats-top-count'>" + counts[n] + "</span></div>";
+        }).join("")
+      : "<div class='stats-empty'>Sin datos aun</div>";
+
+    /* ── Inyectar HTML ── */
+    document.getElementById("stats-content").innerHTML =
+      "<div class='stats-metrics'>" +
+        "<div class='stats-mcard'><div class='s-lbl'>Pedidos hoy</div><div class='s-val'>" + count + "</div><div class='s-sub'>pedidos registrados</div></div>" +
+        "<div class='stats-mcard'><div class='s-lbl'>Esta semana</div><div class='s-val'>" + semCount + "</div><div class='s-sub'>pedidos totales</div></div>" +
+        "<div class='stats-mcard'><div class='s-lbl'>Ingreso hoy</div><div class='s-val'>" + (total > 0 ? fmtCOP(total) : "—") + "</div><div class='s-sub'>COP estimado</div></div>" +
+        "<div class='stats-mcard'><div class='s-lbl'>Ticket promedio</div><div class='s-val'>" + (avg > 0 ? fmtCOP(avg) : "—") + "</div><div class='s-sub'>por pedido</div></div>" +
+      "</div>" +
+
+      "<div class='stats-grid-2'>" +
+        "<div class='stats-chart-card'>" +
+          "<div class='stats-chart-title'>📊 Pedidos por hora</div>" +
+          "<div style='position:relative;height:160px;'><canvas id='chartHora'></canvas></div>" +
+        "</div>" +
+        "<div class='stats-chart-card'>" +
+          "<div class='stats-chart-title'>📈 Esta semana</div>" +
+          "<div style='position:relative;height:160px;'><canvas id='chartSemana'></canvas></div>" +
+        "</div>" +
+      "</div>" +
+
+      "<div class='stats-grid-2'>" +
+        "<div class='stats-chart-card'>" +
+          "<div class='stats-chart-title'>🍽️ Platos más pedidos</div>" +
+          "<div>" + topHTML + "</div>" +
+        "</div>" +
+        "<div class='stats-chart-card'>" +
+          "<div class='stats-chart-title'>🕐 Últimos pedidos</div>" +
+          histHTML +
+        "</div>" +
+      "</div>" +
+
+      "<div style='text-align:center;margin-top:4px;'>" +
+        "<button class='btn-reset-stats' id='btn-reset-stats'>Reiniciar contadores</button>" +
+      "</div>";
+
+    /* ── Gráfica por hora ── */
+    var hrs = Array(24).fill(0);
+    pedidos.forEach(function(p) {
+      var h = parseInt((p.hora||"0").split(":")[0]);
+      if (!isNaN(h)) hrs[h]++;
+    });
+    var horaLabels = ["6","8","10","12","14","16","18","19","20","21","22","23"];
+    var horaVals   = [6,8,10,12,14,16,18,19,20,21,22,23].map(function(h){ return hrs[h]; });
+
+    if (chartHoraInst) { chartHoraInst.destroy(); chartHoraInst = null; }
+    var ctxH = document.getElementById("chartHora");
+    if (ctxH) {
+      chartHoraInst = new Chart(ctxH, {
+        type: "bar",
+        data: { labels: horaLabels, datasets: [{ label: "Pedidos", data: horaVals, backgroundColor: "#D85A30", borderRadius: 5, borderSkipped: false }] },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { ticks: { font: { size: 10 }, color: "#888", family: "Poppins" }, grid: { display: false } },
+            y: { ticks: { font: { size: 10 }, color: "#888", stepSize: 1 }, grid: { color: "rgba(0,0,0,0.04)" }, beginAtZero: true }
+          }
+        }
+      });
+    }
+
+    /* ── Gráfica semanal ── */
+    var diasLbl = ["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"];
+    var diasVals = diasLbl.map(function(d){ return (dSem.dias && dSem.dias[d]) ? dSem.dias[d] : 0; });
+
+    if (chartSemanaInst) { chartSemanaInst.destroy(); chartSemanaInst = null; }
+    var ctxS = document.getElementById("chartSemana");
+    if (ctxS) {
+      chartSemanaInst = new Chart(ctxS, {
+        type: "line",
+        data: { labels: diasLbl, datasets: [{
+          label: "Pedidos", data: diasVals,
+          borderColor: "#D85A30", backgroundColor: "rgba(216,90,48,0.12)",
+          tension: 0.4, fill: true, pointBackgroundColor: "#D85A30", pointRadius: 4, pointHoverRadius: 6
+        }]},
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { ticks: { font: { size: 10 }, color: "#888" }, grid: { display: false } },
+            y: { ticks: { font: { size: 10 }, color: "#888", stepSize: 1 }, grid: { color: "rgba(0,0,0,0.04)" }, beginAtZero: true }
+          }
+        }
+      });
+    }
+
+    /* ── Reset ── */
+    var btnReset = document.getElementById("btn-reset-stats");
+    if (btnReset) {
+      btnReset.addEventListener("click", function() {
+        if (!confirm("Reiniciar contadores de hoy?")) return;
+        db.ref("stats/dias/" + getFechaHoy()).remove();
+        db.ref("stats/semanas/" + getSemanaKey()).remove();
+        setTimeout(cargarYRenderStats, 400);
+      });
+    }
   }
 
   /* ── SEGURIDAD ── */
@@ -463,67 +603,64 @@
   }
 
   function renderAdminEditor() {
-    cargarEstadisticas(function(stats) {
-      renderStats(stats);
-      document.getElementById("negocio-content").innerHTML =
-        "<div class='admin-card'>" +
-        "<b>Nombre del Negocio:</b><input id='brandInput' value='" + esc(data.brand) + "'>" +
-        "<b>Numero de Celular:</b><input id='phoneInput' value='" + esc(data.phone) + "'>" +
-        "<b>Eslogan:</b><input id='sloganInput' value='" + esc(data.slogan) + "'>" +
-        "<b>Nequi:</b><input id='nequiInput' value='" + esc(data.nequi) + "'>" +
-        "<b>Bancolombia:</b><input id='bancoInput' value='" + esc(data.bancolombia) + "'>" +
-        "<b>Horario:</b><div class='horario-row'>" +
-          "<div><small>Apertura (0-23)</small><input id='horaAbreInput' type='number' min='0' max='23' value='" + (data.horaAbre!==undefined?data.horaAbre:18) + "'></div>" +
-          "<div><small>Cierre (0-23)</small><input id='horaCierraInput' type='number' min='0' max='23' value='" + (data.horaCierra||23) + "'></div>" +
-        "</div>" +
-        "<div class='switch-row'><div><div class='switch-label'>Cerrado temporalmente</div><small style='margin:0;'>Bloquea el carrito</small></div>" +
-          "<label class='toggle-switch'><input type='checkbox' id='cerradoToggle' " + (data.cerradoManual?"checked":"") + "><span class='toggle-slider'></span></label>" +
-        "</div>" +
-        "<input id='mensajeCerradoInput' placeholder='Mensaje de cierre' value='" + esc(data.mensajeCerrado) + "'>" +
-        "</div>";
+    document.getElementById("negocio-content").innerHTML =
+      "<div class='admin-card'>" +
+      "<b>Nombre del Negocio:</b><input id='brandInput' value='" + esc(data.brand) + "'>" +
+      "<b>Numero de Celular:</b><input id='phoneInput' value='" + esc(data.phone) + "'>" +
+      "<b>Eslogan:</b><input id='sloganInput' value='" + esc(data.slogan) + "'>" +
+      "<b>Nequi:</b><input id='nequiInput' value='" + esc(data.nequi) + "'>" +
+      "<b>Bancolombia:</b><input id='bancoInput' value='" + esc(data.bancolombia) + "'>" +
+      "<b>Horario:</b><div class='horario-row'>" +
+        "<div><small>Apertura (0-23)</small><input id='horaAbreInput' type='number' min='0' max='23' value='" + (data.horaAbre!==undefined?data.horaAbre:18) + "'></div>" +
+        "<div><small>Cierre (0-23)</small><input id='horaCierraInput' type='number' min='0' max='23' value='" + (data.horaCierra||23) + "'></div>" +
+      "</div>" +
+      "<div class='switch-row'><div><div class='switch-label'>Cerrado temporalmente</div><small style='margin:0;'>Bloquea el carrito</small></div>" +
+        "<label class='toggle-switch'><input type='checkbox' id='cerradoToggle' " + (data.cerradoManual?"checked":"") + "><span class='toggle-slider'></span></label>" +
+      "</div>" +
+      "<input id='mensajeCerradoInput' placeholder='Mensaje de cierre' value='" + esc(data.mensajeCerrado) + "'>" +
+      "</div>";
 
-      var hMenu = "";
-      (data.cats||[]).forEach(function(cat, ci) {
-        var n = (cat.items||[]).length;
-        hMenu += "<div class='admin-cat-block'>" +
-          "<div class='admin-cat-header' data-ci='" + ci + "'>" +
-            "<div class='admin-cat-header-left'>" +
-              "<span style='font-size:18px;'>&#128194;</span>" +
-              "<span style='font-size:15px;font-weight:700;color:#1e272e;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;'>" + esc(cat.name||"Categoria") + "</span>" +
-              "<span class='admin-cat-count'>" + n + " plato" + (n!==1?"s":"") + "</span>" +
-            "</div>" +
-            "<span class='admin-cat-chevron" + (ci===0?" open":"") + "' id='chevron-cat-" + ci + "'>&#9660;</span>" +
+    var hMenu = "";
+    (data.cats||[]).forEach(function(cat, ci) {
+      var n = (cat.items||[]).length;
+      hMenu += "<div class='admin-cat-block'>" +
+        "<div class='admin-cat-header' data-ci='" + ci + "'>" +
+          "<div class='admin-cat-header-left'>" +
+            "<span style='font-size:18px;'>&#128194;</span>" +
+            "<span style='font-size:15px;font-weight:700;color:#1e272e;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;'>" + esc(cat.name||"Categoria") + "</span>" +
+            "<span class='admin-cat-count'>" + n + " plato" + (n!==1?"s":"") + "</span>" +
           "</div>" +
-          "<div class='admin-cat-body" + (ci===0?" open":"") + "' id='body-cat-" + ci + "'>" +
-            "<div style='display:flex;gap:8px;margin:14px 0 10px;'>" +
-              "<input class='admin-cat-name-input' value='" + esc(cat.name||"") + "' placeholder='Nombre categoria' data-ci='" + ci + "' data-role='catname'>" +
-              "<button class='btn btn-del' data-ci='" + ci + "' data-role='delcat'>Eliminar</button>" +
-            "</div>";
-        (cat.items||[]).forEach(function(item, ii) {
-          var b = item.badge || "";
-          hMenu += "<div class='ed-item-block'>" +
-            "<div style='font-size:12px;font-weight:700;color:#555;margin-bottom:4px;'>Plato " + (ii+1) + "</div>" +
-            "<input placeholder='Nombre' value='" + esc(item.name) + "' data-ci='" + ci + "' data-ii='" + ii + "' data-field='name' data-role='item'>" +
-            "<input placeholder='Precio actual' value='" + esc(item.price) + "' data-ci='" + ci + "' data-ii='" + ii + "' data-field='price' data-role='item'>" +
-            "<input placeholder='Precio anterior (opcional)' value='" + esc(item.precioAntes) + "' data-ci='" + ci + "' data-ii='" + ii + "' data-field='precioAntes' data-role='item'>" +
-            "<input placeholder='Descripcion' value='" + esc(item.desc) + "' data-ci='" + ci + "' data-ii='" + ii + "' data-field='desc' data-role='item'>" +
-            "<input placeholder='URL foto (opcional)' value='" + esc(item.img) + "' data-ci='" + ci + "' data-ii='" + ii + "' data-field='img' data-role='item'>" +
-            "<div style='margin:6px 0 2px;font-size:12px;font-weight:600;color:#555;'>Etiqueta:</div>" +
-            "<div class='badge-selector'>" +
-              "<button class='badge-opt " + (b==="hot"?"active-hot":"") + "' data-ci='" + ci + "' data-ii='" + ii + "' data-badge='hot' data-role='badge'>El mas pedido</button>" +
-              "<button class='badge-opt " + (b==="new"?"active-new":"") + "' data-ci='" + ci + "' data-ii='" + ii + "' data-badge='new' data-role='badge'>Nuevo</button>" +
-              "<button class='badge-opt " + (b==="sold"?"active-sold":"") + "' data-ci='" + ci + "' data-ii='" + ii + "' data-badge='sold' data-role='badge'>Agotado</button>" +
-              "<button class='badge-opt " + (b===""?"active-sold":"") + "' data-ci='" + ci + "' data-ii='" + ii + "' data-badge='' data-role='badge'>Sin etiqueta</button>" +
-            "</div>" +
-            "<button class='btn btn-del' style='width:100%;margin-top:8px;' data-ci='" + ci + "' data-ii='" + ii + "' data-role='delitem'>Quitar Plato</button>" +
+          "<span class='admin-cat-chevron" + (ci===0?" open":"") + "' id='chevron-cat-" + ci + "'>&#9660;</span>" +
+        "</div>" +
+        "<div class='admin-cat-body" + (ci===0?" open":"") + "' id='body-cat-" + ci + "'>" +
+          "<div style='display:flex;gap:8px;margin:14px 0 10px;'>" +
+            "<input class='admin-cat-name-input' value='" + esc(cat.name||"") + "' placeholder='Nombre categoria' data-ci='" + ci + "' data-role='catname'>" +
+            "<button class='btn btn-del' data-ci='" + ci + "' data-role='delcat'>Eliminar</button>" +
           "</div>";
-        });
-        hMenu += "<button class='btn btn-add' style='margin-top:10px;' data-ci='" + ci + "' data-role='additem'>+ Anadir Plato</button>" +
-          "</div></div>";
+      (cat.items||[]).forEach(function(item, ii) {
+        var b = item.badge || "";
+        hMenu += "<div class='ed-item-block'>" +
+          "<div style='font-size:12px;font-weight:700;color:#555;margin-bottom:4px;'>Plato " + (ii+1) + "</div>" +
+          "<input placeholder='Nombre' value='" + esc(item.name) + "' data-ci='" + ci + "' data-ii='" + ii + "' data-field='name' data-role='item'>" +
+          "<input placeholder='Precio actual' value='" + esc(item.price) + "' data-ci='" + ci + "' data-ii='" + ii + "' data-field='price' data-role='item'>" +
+          "<input placeholder='Precio anterior (opcional)' value='" + esc(item.precioAntes) + "' data-ci='" + ci + "' data-ii='" + ii + "' data-field='precioAntes' data-role='item'>" +
+          "<input placeholder='Descripcion' value='" + esc(item.desc) + "' data-ci='" + ci + "' data-ii='" + ii + "' data-field='desc' data-role='item'>" +
+          "<input placeholder='URL foto (opcional)' value='" + esc(item.img) + "' data-ci='" + ci + "' data-ii='" + ii + "' data-field='img' data-role='item'>" +
+          "<div style='margin:6px 0 2px;font-size:12px;font-weight:600;color:#555;'>Etiqueta:</div>" +
+          "<div class='badge-selector'>" +
+            "<button class='badge-opt " + (b==="hot"?"active-hot":"") + "' data-ci='" + ci + "' data-ii='" + ii + "' data-badge='hot' data-role='badge'>El mas pedido</button>" +
+            "<button class='badge-opt " + (b==="new"?"active-new":"") + "' data-ci='" + ci + "' data-ii='" + ii + "' data-badge='new' data-role='badge'>Nuevo</button>" +
+            "<button class='badge-opt " + (b==="sold"?"active-sold":"") + "' data-ci='" + ci + "' data-ii='" + ii + "' data-badge='sold' data-role='badge'>Agotado</button>" +
+            "<button class='badge-opt " + (b===""?"active-sold":"") + "' data-ci='" + ci + "' data-ii='" + ii + "' data-badge='' data-role='badge'>Sin etiqueta</button>" +
+          "</div>" +
+          "<button class='btn btn-del' style='width:100%;margin-top:8px;' data-ci='" + ci + "' data-ii='" + ii + "' data-role='delitem'>Quitar Plato</button>" +
+        "</div>";
       });
-      document.getElementById("menu-editor-content").innerHTML = hMenu;
-      bindMenuEvents();
+      hMenu += "<button class='btn btn-add' style='margin-top:10px;' data-ci='" + ci + "' data-role='additem'>+ Anadir Plato</button>" +
+        "</div></div>";
     });
+    document.getElementById("menu-editor-content").innerHTML = hMenu;
+    bindMenuEvents();
   }
 
   function bindMenuEvents() {
