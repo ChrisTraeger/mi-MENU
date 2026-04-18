@@ -141,13 +141,13 @@
       <div class="login-field">
         <label class="login-field-label">&#128100; Usuario</label>
         <div class="login-input-wrap">
-          <input id="user-input" class="login-input" type="text" placeholder="admin">
+          <input id="user-input" class="login-input" type="text" placeholder="admin" autocomplete="username" autocorrect="off" autocapitalize="off" spellcheck="false">
         </div>
       </div>
       <div class="login-field">
         <label class="login-field-label">&#128273; Contrasena</label>
         <div class="login-input-wrap">
-          <input id="pass-input" class="login-input pass" type="password" placeholder="1234" maxlength="30">
+          <input id="pass-input" class="login-input pass" type="password" placeholder="1234" maxlength="30" autocomplete="current-password" autocorrect="off" autocapitalize="off" spellcheck="false">
           <button class="login-eye" id="eye-login">&#128065;</button>
         </div>
       </div>
@@ -256,7 +256,7 @@
   function verificarClave() {
     if (esBloqueado()) return;
     var userVal = (document.getElementById("user-input").value || "").trim();
-    var passVal = document.getElementById("pass-input").value || "";
+    var passVal = (document.getElementById("pass-input").value || "").trim();
     if (!userVal) { document.getElementById("user-input").focus(); return; }
     if (!passVal) { document.getElementById("pass-input").focus(); return; }
     var creds = getCreds();
@@ -337,6 +337,7 @@
       this.classList.add("active");
       document.getElementById("pane-" + tab).classList.add("active");
       if (tab === "stats") cargarYRenderStats();
+      if (tab === "negocio") renderAdminEditor();
       if (tab === "menu") renderAdminEditor();
       if (tab === "seguridad") renderSeguridad();
     });
