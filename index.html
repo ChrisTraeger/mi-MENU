@@ -245,22 +245,31 @@
     const cloud = snap.val();
     if (cloud) {
       data = cloud;
-      if (!data.cats) data.cats = [];
-      if (!data.horaAbre && data.horaAbre !== 0) data.horaAbre = 18;
-      if (!data.horaCierra) data.horaCierra = 23;
-      if (data.cerradoManual === undefined) data.cerradoManual = false;
-      if (!data.mensajeCerrado) data.mensajeCerrado = "";
-      data.cats.forEach(c => {
-        if (!c.items) c.items = [];
-        c.items.forEach(i => {
-          if (!i.badge) i.badge='';
-          if (!i.img) i.img='';
-          if (!i.precioAntes) i.precioAntes='';
-        });
-      });
       guardarMenuCache(data);
       setBanner(false);
+    } else {
+      // Firebase vacío: usar caché o datos por defecto
+      const cache = leerMenuCache();
+      if (cache) { data = cache; setBanner(false); }
     }
+    if (!data.cats) data.cats = [];
+    if (!data.horaAbre && data.horaAbre !== 0) data.horaAbre = 18;
+    if (!data.horaCierra) data.horaCierra = 23;
+    if (data.cerradoManual === undefined) data.cerradoManual = false;
+    if (!data.mensajeCerrado) data.mensajeCerrado = "";
+    data.cats.forEach(c => {
+      if (!c.items) c.items = [];
+      c.items.forEach(i => {
+        if (!i.badge) i.badge='';
+        if (!i.img) i.img='';
+        if (!i.precioAntes) i.precioAntes='';
+      });
+    });
+    loadRatings();
+  }, (error) => {
+    // Error de conexión: usar caché
+    const cache = leerMenuCache();
+    if (cache) { data = cache; }
     loadRatings();
   });
 
