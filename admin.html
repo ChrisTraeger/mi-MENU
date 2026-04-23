@@ -446,9 +446,15 @@
     pedidos.forEach(function(p) {
       if (p.resumen) {
         p.resumen.split(",").forEach(function(part) {
-          var m = part.trim().match(/^(\d+)x?\s+(.+)/);
-          var nm = m ? m[2].trim() : part.trim();
-          if (nm) counts[nm] = (counts[nm]||0) + (m ? parseInt(m[1]) : 1);
+          var t = part.trim();
+          // Formato nuevo: "2x Nombre" o viejo: "Nombre x2"
+          var m1 = t.match(/^(\d+)x\s+(.+)/);   // nuevo: "2x Nombre"
+          var m2 = t.match(/^(.+?)\s+x(\d+)$/);  // viejo: "Nombre x2"
+          var nm, qty;
+          if (m1) { qty = parseInt(m1[1]); nm = m1[2].trim(); }
+          else if (m2) { qty = parseInt(m2[2]); nm = m2[1].trim(); }
+          else { nm = t; qty = 1; }
+          if (nm) counts[nm] = (counts[nm]||0) + qty;
         });
       }
     });

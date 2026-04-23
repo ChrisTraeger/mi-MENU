@@ -282,14 +282,25 @@
     const startOfYear = new Date(now.getFullYear(), 0, 1);
     const semana = `${now.getFullYear()}-W${String(Math.ceil(((now - startOfYear) / 86400000 + startOfYear.getDay() + 1) / 7)).padStart(2,'0')}`;
     const hora = now.toLocaleTimeString('es-CO', {hour:'2-digit', minute:'2-digit'});
-    const resumen = items.map(i => `${i.nombre} x${i.qty}`).join(', ');
+    const resumen = items.map(i => `${i.qty}x ${i.nombre}`).join(', ');
+    const diasNombres = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+    const diaNombre = diasNombres[now.getDay()];
+
+    // Guardar pedido del día
     db.ref(`stats/dias/${hoy}`).transaction(actual => {
       if (!actual) return { count: 1, pedidos: [{ hora, resumen, total }] };
       const pedidos = actual.pedidos || [];
       pedidos.push({ hora, resumen, total });
       return { count: (actual.count || 0) + 1, pedidos };
-    });
-    db.ref(`stats/semanas/${semana}/count`).transaction(v => (v || 0) + 1);
+    }).catch(e => console.warn('Stats día error:', e));
+
+    // Guardar contador semanal total
+    db.ref(`stats/semanas/${semana}/count`).transaction(v => (v || 0) + 1)
+      .catch(e => console.warn('Stats semana error:', e));
+
+    // Guardar desglose por día de la semana (para la gráfica)
+    db.ref(`stats/semanas/${semana}/dias/${diaNombre}`).transaction(v => (v || 0) + 1)
+      .catch(e => console.warn('Stats semana/dia error:', e));
   }
 
   function formatPhone(p) {
