@@ -102,6 +102,32 @@
     #offline-banner { display:none; background:#2d3436; color:white; text-align:center; padding:10px 16px; font-size:12px; font-weight:700; border-radius:12px; margin-bottom:14px; letter-spacing:0.3px; }
     #offline-banner.show { display:flex; align-items:center; justify-content:center; gap:6px; }
     #offline-banner.show.readonly { background: #6c5ce7; }
+
+    /* ── TIPO MENU TABS ── */
+    .tipo-menu-wrap {
+      background: white;
+      border-radius: 20px;
+      padding: 14px 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+    }
+    .tipo-menu-label {
+      font-size: 11px; font-weight: 700; color: #aaa;
+      text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 10px;
+    }
+    .tipo-menu-tabs { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }
+    .tipo-menu-tabs::-webkit-scrollbar { display: none; }
+    .tipo-tab {
+      flex-shrink: 0; display: flex; flex-direction: column; align-items: center;
+      gap: 4px; padding: 10px 16px; border-radius: 14px;
+      border: 2px solid #f0f0f0; background: #f8f9fa; cursor: pointer;
+      font-family: 'Poppins', sans-serif; transition: all 0.18s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .tipo-tab.active { background: var(--primary); border-color: var(--primary); }
+    .tipo-tab-emoji { font-size: 22px; line-height: 1; }
+    .tipo-tab-label { font-size: 11px; font-weight: 700; color: #636e72; white-space: nowrap; }
+    .tipo-tab.active .tipo-tab-label { color: white; }
   </style>
 </head>
 <body>
@@ -411,6 +437,43 @@
     return `<div style="margin-bottom:24px;"><div style="font-size:16px;font-weight:700;color:#2d3436;margin-bottom:12px;">🔥 Lo más pedido</div><div style="display:flex;gap:12px;overflow-x:auto;padding-bottom:6px;scrollbar-width:none;">${cards}</div></div>`;
   }
 
+  // ── TIPOS DE MENÚ ──
+  const TIPOS = [
+    { key: 'comidaRapida', emoji: '🍔', label: 'Comida Rápida' },
+    { key: 'asados',       emoji: '🥩', label: 'Asados' },
+    { key: 'almuerzos',    emoji: '🍱', label: 'Almuerzos' },
+  ];
+  let tipoActivo = 'comidaRapida';
+
+  function tipoMenuHtml() {
+    const tabs = TIPOS.map(t =>
+      `<button class="tipo-tab ${t.key === tipoActivo ? 'active' : ''}" onclick="cambiarTipo('${t.key}')">
+        <span class="tipo-tab-emoji">${t.emoji}</span>
+        <span class="tipo-tab-label">${t.label}</span>
+      </button>`
+    ).join('');
+    return `<div class="tipo-menu-wrap">
+      <div class="tipo-menu-label">¿Qué se te antoja?</div>
+      <div class="tipo-menu-tabs">${tabs}</div>
+    </div>`;
+  }
+
+  function cambiarTipo(key) {
+    tipoActivo = key;
+    busqueda = '';
+    db.ref('menuData').once('value', snap => {
+      const cloud = snap.val() || {};
+      if (cloud[key] && cloud[key].cats) {
+        data.cats = cloud[key].cats;
+      } else if (key === 'comidaRapida' && cloud.cats) {
+        data.cats = cloud.cats;
+      } else {
+        data.cats = [];
+      }
+      renderClientMenu();
+    });
+  }
+
   let busqueda = '';
   function filtrarMenu(q) { busqueda = q.toLowerCase(); renderItems(); }
 
@@ -466,6 +529,7 @@
       </div>
       ${data.cerradoManual && data.mensajeCerrado ? `<div class="closed-banner"><div class="closed-banner-title">⏸ Cerrado temporalmente</div><div class="closed-banner-msg">${data.mensajeCerrado}</div></div>` : ''}
       ${contactBlock}
+      ${tipoMenuHtml()}
       <div id="mas-vendidos-section">${seccionMasVendidosHtml()}</div>
       <div class="cat-nav" id="cat-nav">${navBtns}</div>
       <div class="search-wrap">
