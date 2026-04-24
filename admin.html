@@ -121,6 +121,16 @@
     .admin-cat-body.open { display: block; }
     .admin-cat-name-input { font-weight: 700; color: var(--primary); flex: 1; min-width: 0; padding: 8px 10px; border: 1px solid #ddd; border-radius: 10px; font-family: 'Poppins', sans-serif; font-size: 14px; margin: 0; width: auto; }
     .session-badge { font-size: 10px; color: #05c46b; font-weight: 700; background: #05c46b15; padding: 3px 10px; border-radius: 20px; }
+
+    /* ── TIPO MENÚ SELECTOR (admin) ── */
+    .tipo-selector-wrap { background: white; border-radius: 16px; padding: 14px 16px; margin: 0 0 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+    .tipo-selector-label { font-size: 11px; font-weight: 700; color: #aaa; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 10px; }
+    .tipo-selector-tabs { display: flex; gap: 8px; }
+    .tipo-admin-tab { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 10px 8px; border-radius: 12px; border: 2px solid #f0f0f0; background: #f8f9fa; cursor: pointer; font-family: 'Poppins', sans-serif; transition: all 0.18s; }
+    .tipo-admin-tab.active { background: var(--primary); border-color: var(--primary); }
+    .tipo-admin-tab-emoji { font-size: 20px; line-height: 1; }
+    .tipo-admin-tab-label { font-size: 10px; font-weight: 700; color: #636e72; }
+    .tipo-admin-tab.active .tipo-admin-tab-label { color: white; }
   </style>
 </head>
 <body>
@@ -181,6 +191,14 @@
     <div class="admin-pane active" id="pane-stats"><div id="stats-content"></div></div>
     <div class="admin-pane" id="pane-negocio"><div id="negocio-content"></div></div>
     <div class="admin-pane" id="pane-menu">
+      <div class="tipo-selector-wrap" style="margin:16px 0 0;">
+        <div class="tipo-selector-label">Editando menú de:</div>
+        <div class="tipo-selector-tabs">
+          <button class="tipo-admin-tab active" data-tipo="comidaRapida" onclick="cambiarTipoAdmin(this)"><span class="tipo-admin-tab-emoji">🍔</span><span class="tipo-admin-tab-label">Comida Rápida</span></button>
+          <button class="tipo-admin-tab" data-tipo="asados" onclick="cambiarTipoAdmin(this)"><span class="tipo-admin-tab-emoji">🥩</span><span class="tipo-admin-tab-label">Asados</span></button>
+          <button class="tipo-admin-tab" data-tipo="almuerzos" onclick="cambiarTipoAdmin(this)"><span class="tipo-admin-tab-emoji">🍱</span><span class="tipo-admin-tab-label">Almuerzos</span></button>
+        </div>
+      </div>
       <div id="menu-editor-content"></div>
       <button class="btn btn-cat" id="btn-add-cat">+ NUEVA CATEGORIA</button>
     </div>
@@ -218,6 +236,35 @@
     nequi: "3127447977", bancolombia: "000-000000-00",
     horaAbre: 18, horaCierra: 23, cerradoManual: false, mensajeCerrado: "", cats: []
   };
+
+  /* ── TIPOS DE MENÚ ── */
+  var tipoAdminActivo = "comidaRapida";
+  var TIPOS_MENU = {
+    comidaRapida: { emoji: "🍔", label: "Comida Rápida" },
+    asados:       { emoji: "🥩", label: "Asados" },
+    almuerzos:    { emoji: "🍱", label: "Almuerzos" }
+  };
+
+  function getCatsActuales() {
+    if (tipoAdminActivo === "comidaRapida") return data.cats || [];
+    return (data[tipoAdminActivo] && data[tipoAdminActivo].cats) ? data[tipoAdminActivo].cats : [];
+  }
+
+  function setCatsActuales(cats) {
+    if (tipoAdminActivo === "comidaRapida") {
+      data.cats = cats;
+    } else {
+      if (!data[tipoAdminActivo]) data[tipoAdminActivo] = {};
+      data[tipoAdminActivo].cats = cats;
+    }
+  }
+
+  function cambiarTipoAdmin(btn) {
+    document.querySelectorAll(".tipo-admin-tab").forEach(function(t) { t.classList.remove("active"); });
+    btn.classList.add("active");
+    tipoAdminActivo = btn.getAttribute("data-tipo");
+    renderAdminEditor();
+  }
 
   /* ── CREDENCIALES EN FIREBASE ── */
   function getCreds() {
@@ -656,7 +703,8 @@
       "</div>";
 
     var hMenu = "";
-    (data.cats||[]).forEach(function(cat, ci) {
+    var _cats = getCatsActuales();
+    _cats.forEach(function(cat, ci) {
       var n = (cat.items||[]).length;
       hMenu += "<div class='admin-cat-block'>" +
         "<div class='admin-cat-header' data-ci='" + ci + "'>" +
@@ -714,32 +762,32 @@
       inp.addEventListener("change", function() {
         var ci = +this.getAttribute("data-ci");
         var ii = +this.getAttribute("data-ii");
-        data.cats[ci].items[ii][this.getAttribute("data-field")] = this.value;
+        getCatsActuales()[ci].items[ii][this.getAttribute("data-field")] = this.value;
       });
     });
     document.querySelectorAll("[data-role='catname']").forEach(function(inp) {
       inp.addEventListener("change", function() {
-        data.cats[+this.getAttribute("data-ci")].name = this.value;
+        getCatsActuales()[+this.getAttribute("data-ci")].name = this.value;
       });
     });
     document.querySelectorAll("[data-role='delcat']").forEach(function(btn) {
       btn.addEventListener("click", function() {
         if (!confirm("Eliminar categoria y todos sus platos?")) return;
-        data.cats.splice(+this.getAttribute("data-ci"), 1);
+        getCatsActuales().splice(+this.getAttribute("data-ci"), 1);
         renderAdminEditor();
       });
     });
     document.querySelectorAll("[data-role='delitem']").forEach(function(btn) {
       btn.addEventListener("click", function() {
-        data.cats[+this.getAttribute("data-ci")].items.splice(+this.getAttribute("data-ii"), 1);
+        getCatsActuales()[+this.getAttribute("data-ci")].items.splice(+this.getAttribute("data-ii"), 1);
         renderAdminEditor();
       });
     });
     document.querySelectorAll("[data-role='additem']").forEach(function(btn) {
       btn.addEventListener("click", function() {
         var ci = +this.getAttribute("data-ci");
-        if (!data.cats[ci].items) data.cats[ci].items = [];
-        data.cats[ci].items.push({ name:"", desc:"", price:"", img:"", badge:"", precioAntes:"" });
+        if (!getCatsActuales()[ci].items) getCatsActuales()[ci].items = [];
+        getCatsActuales()[ci].items.push({ name:"", desc:"", price:"", img:"", badge:"", precioAntes:"" });
         renderAdminEditor();
         setTimeout(function() {
           var b = document.getElementById("body-cat-" + ci);
@@ -750,14 +798,14 @@
     });
     document.querySelectorAll("[data-role='badge']").forEach(function(btn) {
       btn.addEventListener("click", function() {
-        data.cats[+this.getAttribute("data-ci")].items[+this.getAttribute("data-ii")].badge = this.getAttribute("data-badge");
+        getCatsActuales()[+this.getAttribute("data-ci")].items[+this.getAttribute("data-ii")].badge = this.getAttribute("data-badge");
         renderAdminEditor();
       });
     });
   }
 
   document.getElementById("btn-add-cat").addEventListener("click", function() {
-    data.cats.push({ name: "Nueva Categoria", items: [] });
+    getCatsActuales().push({ name: "Nueva Categoria", items: [] });
     renderAdminEditor();
   });
 
